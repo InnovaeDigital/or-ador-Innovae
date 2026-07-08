@@ -776,7 +776,8 @@
       const company = {
         providerName: "David P. Tomé",
         phone: "(61) 93300-4316",
-        pixKey: "61933004316",
+        pixKey: "+5561933004316",
+        pixDisplayKey: "61933004316",
         city: "Luziânia/GO",
         email: "innovaedigital.media@gmail.com",
         social: "@innovaedigital.midia",
@@ -917,7 +918,7 @@
         data.social = company.social;
         data.paymentTitle = "FORMA DE PAGAMENTO:";
         data.paymentLines = [
-          `Pix Celular - ${company.pixKey} - David Peçanha Tomé`,
+          `Pix Celular - ${company.pixDisplayKey} - David Peçanha Tomé`,
           company.social,
           `${company.city} - Valor fixado: ${money(data.total)}`
         ];
