@@ -2,7 +2,13 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0b17" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/app-cover.jpg" />
     <title>Gerador de Orçamentos - Innovae Digital</title>
     <style>
       :root {
@@ -74,6 +80,39 @@
         padding: 10px;
       }
 
+      .app-splash {
+        background: var(--panel);
+        border: 1px solid #d9d9d9;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 18px;
+      }
+
+      .app-splash strong {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 24px;
+        color: #050505;
+      }
+
+      .app-splash span {
+        color: #666;
+        line-height: 1.45;
+        font-size: 14px;
+      }
+
+      .install-app {
+        display: block;
+        width: 100%;
+        margin: 18px 0 0;
+        background: var(--yellow);
+        color: #050505;
+        border-radius: 6px;
+        padding: 10px 12px;
+        border: 0;
+        font-weight: 700;
+      }
+
       .section-title {
         margin: 20px 0 10px;
         font-size: 13px;
@@ -116,6 +155,10 @@
       .field textarea {
         min-height: 74px;
         resize: vertical;
+      }
+
+      .hint {
+        color: var(--muted);
       }
 
       .row {
@@ -407,7 +450,6 @@
 
       .table-yellow thead th {
         background: #050505;
-        color: #111;
         color: var(--yellow);
         padding: 10px;
         border: 1px solid #050505;
@@ -437,26 +479,6 @@
         border: 2px solid #050505;
         border-left: 12px solid var(--yellow);
         line-height: 1.45;
-      }
-
-      .pix-area {
-        display: grid;
-        grid-template-columns: 132px 1fr;
-        gap: 14px;
-        align-items: start;
-        margin-top: 12px;
-      }
-
-      .pix-area img {
-        width: 132px;
-        height: 132px;
-        border: 1px solid #d8dbe2;
-      }
-
-      .pix-copy {
-        overflow-wrap: anywhere;
-        font-size: 10px;
-        color: #333;
       }
 
       .footer-logos {
@@ -506,17 +528,74 @@
           padding: 12px;
         }
 
+        .app-splash {
+          min-height: 180px;
+          padding: 18px;
+          border-radius: 16px;
+        }
+
         .preview-wrap {
-          margin-inline: -12px;
+          margin: 0;
+          padding-bottom: 16px;
         }
 
         .preview-header {
-          margin-left: 12px;
-          margin-right: 12px;
+          margin: 0;
+          width: auto;
+          border-radius: 18px;
         }
 
         .row.three {
           grid-template-columns: 1fr;
+        }
+
+        .sheet {
+          width: auto;
+          margin: 0;
+          border-radius: 18px;
+        }
+
+        .pdf-header,
+        .pdf-title,
+        .meta,
+        .payment-info,
+        .footer-logos {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .app {
+          padding: 10px 10px 0;
+        }
+
+        .controls {
+          padding: 16px;
+        }
+
+        .item-editor {
+          padding: 14px;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+          padding: 12px;
+        }
+
+        .pdf-header,
+        .pdf-title,
+        .meta,
+        .payment-info,
+        .footer-logos {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+        .preview-header {
+          flex-direction: column;
+          align-items: flex-start;
         }
       }
 
@@ -568,6 +647,13 @@
     <main class="app">
       <section class="controls" aria-label="Dados do orçamento">
         <img class="control-logo" src="assets/logo-innovae.png" alt="Innovae Digital" />
+        <div class="app-splash">
+          <div class="splash-copy">
+            <strong>Orçamento limpo e pronto para envio</strong>
+            <span>Preencha os dados, confira a prévia e gere o PDF ou imagem para WhatsApp com facilidade.</span>
+          </div>
+        </div>
+        <button class="btn primary install-app" id="installButton" type="button" hidden>Adicionar à tela de início</button>
         <h1>Gerador de Orçamentos</h1>
         <p class="hint">Preencha os dados, confira a prévia e gere o PDF pelo navegador. Ao gerar, o próximo número da fatura avança automaticamente.</p>
 
@@ -606,7 +692,7 @@
               <input id="calcHeight" type="number" min="0" step="0.01" />
             </div>
             <div class="field">
-              <label for="calcQuantity">Qtd</label>
+              <label for="calcQuantity">Qtd (unid/m²)</label>
               <input id="calcQuantity" type="number" min="1" step="1" value="1" />
             </div>
           </div>
@@ -652,17 +738,12 @@
           <label for="discount">Desconto (R$)</label>
           <input id="discount" type="number" min="0" step="0.01" />
         </div>
-        <p class="hint">O Pix é gerado automaticamente para a chave celular 61933004316 com o valor total do orçamento.</p>
+        <p class="hint">Pague via PIX para a chave celular 61933004316 em nome de David Peçanha Tomé. Digite o valor do orçamento manualmente no seu app.</p>
 
         <div class="actions">
           <button class="btn primary" id="downloadPdf" type="button">Gerar PDF</button>
           <button class="btn" id="downloadPdfFile" type="button">Baixar PDF</button>
-          <button class="btn" id="printPdf" type="button">Imprimir/Salvar PDF</button>
-          <button class="btn" id="saveNumber" type="button">Salvar número atual</button>
-          <button class="btn danger" id="resetForm" type="button">Limpar</button>
-        </div>
-
-        <div class="section-title">Banco de dados local</div>
+            <button class="btn" id="downloadJpeg" type="button">Gerar imagem para WhatsApp</button>
         <div class="db-panel">
           <div class="db-stats">
             <div class="db-stat">Orçamentos salvos<strong id="savedQuotesCount">0</strong></div>
@@ -682,14 +763,13 @@
       <section class="preview-wrap" aria-label="Prévia do orçamento">
         <div class="preview-header">
           <strong>Prévia do orçamento</strong>
-          <span>Confira layout, valores, Pix e dados do cliente antes de salvar em PDF.</span>
+          <span>Confira layout e valores antes de salvar em PDF ou JPEG.</span>
         </div>
         <article class="sheet" id="preview">
           <div class="pdf-header">
             <div class="brand">
               <img class="brand-logo" src="assets/logo-innovae.png" alt="Innovae Digital" />
               <div>
-                <div class="brand-name">AGÊNCIA INNOVAE DIGITAL</div>
                 <div class="brand-line" data-preview="phoneCity"></div>
               </div>
               <div class="brand-social" data-preview="social"></div>
@@ -712,7 +792,7 @@
             <thead>
               <tr>
                 <th style="width:55%">DESCRIÇÃO</th>
-                <th style="width:10%">QTD</th>
+                <th style="width:10%">QTD (unid/m²)</th>
                 <th style="width:17%">PREÇO UNITÁRIO</th>
                 <th style="width:18%">TOTAL</th>
               </tr>
@@ -727,18 +807,10 @@
           </table>
 
           <div class="payment-info">
-            <div><strong data-preview="paymentTitle"></strong></div>
-            <div data-preview="paymentLine1"></div>
-            <div data-preview="paymentLine2"></div>
-            <div data-preview="paymentLine3"></div>
-            <div class="pix-area">
-              <img data-preview="pixQr" alt="QR Code Pix" />
-              <div>
-                <strong>PIX COPIA E COLA</strong>
-                <div class="hint">Gerado com chave celular 61933004316 e valor total fixado.</div>
-                <div class="pix-copy" data-preview="pixPayload"></div>
-              </div>
-            </div>
+            <div><strong>FORMA DE PAGAMENTO</strong></div>
+            <div class="payment-note">PIX Celular: <strong>61933004316</strong></div>
+            <div class="payment-note">Recebedor: <strong>David Peçanha Tomé</strong></div>
+            <div class="payment-note">Informe o valor do orçamento manualmente no app do banco.</div>
           </div>
 
           <div class="footer-logos">
@@ -759,8 +831,6 @@
       const statusMessage = document.getElementById("statusMessage");
       const calcIds = ["materialPreset", "calcWidth", "calcHeight", "calcQuantity", "calcCost", "calcPrice"];
       const calcFields = {};
-      let pixRequestId = 0;
-      let pixTimer = null;
       const previewTargets = [...document.querySelectorAll("[data-preview]")]
         .reduce((acc, node) => {
           acc[node.dataset.preview] = node;
@@ -835,69 +905,6 @@
           .replaceAll('"', "&quot;");
       }
 
-      function tlv(id, value) {
-        const text = String(value);
-        return `${id}${String(text.length).padStart(2, "0")}${text}`;
-      }
-
-      function crc16(payload) {
-        let crc = 0xffff;
-        for (let i = 0; i < payload.length; i += 1) {
-          crc ^= payload.charCodeAt(i) << 8;
-          for (let bit = 0; bit < 8; bit += 1) {
-            crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
-            crc &= 0xffff;
-          }
-        }
-        return crc.toString(16).toUpperCase().padStart(4, "0");
-      }
-
-      function createPixPayload(data) {
-        const amount = data.total.toFixed(2);
-        const txid = data.invoiceNumber.replace(/[^A-Z0-9]/gi, "").slice(0, 25) || "***";
-        const merchantAccount = [
-          tlv("00", "br.gov.bcb.pix"),
-          tlv("01", company.pixKey),
-          tlv("02", `Orcamento ${data.invoiceNumber}`.slice(0, 72))
-        ].join("");
-        const payload = [
-          tlv("00", "01"),
-          tlv("26", merchantAccount),
-          tlv("52", "0000"),
-          tlv("53", "986"),
-          tlv("54", amount),
-          tlv("58", "BR"),
-          tlv("59", company.pixName.slice(0, 25)),
-          tlv("60", company.pixCity.slice(0, 15)),
-          tlv("62", tlv("05", txid))
-        ].join("");
-        const withCrc = `${payload}6304`;
-        return `${withCrc}${crc16(withCrc)}`;
-      }
-
-      function qrCodeUrl(payload) {
-        return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(payload)}`;
-      }
-
-      function pixPlaceholder() {
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220"><rect width="220" height="220" fill="#fff200"/><rect x="16" y="16" width="188" height="188" fill="#ffffff" stroke="#050505" stroke-width="4"/><text x="110" y="104" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#050505">Gerando Pix</text><text x="110" y="130" text-anchor="middle" font-family="Arial" font-size="12" fill="#050505">GerarPix.com.br</text></svg>`;
-        return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-      }
-
-      function pixReference(invoiceNumber) {
-        return String(invoiceNumber || "ORCAMENTO").replace(/[^a-z0-9]/gi, "").slice(0, 20) || "ORCAMENTO";
-      }
-
-      function loadGerarPix(data) {
-        previewTargets.pixPayload.textContent = data.pixPayload;
-        previewTargets.pixQr.src = qrCodeUrl(data.pixPayload);
-      }
-
-      function scheduleGerarPix(data) {
-        // Generate QR locally immediately; avoid external API to prevent failures
-        loadGerarPix(data);
-      }
-
       function getFormData() {
         const data = {};
         Object.keys(defaults).forEach((key) => {
@@ -916,13 +923,6 @@
         data.city = company.city;
         data.email = company.email;
         data.social = company.social;
-        data.paymentTitle = "FORMA DE PAGAMENTO:";
-        data.paymentLines = [
-          `Pix Celular - ${company.pixDisplayKey} - David Peçanha Tomé`,
-          company.social,
-          `${company.city} - Valor fixado: ${money(data.total)}`
-        ];
-        data.pixPayload = createPixPayload(data);
         return data;
       }
 
@@ -1132,7 +1132,7 @@
                 <textarea data-field="description" data-index="${index}">${escapeHtml(item.description)}</textarea>
               </div>
               <div class="field">
-                <label>Qtd</label>
+                <label>Qtd (unid/m²)</label>
                 <input data-field="quantity" data-index="${index}" type="number" min="0" step="0.01" value="${item.quantity}">
               </div>
               <div class="field">
@@ -1164,15 +1164,7 @@
         previewTargets.email.textContent = data.email || "-";
         previewTargets.social.textContent = data.social || "";
         previewTargets.phoneCity.textContent = `${data.phone || "-"} — ${data.city || "-"}`;
-        previewTargets.paymentTitle.textContent = data.paymentTitle || "FORMA DE PAGAMENTO:";
         previewTargets.grandTotal.textContent = money(data.total);
-
-        const lines = [...data.paymentLines, "", ""];
-        previewTargets.paymentLine1.textContent = lines[0] || "";
-        previewTargets.paymentLine2.textContent = lines[1] || "";
-        previewTargets.paymentLine3.textContent = lines[2] || "";
-        previewTargets.pixPayload.textContent = data.pixPayload;
-        previewTargets.pixQr.src = qrCodeUrl(data.pixPayload);
 
         previewRows.innerHTML = "";
         data.items.forEach((item) => {
@@ -1319,7 +1311,7 @@
         const headerH = 30;
         const rowH = 46;
         rect(tableX, top, 505, headerH, yellow);
-        ["DESCRIÇÃO", "QTD", "PREÇO UNITÁRIO", "TOTAL"].forEach((label, index) => {
+        ["DESCRIÇÃO", "QTD (unid/m²)", "PREÇO UNITÁRIO", "TOTAL"].forEach((label, index) => {
           lineRect(tableX + col[index], top, col[index + 1] - col[index], headerH);
           text(label, tableX + col[index] + 5, top + 19, 9, "F2", "center", col[index + 1] - col[index] - 10);
         });
@@ -1352,8 +1344,13 @@
         text(plainMoney(data.total), tableX + 431, top + 22, 10, "F2", "right", 69);
 
         top += 66;
+        const paymentLines = [
+          "PIX Celular: 61933004316",
+          "Recebedor: David Peçanha Tomé",
+          "Digite o valor do orçamento manualmente no app do banco."
+        ];
         text(data.paymentTitle || "FORMA DE PAGAMENTO:", margin, top, 10, "F2");
-        data.paymentLines.slice(0, 5).forEach((line, index) => {
+        paymentLines.forEach((line, index) => {
           text(line, margin, top + 18 + index * 15, 10);
         });
 
@@ -1446,6 +1443,90 @@
         setStatus(`PDF ${data.invoiceNumber} gerado para download. Próximo número: ${next}.`);
       }
 
+      function createJpegBlob(element) {
+        const scale = 2;
+        const { width, height } = element.getBoundingClientRect();
+        const sanitizedWidth = Math.ceil(width);
+        const sanitizedHeight = Math.ceil(height);
+        const cloned = element.cloneNode(true);
+        const styleSheets = [...document.styleSheets].reduce((acc, sheet) => {
+          try {
+            return acc + [...sheet.cssRules].map((rule) => rule.cssText).join("\n");
+          } catch {
+            return acc;
+          }
+        }, "");
+        const wrapper = document.createElement("div");
+        wrapper.appendChild(cloned);
+        const html = `
+          <div xmlns="http://www.w3.org/1999/xhtml" style="width:${sanitizedWidth}px;height:${sanitizedHeight}px;background:#ffffff;color:#050505;">
+            <style>${styleSheets}</style>
+            ${wrapper.innerHTML}
+          </div>
+        `;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${sanitizedWidth}" height="${sanitizedHeight}"><foreignObject x="0" y="0" width="${sanitizedWidth}" height="${sanitizedHeight}">${html}</foreignObject></svg>`;
+        const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(svgBlob);
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = sanitizedWidth * scale;
+            canvas.height = sanitizedHeight * scale;
+            const ctx = canvas.getContext("2d");
+            ctx.scale(scale, scale);
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, sanitizedWidth, sanitizedHeight);
+            ctx.drawImage(img, 0, 0, sanitizedWidth, sanitizedHeight);
+            canvas.toBlob((blob) => {
+              URL.revokeObjectURL(url);
+              if (blob) resolve(blob);
+              else reject(new Error("Falha ao gerar JPEG."));
+            }, "image/jpeg", 0.92);
+          };
+          img.onerror = (event) => {
+            URL.revokeObjectURL(url);
+            reject(event.error || new Error("Falha ao carregar imagem SVG."));
+          };
+          img.src = url;
+        });
+      }
+
+      async function downloadJpegFile() {
+        const data = getFormData();
+        if (!data.clientName.trim()) {
+          alert("Informe o nome do cliente antes de gerar o JPEG.");
+          fields.clientName.focus();
+          return;
+        }
+        if (!data.items.some((item) => item.description !== "-" && item.quantity > 0 && item.unitPrice >= 0)) {
+          alert("Adicione pelo menos um item válido ao orçamento.");
+          return;
+        }
+        saveQuoteRecord(data);
+        try {
+          const blob = await createJpegBlob(document.getElementById("preview"));
+          const filename = `${sanitizeFileName(data.clientName)}-${data.invoiceNumber}.jpg`;
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(link.href);
+          const next = incrementInvoiceNumber(data.invoiceNumber);
+          fields.invoiceNumber.value = next;
+          localStorage.setItem(storageKey, next);
+          renderPreview();
+          setStatus(`JPEG ${data.invoiceNumber} gerado para download. Próximo número: ${next}.`);
+        } catch (error) {
+          alert("Falha ao gerar o JPEG. Tente novamente ou use o botão de PDF.");
+          console.error(error);
+        }
+      }
+
+      let deferredPrompt = null;
+
       function bind() {
         Object.keys(defaults).forEach((key) => {
           fields[key] = byId(key);
@@ -1497,10 +1578,25 @@
 
         byId("downloadPdf").addEventListener("click", downloadPdf);
         byId("downloadPdfFile").addEventListener("click", downloadPdfFile);
+        byId("downloadJpeg").addEventListener("click", downloadJpegFile);
         byId("printPdf").addEventListener("click", printPdf);
         byId("saveNumber").addEventListener("click", () => {
           localStorage.setItem(storageKey, fields.invoiceNumber.value);
           setStatus(`Número ${fields.invoiceNumber.value} salvo para o próximo orçamento.`);
+        });
+        const installButton = byId("installButton");
+        installButton.addEventListener("click", () => {
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === "accepted") {
+              setStatus("Instalação aceita. Use o app pela tela de início.");
+            } else {
+              setStatus("Instalação cancelada.");
+            }
+            deferredPrompt = null;
+            installButton.hidden = true;
+          });
         });
         byId("resetForm").addEventListener("click", () => {
           fields.clientName.value = "";
@@ -1509,6 +1605,27 @@
           renderItems();
           renderPreview();
           setStatus("Formulário limpo.");
+        });
+      }
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredPrompt = event;
+        const installButton = byId("installButton");
+        if (installButton) {
+          installButton.hidden = false;
+        }
+      });
+
+      window.addEventListener("appinstalled", () => {
+        setStatus("App instalado com sucesso.");
+      });
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("service-worker.js").catch(() => {
+            console.warn("Falha ao registrar service worker.");
+          });
         });
       }
 
