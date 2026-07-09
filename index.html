@@ -446,6 +446,7 @@
         width: calc(100% - 56px);
         border-collapse: collapse;
         margin: 12px 28px 0;
+        box-sizing: border-box;
       }
 
       .table-yellow thead th {
@@ -555,6 +556,20 @@
           border-radius: 18px;
         }
 
+        .brand {
+          flex-wrap: wrap;
+          gap: 10px 14px;
+        }
+
+        .brand-social {
+          margin-left: 0;
+        }
+
+        .brand-logo {
+          width: min(44vw, 205px);
+          height: auto;
+        }
+
         .pdf-header,
         .pdf-title,
         .meta,
@@ -562,6 +577,11 @@
         .footer-logos {
           padding-left: 18px;
           padding-right: 18px;
+        }
+
+        .table-yellow {
+          width: calc(100% - 36px);
+          margin: 12px 18px 0;
         }
       }
 
@@ -591,6 +611,11 @@
         .footer-logos {
           padding-left: 16px;
           padding-right: 16px;
+        }
+
+        .table-yellow {
+          width: calc(100% - 32px);
+          margin: 12px 16px 0;
         }
 
         .preview-header {
@@ -1419,18 +1444,28 @@
         window.print();
       }
 
+      function getPreviewRenderSize(element) {
+        const rect = element.getBoundingClientRect();
+        const width = Math.max(1, Math.ceil(rect.width || element.scrollWidth || element.offsetWidth || 800));
+        const height = Math.max(1, Math.ceil(rect.height || element.scrollHeight || element.offsetHeight || 1200));
+        return { width, height };
+      }
+
       async function createPdfBlobFromPreview(element) {
         const jsPDFClass = window.jspdf?.jsPDF || window.jsPDF;
         if (!jsPDFClass) {
           throw new Error("jsPDF não está carregado.");
         }
+        const { width, height } = getPreviewRenderSize(element);
         const canvas = await html2canvas(element, {
           backgroundColor: "#ffffff",
           scale: 2,
           useCORS: true,
           logging: false,
-          windowWidth: document.body.scrollWidth,
-          windowHeight: document.body.scrollHeight
+          width,
+          height,
+          windowWidth: width,
+          windowHeight: height
         });
         const imgData = canvas.toDataURL("image/jpeg", 0.92);
         const pdf = new jsPDFClass({ unit: "px", format: [canvas.width, canvas.height] });
@@ -1509,13 +1544,16 @@
       }
 
       function createJpegBlob(element) {
+        const { width, height } = getPreviewRenderSize(element);
         return html2canvas(element, {
           backgroundColor: "#ffffff",
           scale: 2,
           useCORS: true,
           logging: false,
-          windowWidth: document.body.scrollWidth,
-          windowHeight: document.body.scrollHeight
+          width,
+          height,
+          windowWidth: width,
+          windowHeight: height
         }).then((canvas) => {
           return new Promise((resolve, reject) => {
             canvas.toBlob((blob) => {
