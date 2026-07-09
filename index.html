@@ -275,6 +275,37 @@
         font-size: 16px;
       }
 
+      .client-links {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .client-link-card {
+        border: 1px solid #dedede;
+        border-radius: 6px;
+        background: #fff;
+        padding: 10px;
+      }
+
+      .client-link-card strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .client-link-meta {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .client-link-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
       .hidden-input {
         display: none;
       }
@@ -769,6 +800,7 @@
 
         <div class="actions">
           <button class="btn primary" id="downloadPdf" type="button">Gerar PDF</button>
+          <button class="btn primary" id="createClientLink" type="button">CRIAR LINK PARA CLIENTE</button>
           <button class="btn" id="downloadPdfFile" type="button">Baixar PDF</button>
           <button class="btn" id="sharePdfWhatsApp" type="button">Enviar PDF para WhatsApp</button>
           <button class="btn" id="downloadJpeg" type="button">Gerar imagem para WhatsApp</button>
@@ -784,6 +816,8 @@
             <button class="btn danger" id="clearDb" type="button">Limpar banco</button>
           </div>
           <input class="hidden-input" id="importDb" type="file" accept="application/json,.json" />
+          <div class="section-title">Links para clientes</div>
+          <div class="client-links" id="clientLinks"></div>
           <p class="hint">Os dados ficam salvos neste navegador. Use o backup para transferir ou guardar uma cópia.</p>
         </div>
         <p class="hint" id="statusMessage" aria-live="polite"></p>
@@ -856,6 +890,7 @@
       const quotesStorageKey = "innovae.savedQuotes";
       const fields = {};
       const itemList = document.getElementById("items");
+      const clientLinks = document.getElementById("clientLinks");
       const previewRows = document.getElementById("previewRows");
       const statusMessage = document.getElementById("statusMessage");
       const calcIds = ["materialPreset", "calcWidth", "calcHeight", "calcQuantity", "calcCost", "calcPrice"];
@@ -1015,24 +1050,108 @@
 
       function saveQuoteRecord(data) {
         const quotes = loadSavedQuotes();
+        const existingIndex = quotes.findIndex((quote) => quote.invoiceNumber === data.invoiceNumber);
         const record = {
-          id: `${data.invoiceNumber}-${Date.now()}`,
+          id: existingIndex >= 0 ? quotes[existingIndex].id : `${sanitizeFileName(data.invoiceNumber)}-${Date.now()}`,
           createdAt: new Date().toISOString(),
           invoiceNumber: data.invoiceNumber,
           clientName: data.clientName,
           subtotal: data.subtotal,
           discount: data.discount,
           total: data.total,
-          items: data.items
+          items: data.items,
+          providerName: data.providerName,
+          phone: data.phone,
+          city: data.city,
+          email: data.email,
+          social: data.social
         };
+        if (existingIndex >= 0) {
+          quotes.splice(existingIndex, 1);
+        }
         quotes.unshift(record);
         localStorage.setItem(quotesStorageKey, JSON.stringify(quotes.slice(0, 500)));
         renderDbStats();
+        return record;
       }
 
       function renderDbStats() {
-        byId("savedQuotesCount").textContent = loadSavedQuotes().length;
+        const quotes = loadSavedQuotes();
+        byId("savedQuotesCount").textContent = quotes.length;
         byId("savedMaterialsCount").textContent = materialPresets.length;
+        renderClientLinks(quotes);
+      }
+
+      function getClientLink(record) {
+        const url = new URL("cliente.html", window.location.href);
+        url.searchParams.set("orcamento", record.id);
+        return url.href;
+      }
+
+      async function copyText(value) {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(value);
+          return;
+        }
+        const input = document.createElement("textarea");
+        input.value = value;
+        input.setAttribute("readonly", "");
+        input.style.position = "fixed";
+        input.style.left = "-9999px";
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        input.remove();
+      }
+
+      function renderClientLinks(quotes = loadSavedQuotes()) {
+        if (!clientLinks) return;
+        if (!quotes.length) {
+          clientLinks.innerHTML = `<p class="hint">Nenhum link criado ainda.</p>`;
+          return;
+        }
+        clientLinks.innerHTML = "";
+        quotes.slice(0, 20).forEach((quote) => {
+          const card = document.createElement("div");
+          card.className = "client-link-card";
+          const createdAt = quote.createdAt ? new Date(quote.createdAt).toLocaleString("pt-BR") : "-";
+          card.innerHTML = `
+            <strong>${escapeHtml(quote.clientName || "Cliente")} - ${escapeHtml(quote.invoiceNumber || "")}</strong>
+            <div class="client-link-meta">${createdAt} | ${money(quote.total)}</div>
+            <div class="client-link-actions">
+              <button class="btn" type="button" data-copy-client-link="${escapeHtml(quote.id)}">Copiar link</button>
+              <button class="btn" type="button" data-open-client-link="${escapeHtml(quote.id)}">Abrir</button>
+              <button class="btn danger" type="button" data-delete-client-link="${escapeHtml(quote.id)}">Excluir</button>
+            </div>
+          `;
+          clientLinks.appendChild(card);
+        });
+      }
+
+      function validateQuoteData(data, action) {
+        if (!data.clientName.trim()) {
+          alert(`Informe o nome do cliente antes de ${action}.`);
+          fields.clientName.focus();
+          return false;
+        }
+        if (!data.items.some((item) => item.description !== "-" && item.quantity > 0 && item.unitPrice >= 0)) {
+          alert("Adicione pelo menos um item vÃ¡lido ao orÃ§amento.");
+          return false;
+        }
+        return true;
+      }
+
+      async function createClientLink() {
+        const data = getFormData();
+        if (!validateQuoteData(data, "criar o link")) return;
+        const record = saveQuoteRecord(data);
+        const link = getClientLink(record);
+        try {
+          await copyText(link);
+          setStatus(`Link do cliente copiado: ${link}`);
+        } catch {
+          setStatus(`Link do cliente criado: ${link}`);
+        }
       }
 
       function exportDatabase() {
@@ -1649,13 +1768,46 @@
         byId("addCalcItem").addEventListener("click", addCalculatorItem);
 
         byId("downloadPdf").addEventListener("click", downloadPdf);
+        byId("createClientLink").addEventListener("click", createClientLink);
         byId("downloadPdfFile").addEventListener("click", downloadPdfFile);
         byId("sharePdfWhatsApp").addEventListener("click", sharePdfToWhatsApp);
         byId("downloadJpeg").addEventListener("click", downloadJpegFile);
-        byId("printPdf").addEventListener("click", printPdf);
-        byId("saveNumber").addEventListener("click", () => {
+        if (byId("printPdf")) byId("printPdf").addEventListener("click", printPdf);
+        if (byId("saveNumber")) byId("saveNumber").addEventListener("click", () => {
           localStorage.setItem(storageKey, fields.invoiceNumber.value);
           setStatus(`Número ${fields.invoiceNumber.value} salvo para o próximo orçamento.`);
+        });
+        byId("exportDb").addEventListener("click", exportDatabase);
+        byId("importDbButton").addEventListener("click", () => byId("importDb").click());
+        byId("importDb").addEventListener("change", (event) => {
+          const [file] = event.target.files;
+          if (file) importDatabaseFile(file);
+          event.target.value = "";
+        });
+        byId("clearDb").addEventListener("click", clearDatabase);
+        clientLinks.addEventListener("click", async (event) => {
+          const copyId = event.target.dataset.copyClientLink;
+          const openId = event.target.dataset.openClientLink;
+          const deleteId = event.target.dataset.deleteClientLink;
+          const id = copyId || openId || deleteId;
+          if (!id) return;
+          const quotes = loadSavedQuotes();
+          const record = quotes.find((quote) => quote.id === id);
+          if (!record && !deleteId) return;
+          if (copyId) {
+            const link = getClientLink(record);
+            await copyText(link);
+            setStatus(`Link copiado: ${link}`);
+          }
+          if (openId) {
+            window.open(getClientLink(record), "_blank", "noopener");
+          }
+          if (deleteId) {
+            if (!confirm("Excluir este link de cliente? O cliente nÃ£o conseguirÃ¡ mais consultar esse orÃ§amento neste navegador.")) return;
+            localStorage.setItem(quotesStorageKey, JSON.stringify(quotes.filter((quote) => quote.id !== deleteId)));
+            renderDbStats();
+            setStatus("Link de cliente excluÃ­do.");
+          }
         });
         const installButton = byId("installButton");
         installButton.addEventListener("click", () => {
@@ -1671,7 +1823,7 @@
             installButton.hidden = true;
           });
         });
-        byId("resetForm").addEventListener("click", () => {
+        if (byId("resetForm")) byId("resetForm").addEventListener("click", () => {
           fields.clientName.value = "";
           fields.discount.value = "0";
           items = [{ description: "", quantity: 1, unitPrice: 0 }];
@@ -1706,6 +1858,7 @@
       renderCalculator();
       renderItems();
       renderPreview();
+      renderDbStats();
     </script>
   </body>
 </html>

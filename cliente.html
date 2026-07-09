@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0b17" />
+    <title>Consulta de Orçamento - Innovae Digital</title>
+    <style>
+      :root {
+        --yellow: #fff200;
+        --yellow-deep: #ffd500;
+        --ink: #050505;
+        --line: #171717;
+        --page: #e7e7e7;
+        --muted: #666;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--page);
+        color: var(--ink);
+      }
+
+      .client-page {
+        min-height: 100vh;
+        padding: 22px;
+      }
+
+      .client-top {
+        width: 800px;
+        max-width: 100%;
+        margin: 0 auto 12px;
+        background: #050505;
+        color: #fff;
+        border-radius: 8px;
+        padding: 12px 14px;
+      }
+
+      .client-top strong {
+        color: var(--yellow);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        font-size: 12px;
+      }
+
+      .client-top span {
+        display: block;
+        color: #d9d9d9;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .sheet {
+        width: 800px;
+        max-width: 100%;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #111;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, .08);
+        overflow: hidden;
+      }
+
+      .pdf-header {
+        background: #050505;
+        color: #fff;
+        padding: 22px 26px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pdf-header::after {
+        content: "";
+        position: absolute;
+        right: -64px;
+        top: -80px;
+        width: 220px;
+        height: 220px;
+        background: var(--yellow);
+        transform: rotate(28deg);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand-logo {
+        width: 205px;
+        height: 74px;
+        object-fit: contain;
+        object-position: left center;
+        display: block;
+      }
+
+      .brand-line { font-size: 12px; }
+
+      .brand-social {
+        margin-left: auto;
+        align-self: end;
+        background: rgba(255, 242, 0, .96);
+        color: #050505;
+        padding: 7px 10px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 12px;
+      }
+
+      .pdf-title {
+        background: linear-gradient(90deg, var(--yellow), var(--yellow-deep));
+        padding: 24px 28px 22px;
+        border-bottom: 8px solid #050505;
+      }
+
+      .pdf-title h1 {
+        margin: 0;
+        font-size: 38px;
+        letter-spacing: 0;
+      }
+
+      .invoice-number {
+        font-weight: 700;
+        margin-top: 6px;
+        text-transform: uppercase;
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 24px;
+        padding: 22px 28px 12px;
+        line-height: 1.45;
+      }
+
+      .meta .client-line {
+        grid-column: 1 / -1;
+        padding-top: 8px;
+        font-size: 15px;
+      }
+
+      .table-yellow {
+        width: calc(100% - 56px);
+        border-collapse: collapse;
+        margin: 12px 28px 0;
+      }
+
+      .table-yellow thead th {
+        background: #050505;
+        color: var(--yellow);
+        padding: 10px;
+        border: 1px solid #050505;
+        font-size: 12px;
+        letter-spacing: .04em;
+      }
+
+      .table-yellow td,
+      .table-yellow th {
+        border: 1px solid var(--line);
+        padding: 12px;
+        vertical-align: top;
+      }
+
+      .table-total {
+        background: var(--yellow);
+        font-weight: 700;
+      }
+
+      .right { text-align: right; }
+
+      .payment-info {
+        margin: 20px 28px 0;
+        padding: 16px;
+        border: 2px solid #050505;
+        border-left: 12px solid var(--yellow);
+        line-height: 1.45;
+      }
+
+      .footer-logos {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        padding: 16px 28px;
+        background: #050505;
+        color: #fff;
+      }
+
+      .footer-logo {
+        width: 150px;
+        height: 42px;
+        object-fit: contain;
+        object-position: left center;
+      }
+
+      .footer-note {
+        color: var(--yellow);
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+      }
+
+      .empty {
+        width: 800px;
+        max-width: 100%;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #d9d9d9;
+        border-radius: 8px;
+        padding: 22px;
+        line-height: 1.45;
+      }
+
+      .empty strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: 640px) {
+        .client-page { padding: 10px; }
+        .client-top { border-radius: 18px; }
+        .sheet { border-radius: 18px; }
+        .brand { flex-wrap: wrap; gap: 10px 14px; }
+        .brand-social { margin-left: 0; }
+        .brand-logo { width: min(44vw, 205px); height: auto; }
+        .pdf-header,
+        .pdf-title,
+        .meta,
+        .payment-info,
+        .footer-logos {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+        .meta { grid-template-columns: 1fr; }
+        .table-yellow {
+          width: calc(100% - 32px);
+          margin: 12px 16px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="client-page">
+      <div class="client-top">
+        <strong>Consulta de orçamento</strong>
+        <span>Visualização liberada pela Innovae Digital.</span>
+      </div>
+
+      <article class="sheet" id="quote" hidden>
+        <div class="pdf-header">
+          <div class="brand">
+            <img class="brand-logo" src="assets/logo-innovae.png" alt="Innovae Digital" />
+            <div>
+              <div class="brand-line" data-preview="phoneCity"></div>
+            </div>
+            <div class="brand-social" data-preview="social"></div>
+          </div>
+        </div>
+
+        <div class="pdf-title">
+          <h1>Fatura de Serviço</h1>
+          <div class="invoice-number">NÚMERO DA FATURA: <span data-preview="invoiceNumber"></span></div>
+        </div>
+
+        <div class="meta">
+          <div><strong>Prestador do Serviço:</strong> <span data-preview="providerName"></span></div>
+          <div><strong>Telefone:</strong> <span data-preview="phone"></span></div>
+          <div><strong>E-mail:</strong> <span data-preview="email"></span></div>
+          <div class="client-line"><strong>Nome do Cliente:</strong> <span data-preview="clientName"></span></div>
+        </div>
+
+        <table class="table-yellow">
+          <thead>
+            <tr>
+              <th style="width:55%">DESCRIÇÃO</th>
+              <th style="width:10%">QTD (unid/m²)</th>
+              <th style="width:17%">PREÇO UNITÁRIO</th>
+              <th style="width:18%">TOTAL</th>
+            </tr>
+          </thead>
+          <tbody id="previewRows"></tbody>
+          <tfoot>
+            <tr class="table-total">
+              <td colspan="3" class="right">TOTAL C/ DESCONTO APLICADO:</td>
+              <td class="right" data-preview="grandTotal"></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="payment-info">
+          <div><strong>FORMA DE PAGAMENTO</strong></div>
+          <div>PIX Celular: <strong>61933004316</strong></div>
+          <div>Recebedor: <strong>David Peçanha Tomé</strong></div>
+          <div>Informe o valor do orçamento manualmente no app do banco.</div>
+        </div>
+
+        <div class="footer-logos">
+          <img class="footer-logo" src="assets/logo-innovae.png" alt="Innovae Digital" />
+          <div class="footer-note">Design, impressão e comunicação visual</div>
+        </div>
+      </article>
+
+      <div class="empty" id="notFound" hidden>
+        <strong>Orçamento não encontrado.</strong>
+        Este link foi removido ou não está salvo neste navegador.
+      </div>
+    </main>
+
+    <script>
+      const quotesStorageKey = "innovae.savedQuotes";
+      const company = {
+        providerName: "David P. Tomé",
+        phone: "(61) 93300-4316",
+        city: "Luziânia/GO",
+        email: "innovaedigital.media@gmail.com",
+        social: "@innovaedigital.midia"
+      };
+
+      const previewRows = document.getElementById("previewRows");
+      const previewTargets = [...document.querySelectorAll("[data-preview]")].reduce((acc, node) => {
+        acc[node.dataset.preview] = node;
+        return acc;
+      }, {});
+
+      function money(value) {
+        return Number(value || 0).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL"
+        });
+      }
+
+      function formatQuantity(value) {
+        return Number(value || 0).toLocaleString("pt-BR", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 4
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function loadSavedQuotes() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(quotesStorageKey) || "[]");
+          return Array.isArray(saved) ? saved : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function showNotFound() {
+        document.getElementById("quote").hidden = true;
+        document.getElementById("notFound").hidden = false;
+      }
+
+      function renderQuote(data) {
+        const providerName = data.providerName || company.providerName;
+        const phone = data.phone || company.phone;
+        const city = data.city || company.city;
+        const email = data.email || company.email;
+        const social = data.social || company.social;
+        const items = Array.isArray(data.items) ? data.items : [];
+        const discount = Number(data.discount || 0);
+        const subtotal = items.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.unitPrice || 0), 0);
+        const total = Number.isFinite(Number(data.total)) ? Number(data.total) : Math.max(0, subtotal - discount);
+
+        previewTargets.invoiceNumber.textContent = data.invoiceNumber || "-";
+        previewTargets.clientName.textContent = data.clientName || "-";
+        previewTargets.providerName.textContent = providerName;
+        previewTargets.phone.textContent = phone;
+        previewTargets.email.textContent = email;
+        previewTargets.social.textContent = social;
+        previewTargets.phoneCity.textContent = `${phone} - ${city}`;
+        previewTargets.grandTotal.textContent = money(total);
+
+        previewRows.innerHTML = "";
+        items.forEach((item) => {
+          const tr = document.createElement("tr");
+          const [main, ...small] = String(item.description || "-").split(/\r?\n/);
+          const quantity = Number(item.quantity || 0);
+          const unitPrice = Number(item.unitPrice || 0);
+          tr.innerHTML = `
+            <td>${escapeHtml(main || "-")}${small.length ? `<br><small>${escapeHtml(small.join(" "))}</small>` : ""}</td>
+            <td class="right">${quantity ? formatQuantity(quantity) : "-"}</td>
+            <td class="right">${money(unitPrice)}</td>
+            <td class="right">${money(quantity * unitPrice)}</td>
+          `;
+          previewRows.appendChild(tr);
+        });
+
+        if (discount > 0) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>DESCONTO</td>
+            <td class="right">-</td>
+            <td class="right">-</td>
+            <td class="right">${money(discount)}</td>
+          `;
+          previewRows.appendChild(tr);
+        }
+
+        document.getElementById("quote").hidden = false;
+        document.getElementById("notFound").hidden = true;
+      }
+
+      const quoteId = new URLSearchParams(window.location.search).get("orcamento");
+      const quote = loadSavedQuotes().find((item) => item.id === quoteId);
+      if (quote) {
+        renderQuote(quote);
+      } else {
+        showNotFound();
+      }
+    </script>
+  </body>
+</html>
