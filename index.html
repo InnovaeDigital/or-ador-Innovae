@@ -888,6 +888,8 @@
       const storageKey = "innovae.nextInvoiceNumber";
       const materialStorageKey = "innovae.materialPresets";
       const quotesStorageKey = "innovae.savedQuotes";
+      const jsonBinApiKey = "$2a$10$kK9lc8wQd0G8RmsiJbXr7OrwRuCeVc6u.ASb7rvLgHfxvUqZo3mhW";
+      const jsonBinBaseUrl = "https://api.jsonbin.io/v3/b";
       const fields = {};
       const itemList = document.getElementById("items");
       const clientLinks = document.getElementById("clientLinks");
@@ -1060,6 +1062,7 @@
           discount: data.discount,
           total: data.total,
           items: data.items,
+          binId: data.binId || null,
           providerName: data.providerName,
           phone: data.phone,
           city: data.city,
@@ -1084,8 +1087,45 @@
 
       function getClientLink(record) {
         const url = new URL("cliente.html", window.location.href);
-        url.searchParams.set("orcamento", record.id);
+        if (record.binId) {
+          url.searchParams.set("bin", record.binId);
+        } else {
+          url.searchParams.set("orcamento", record.id);
+        }
         return url.href;
+      }
+
+      async function saveQuoteToCloud(data, previousRecord = null) {
+        const endpoint = previousRecord?.binId ? `${jsonBinBaseUrl}/${previousRecord.binId}` : jsonBinBaseUrl;
+        const response = await fetch(endpoint, {
+          method: previousRecord?.binId ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": jsonBinApiKey,
+            "X-Bin-Private": "false",
+            "X-Bin-Name": `Orcamento ${data.invoiceNumber}`
+          },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(result.message || "Falha ao salvar orçamento no JSONBin.");
+        }
+        return previousRecord?.binId || result.metadata?.id;
+      }
+
+      async function deleteQuoteFromCloud(record) {
+        if (!record?.binId) return;
+        const response = await fetch(`${jsonBinBaseUrl}/${record.binId}`, {
+          method: "DELETE",
+          headers: {
+            "X-Master-Key": jsonBinApiKey
+          }
+        });
+        if (!response.ok && response.status !== 404) {
+          const result = await response.json().catch(() => ({}));
+          throw new Error(result.message || "Falha ao excluir orçamento no JSONBin.");
+        }
       }
 
       async function copyText(value) {
@@ -1144,13 +1184,19 @@
       async function createClientLink() {
         const data = getFormData();
         if (!validateQuoteData(data, "criar o link")) return;
-        const record = saveQuoteRecord(data);
-        const link = getClientLink(record);
         try {
+          setStatus("Salvando orçamento na nuvem...");
+          const previousRecord = loadSavedQuotes().find((quote) => quote.invoiceNumber === data.invoiceNumber);
+          data.cloudSavedAt = new Date().toISOString();
+          const binId = await saveQuoteToCloud(data, previousRecord);
+          const record = saveQuoteRecord({ ...data, binId });
+          const link = getClientLink(record);
           await copyText(link);
           setStatus(`Link do cliente copiado: ${link}`);
-        } catch {
-          setStatus(`Link do cliente criado: ${link}`);
+        } catch (error) {
+          console.error(error);
+          alert("Não foi possível criar o link na nuvem. Confira sua chave do JSONBin e tente novamente.");
+          setStatus("Falha ao criar link na nuvem.");
         }
       }
 
@@ -1804,6 +1850,13 @@
           }
           if (deleteId) {
             if (!confirm("Excluir este link de cliente? O cliente nÃ£o conseguirÃ¡ mais consultar esse orÃ§amento neste navegador.")) return;
+            try {
+              await deleteQuoteFromCloud(record);
+            } catch (error) {
+              console.error(error);
+              alert("Não foi possível excluir no JSONBin. Tente novamente.");
+              return;
+            }
             localStorage.setItem(quotesStorageKey, JSON.stringify(quotes.filter((quote) => quote.id !== deleteId)));
             renderDbStats();
             setStatus("Link de cliente excluÃ­do.");

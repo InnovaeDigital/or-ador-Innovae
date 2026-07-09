@@ -313,6 +313,7 @@
 
     <script>
       const quotesStorageKey = "innovae.savedQuotes";
+      const jsonBinBaseUrl = "https://api.jsonbin.io/v3/b";
       const company = {
         providerName: "David P. Tomé",
         phone: "(61) 93300-4316",
@@ -413,13 +414,37 @@
         document.getElementById("notFound").hidden = true;
       }
 
-      const quoteId = new URLSearchParams(window.location.search).get("orcamento");
-      const quote = loadSavedQuotes().find((item) => item.id === quoteId);
-      if (quote) {
-        renderQuote(quote);
-      } else {
-        showNotFound();
+      async function loadCloudQuote(binId) {
+        const response = await fetch(`${jsonBinBaseUrl}/${encodeURIComponent(binId)}/latest?meta=false`);
+        if (!response.ok) {
+          throw new Error("Orçamento não encontrado no JSONBin.");
+        }
+        return response.json();
       }
+
+      async function init() {
+        const params = new URLSearchParams(window.location.search);
+        const binId = params.get("bin");
+        const quoteId = params.get("orcamento");
+        if (binId) {
+          try {
+            const quote = await loadCloudQuote(binId);
+            renderQuote(quote);
+          } catch (error) {
+            console.error(error);
+            showNotFound();
+          }
+          return;
+        }
+        const quote = loadSavedQuotes().find((item) => item.id === quoteId);
+        if (quote) {
+          renderQuote(quote);
+        } else {
+          showNotFound();
+        }
+      }
+
+      init();
     </script>
   </body>
 </html>
