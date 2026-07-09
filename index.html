@@ -643,6 +643,7 @@
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </head>
   <body>
     <main class="app">
@@ -744,7 +745,9 @@
         <div class="actions">
           <button class="btn primary" id="downloadPdf" type="button">Gerar PDF</button>
           <button class="btn" id="downloadPdfFile" type="button">Baixar PDF</button>
-            <button class="btn" id="downloadJpeg" type="button">Gerar imagem para WhatsApp</button>
+          <button class="btn" id="sharePdfWhatsApp" type="button">Enviar PDF para WhatsApp</button>
+          <button class="btn" id="downloadJpeg" type="button">Gerar imagem para WhatsApp</button>
+        </div>
         <div class="db-panel">
           <div class="db-stats">
             <div class="db-stat">Orçamentos salvos<strong id="savedQuotesCount">0</strong></div>
@@ -1416,7 +1419,26 @@
         window.print();
       }
 
-      function downloadPdfFile() {
+      async function createPdfBlobFromPreview(element) {
+        const jsPDFClass = window.jspdf?.jsPDF || window.jsPDF;
+        if (!jsPDFClass) {
+          throw new Error("jsPDF não está carregado.");
+        }
+        const canvas = await html2canvas(element, {
+          backgroundColor: "#ffffff",
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          windowWidth: document.body.scrollWidth,
+          windowHeight: document.body.scrollHeight
+        });
+        const imgData = canvas.toDataURL("image/jpeg", 0.92);
+        const pdf = new jsPDFClass({ unit: "px", format: [canvas.width, canvas.height] });
+        pdf.addImage(imgData, "JPEG", 0, 0, canvas.width, canvas.height);
+        return pdf.output("blob");
+      }
+
+      async function downloadPdfFile() {
         const data = getFormData();
         if (!data.clientName.trim()) {
           alert("Informe o nome do cliente antes de gerar o PDF.");
@@ -1428,20 +1450,62 @@
           return;
         }
         saveQuoteRecord(data);
-        const blob = createPdf(data);
-        const filename = `${sanitizeFileName(data.clientName)}-${data.invoiceNumber}.pdf`;
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(link.href);
-        const next = incrementInvoiceNumber(data.invoiceNumber);
-        fields.invoiceNumber.value = next;
-        localStorage.setItem(storageKey, next);
-        renderPreview();
-        setStatus(`PDF ${data.invoiceNumber} gerado para download. Próximo número: ${next}.`);
+        try {
+          const blob = await createPdfBlobFromPreview(document.getElementById("preview"));
+          const filename = `${sanitizeFileName(data.clientName)}-${data.invoiceNumber}.pdf`;
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(link.href);
+          const next = incrementInvoiceNumber(data.invoiceNumber);
+          fields.invoiceNumber.value = next;
+          localStorage.setItem(storageKey, next);
+          renderPreview();
+          setStatus(`PDF ${data.invoiceNumber} gerado para download. Próximo número: ${next}.`);
+        } catch (error) {
+          alert("Falha ao gerar o PDF. Tente novamente.");
+          console.error(error);
+        }
+      }
+
+      async function sharePdfToWhatsApp() {
+        const data = getFormData();
+        if (!data.clientName.trim()) {
+          alert("Informe o nome do cliente antes de enviar o PDF.");
+          fields.clientName.focus();
+          return;
+        }
+        if (!data.items.some((item) => item.description !== "-" && item.quantity > 0 && item.unitPrice >= 0)) {
+          alert("Adicione pelo menos um item válido ao orçamento.");
+          return;
+        }
+        saveQuoteRecord(data);
+        try {
+          const blob = await createPdfBlobFromPreview(document.getElementById("preview"));
+          const filename = `${sanitizeFileName(data.clientName)}-${data.invoiceNumber}.pdf`;
+          const file = new File([blob], filename, { type: "application/pdf" });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: "Orçamento",
+              text: `Orçamento ${data.invoiceNumber} para ${data.clientName}`
+            });
+            setStatus(`PDF ${data.invoiceNumber} compartilhado com sucesso.`);
+          } else {
+            await downloadPdfFile();
+            alert("Compartilhamento direto não está disponível neste dispositivo. O PDF foi baixado automaticamente.");
+          }
+          const next = incrementInvoiceNumber(data.invoiceNumber);
+          fields.invoiceNumber.value = next;
+          localStorage.setItem(storageKey, next);
+          renderPreview();
+        } catch (error) {
+          alert("Falha ao compartilhar o PDF. Tente novamente ou use o download.");
+          console.error(error);
+        }
       }
 
       function createJpegBlob(element) {
@@ -1548,6 +1612,7 @@
 
         byId("downloadPdf").addEventListener("click", downloadPdf);
         byId("downloadPdfFile").addEventListener("click", downloadPdfFile);
+        byId("sharePdfWhatsApp").addEventListener("click", sharePdfToWhatsApp);
         byId("downloadJpeg").addEventListener("click", downloadJpegFile);
         byId("printPdf").addEventListener("click", printPdf);
         byId("saveNumber").addEventListener("click", () => {
