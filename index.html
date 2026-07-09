@@ -642,6 +642,7 @@
         }
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   </head>
   <body>
     <main class="app">
@@ -1444,51 +1445,20 @@
       }
 
       function createJpegBlob(element) {
-        const scale = 2;
-        const { width, height } = element.getBoundingClientRect();
-        const sanitizedWidth = Math.ceil(width);
-        const sanitizedHeight = Math.ceil(height);
-        const cloned = element.cloneNode(true);
-        const styleSheets = [...document.styleSheets].reduce((acc, sheet) => {
-          try {
-            return acc + [...sheet.cssRules].map((rule) => rule.cssText).join("\n");
-          } catch {
-            return acc;
-          }
-        }, "");
-        const wrapper = document.createElement("div");
-        wrapper.appendChild(cloned);
-        const html = `
-          <div xmlns="http://www.w3.org/1999/xhtml" style="width:${sanitizedWidth}px;height:${sanitizedHeight}px;background:#ffffff;color:#050505;">
-            <style>${styleSheets}</style>
-            ${wrapper.innerHTML}
-          </div>
-        `;
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${sanitizedWidth}" height="${sanitizedHeight}"><foreignObject x="0" y="0" width="${sanitizedWidth}" height="${sanitizedHeight}">${html}</foreignObject></svg>`;
-        const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-        const url = URL.createObjectURL(svgBlob);
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = sanitizedWidth * scale;
-            canvas.height = sanitizedHeight * scale;
-            const ctx = canvas.getContext("2d");
-            ctx.scale(scale, scale);
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(0, 0, sanitizedWidth, sanitizedHeight);
-            ctx.drawImage(img, 0, 0, sanitizedWidth, sanitizedHeight);
+        return html2canvas(element, {
+          backgroundColor: "#ffffff",
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          windowWidth: document.body.scrollWidth,
+          windowHeight: document.body.scrollHeight
+        }).then((canvas) => {
+          return new Promise((resolve, reject) => {
             canvas.toBlob((blob) => {
-              URL.revokeObjectURL(url);
               if (blob) resolve(blob);
               else reject(new Error("Falha ao gerar JPEG."));
             }, "image/jpeg", 0.92);
-          };
-          img.onerror = (event) => {
-            URL.revokeObjectURL(url);
-            reject(event.error || new Error("Falha ao carregar imagem SVG."));
-          };
-          img.src = url;
+          });
         });
       }
 
