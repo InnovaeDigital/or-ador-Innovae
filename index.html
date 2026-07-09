@@ -888,7 +888,7 @@
       const storageKey = "innovae.nextInvoiceNumber";
       const materialStorageKey = "innovae.materialPresets";
       const quotesStorageKey = "innovae.savedQuotes";
-      const jsonBinApiKey = "$2a$10$kK9lc8wQd0G8RmsiJbXr7OrwRuCeVc6u.ASb7rvLgHfxvUqZo3mhW";
+      const jsonBinApiKey = "$2a$10$mVMcYrxiKOYeXPcU5F8JT.p/b/APp9ptSaW01qH3Aq2hGnq.7Lzu2";
       const jsonBinBaseUrl = "https://api.jsonbin.io/v3/b";
       const fields = {};
       const itemList = document.getElementById("items");
@@ -1097,14 +1097,17 @@
 
       async function saveQuoteToCloud(data, previousRecord = null) {
         const endpoint = previousRecord?.binId ? `${jsonBinBaseUrl}/${previousRecord.binId}` : jsonBinBaseUrl;
+        const headers = {
+          "Content-Type": "application/json",
+          "X-Access-Key": jsonBinApiKey
+        };
+        if (!previousRecord?.binId) {
+          headers["X-Bin-Private"] = "false";
+          headers["X-Bin-Name"] = `Orcamento ${data.invoiceNumber}`;
+        }
         const response = await fetch(endpoint, {
           method: previousRecord?.binId ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Master-Key": jsonBinApiKey,
-            "X-Bin-Private": "false",
-            "X-Bin-Name": `Orcamento ${data.invoiceNumber}`
-          },
+          headers,
           body: JSON.stringify(data)
         });
         const result = await response.json().catch(() => ({}));
@@ -1119,7 +1122,7 @@
         const response = await fetch(`${jsonBinBaseUrl}/${record.binId}`, {
           method: "DELETE",
           headers: {
-            "X-Master-Key": jsonBinApiKey
+            "X-Access-Key": jsonBinApiKey
           }
         });
         if (!response.ok && response.status !== 404) {
