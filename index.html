@@ -586,12 +586,38 @@
       .brand-social {
         margin-left: auto;
         align-self: end;
-        background: rgba(255, 242, 0, .96);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 40px;
+        background: linear-gradient(135deg, #fff200, #ffd500);
         color: #050505;
-        padding: 7px 10px;
-        border-radius: 4px;
+        padding: 9px 12px;
+        border: 1px solid rgba(255, 255, 255, .3);
+        border-radius: 999px;
         font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 10px 24px rgba(255, 242, 0, .22);
         animation: badgePulse 3.8s ease-in-out infinite;
+        transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+      }
+
+      .brand-social:hover {
+        background: #ffffff;
+        box-shadow: 0 14px 30px rgba(255, 242, 0, .34);
+        transform: translateY(-2px);
+      }
+
+      .instagram-icon {
+        width: 19px;
+        height: 19px;
+        flex: 0 0 auto;
+        display: block;
+      }
+
+      .instagram-text {
+        line-height: 1;
+        white-space: nowrap;
       }
 
       .pdf-title {
@@ -1064,6 +1090,7 @@
 
         .brand-social {
           margin-left: 0;
+          justify-content: center;
         }
 
         .brand-logo {
@@ -1132,6 +1159,18 @@
         .preview-header {
           flex-direction: column;
           align-items: flex-start;
+        }
+
+        .brand-social {
+          width: 100%;
+          min-height: 46px;
+          padding: 12px 14px;
+          font-size: 13px;
+        }
+
+        .instagram-icon {
+          width: 21px;
+          height: 21px;
         }
 
         .design-tags {
@@ -1342,7 +1381,14 @@
               <div>
                 <div class="brand-line" data-preview="phoneCity"></div>
               </div>
-              <div class="brand-social" data-preview="social"></div>
+              <a class="brand-social" href="https://www.instagram.com/innovaedigital.midia/?hl=pt-br" target="_blank" rel="noopener noreferrer" aria-label="Abrir Instagram da Innovae Digital">
+                <svg class="instagram-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"></rect>
+                  <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                  <circle cx="17.5" cy="6.5" r="1.4" fill="currentColor"></circle>
+                </svg>
+                <span class="instagram-text" data-preview="social"></span>
+              </a>
             </div>
           </div>
 
