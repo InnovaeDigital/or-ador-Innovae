@@ -31,8 +31,13 @@
       body {
         margin: 0;
         font-family: Arial, Helvetica, sans-serif;
-        background: var(--page);
+        background:
+          linear-gradient(135deg, rgba(255, 242, 0, .18), transparent 26%),
+          linear-gradient(315deg, rgba(5, 5, 5, .08), transparent 32%),
+          var(--page);
+        background-size: 140% 140%;
         color: var(--ink);
+        animation: pageDrift 16s ease-in-out infinite alternate;
       }
 
       button,
@@ -61,6 +66,7 @@
         top: 18px;
         max-height: calc(100vh - 36px);
         overflow: auto;
+        animation: panelEntrance .6s ease both;
       }
 
       .controls h1 {
@@ -78,14 +84,39 @@
         background: #050505;
         border-radius: 6px;
         padding: 10px;
+        transition: transform .25s ease, box-shadow .25s ease;
+      }
+
+      .control-logo:hover {
+        box-shadow: 0 14px 28px rgba(0, 0, 0, .18);
+        transform: translateY(-2px);
       }
 
       .app-splash {
-        background: var(--panel);
+        background:
+          linear-gradient(120deg, rgba(255, 242, 0, .22), transparent 36%),
+          var(--panel);
         border: 1px solid #d9d9d9;
         border-radius: 8px;
         padding: 18px;
         margin-bottom: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .app-splash::after {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 -60%;
+        width: 55%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .82), transparent);
+        transform: skewX(-18deg);
+        animation: shineSweep 5.5s ease-in-out infinite;
+      }
+
+      .splash-copy {
+        position: relative;
+        z-index: 1;
       }
 
       .app-splash strong {
@@ -120,12 +151,27 @@
         text-transform: uppercase;
         letter-spacing: .04em;
         color: #050505;
+        position: relative;
+        padding-left: 12px;
+      }
+
+      .section-title::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 5px;
+        height: 18px;
+        background: var(--yellow);
+        transform: translateY(-50%);
+        animation: titlePulse 2.8s ease-in-out infinite;
       }
 
       .field {
         display: grid;
         gap: 6px;
         margin-bottom: 10px;
+        animation: softRise .45s ease both;
       }
 
       .field label {
@@ -142,6 +188,7 @@
         border-radius: 6px;
         padding: 10px;
         background: #fff;
+        transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
       }
 
       .field input:focus,
@@ -150,6 +197,7 @@
         border-color: var(--ink);
         box-shadow: 0 0 0 3px rgba(255, 242, 0, .36);
         outline: none;
+        transform: translateY(-1px);
       }
 
       .field textarea {
@@ -186,6 +234,32 @@
         font-weight: 700;
         background: #e8e8e8;
         color: #111;
+        position: relative;
+        overflow: hidden;
+        transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+      }
+
+      .btn::after {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 -45%;
+        width: 35%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .48), transparent);
+        transform: skewX(-18deg);
+        transition: left .45s ease;
+      }
+
+      .btn:hover {
+        box-shadow: 0 10px 18px rgba(0, 0, 0, .14);
+        transform: translateY(-2px);
+      }
+
+      .btn:hover::after {
+        left: 115%;
+      }
+
+      .btn:active {
+        transform: translateY(0);
       }
 
       .btn.primary {
@@ -206,6 +280,15 @@
         padding: 12px;
         margin-bottom: 10px;
         background: #fbfbfc;
+        animation: softRise .38s ease both;
+        transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+      }
+
+      .item-editor:focus-within,
+      .item-editor:hover {
+        border-color: #b8b8b8;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, .08);
+        transform: translateY(-1px);
       }
 
       .item-editor .item-grid {
@@ -230,6 +313,25 @@
         border-radius: 8px;
         background: linear-gradient(180deg, #fff 0%, #fffdeb 100%);
         padding: 14px;
+        position: relative;
+        overflow: hidden;
+        animation: softRise .55s .08s ease both;
+      }
+
+      .calc-panel::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -30%;
+        width: 30%;
+        height: 3px;
+        background: var(--yellow);
+        animation: scanLine 4s ease-in-out infinite;
+      }
+
+      .calc-panel > * {
+        position: relative;
+        z-index: 1;
       }
 
       .calc-summary {
@@ -252,6 +354,7 @@
         background: #fafafa;
         padding: 12px;
         margin-top: 10px;
+        animation: softRise .55s .16s ease both;
       }
 
       .db-stats {
@@ -267,6 +370,12 @@
         border-radius: 6px;
         padding: 8px;
         font-size: 12px;
+        transition: transform .2s ease, box-shadow .2s ease;
+      }
+
+      .db-stat:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, .16);
+        transform: translateY(-2px);
       }
 
       .db-stat strong {
@@ -286,6 +395,14 @@
         border-radius: 6px;
         background: #fff;
         padding: 10px;
+        animation: softRise .35s ease both;
+        transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+      }
+
+      .client-link-card:hover {
+        border-color: #bfbfbf;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, .08);
+        transform: translateY(-1px);
       }
 
       .client-link-card strong {
@@ -316,6 +433,12 @@
         border-radius: 6px;
         padding: 10px;
         min-height: 68px;
+        transition: transform .22s ease, box-shadow .22s ease;
+      }
+
+      .calc-metric:hover {
+        box-shadow: 0 12px 22px rgba(0, 0, 0, .18);
+        transform: translateY(-2px);
       }
 
       .calc-metric strong {
@@ -344,6 +467,7 @@
       .preview-wrap {
         overflow: auto;
         padding-bottom: 24px;
+        perspective: 1600px;
       }
 
       .preview-header {
@@ -357,6 +481,8 @@
         color: #fff;
         border-radius: 8px;
         padding: 12px 14px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, .18);
+        animation: panelEntrance .6s .08s ease both;
       }
 
       .preview-header strong {
@@ -376,28 +502,49 @@
         margin: 0 auto;
         background: #fff;
         padding: 0;
-        border: 1px solid #111;
-        box-shadow: 0 14px 30px rgba(0, 0, 0, .08);
+        border: 0;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, .18);
         overflow: hidden;
+        position: relative;
+        isolation: isolate;
+        animation: sheetEntrance .7s ease both;
       }
 
       .pdf-header {
-        background: #050505;
+        background:
+          linear-gradient(135deg, rgba(255, 242, 0, .18), transparent 32%),
+          radial-gradient(circle at 92% 12%, rgba(255, 242, 0, .32), transparent 28%),
+          #050505;
         color: #fff;
-        padding: 22px 26px;
+        padding: 24px 30px;
         position: relative;
         overflow: hidden;
+      }
+
+      .pdf-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(90deg, rgba(255, 255, 255, .07) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+        background-size: 28px 28px;
+        mask-image: linear-gradient(90deg, #000, transparent 70%);
+        opacity: .7;
+        animation: gridDrift 12s linear infinite;
       }
 
       .pdf-header::after {
         content: "";
         position: absolute;
-        right: -64px;
-        top: -80px;
-        width: 220px;
-        height: 220px;
+        right: -56px;
+        top: -92px;
+        width: 260px;
+        height: 260px;
         background: var(--yellow);
-        transform: rotate(28deg);
+        transform: rotate(25deg);
+        opacity: .96;
+        animation: cornerFloat 6s ease-in-out infinite alternate;
       }
 
       .brand {
@@ -406,11 +553,12 @@
         gap: 18px;
         position: relative;
         z-index: 1;
+        animation: softRise .55s .18s ease both;
       }
 
       .brand-logo {
-        width: 205px;
-        height: 74px;
+        width: 218px;
+        height: 78px;
         object-fit: contain;
         object-position: left center;
         display: block;
@@ -429,6 +577,12 @@
         font-size: 12px;
       }
 
+      .brand-line {
+        color: #f3f3f3;
+        font-weight: 700;
+        letter-spacing: .02em;
+      }
+
       .brand-social {
         margin-left: auto;
         align-self: end;
@@ -437,20 +591,50 @@
         padding: 7px 10px;
         border-radius: 4px;
         font-weight: 700;
+        animation: badgePulse 3.8s ease-in-out infinite;
       }
 
       .pdf-title {
-        background: linear-gradient(90deg, var(--yellow), var(--yellow-deep));
-        padding: 24px 28px 22px;
+        background:
+          linear-gradient(100deg, var(--yellow) 0%, #fff98c 54%, var(--yellow-deep) 100%);
+        padding: 26px 30px 24px;
         text-align: left;
         margin-top: 0;
-        border-bottom: 8px solid #050505;
+        border-bottom: 10px solid #050505;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pdf-title::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 -45%;
+        width: 35%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .42), transparent);
+        transform: skewX(-18deg);
+        animation: titleSweep 6s ease-in-out infinite;
+      }
+
+      .pdf-title::after {
+        content: "";
+        position: absolute;
+        right: 30px;
+        bottom: -10px;
+        width: 180px;
+        height: 10px;
+        background: #ffffff;
+      }
+
+      .pdf-title > * {
+        position: relative;
+        z-index: 1;
       }
 
       .pdf-title h2 {
         margin: 0;
-        font-size: 38px;
+        font-size: 40px;
         letter-spacing: 0;
+        line-height: 1;
       }
 
       .invoice-number {
@@ -462,9 +646,27 @@
       .meta {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 8px 24px;
-        padding: 22px 28px 12px;
+        gap: 10px 24px;
+        padding: 24px 30px 12px;
         line-height: 1.45;
+      }
+
+      .meta > div {
+        border-bottom: 1px solid #ececec;
+        padding-bottom: 8px;
+        animation: softRise .45s ease both;
+      }
+
+      .meta > div:nth-child(2) {
+        animation-delay: .06s;
+      }
+
+      .meta > div:nth-child(3) {
+        animation-delay: .12s;
+      }
+
+      .meta > div:nth-child(4) {
+        animation-delay: .18s;
       }
 
       .meta .client-line {
@@ -474,16 +676,16 @@
       }
 
       .table-yellow {
-        width: calc(100% - 56px);
+        width: calc(100% - 60px);
         border-collapse: collapse;
-        margin: 12px 28px 0;
+        margin: 16px 30px 0;
         box-sizing: border-box;
       }
 
       .table-yellow thead th {
         background: #050505;
         color: var(--yellow);
-        padding: 10px;
+        padding: 12px 10px;
         border: 1px solid #050505;
         font-size: 12px;
         letter-spacing: .04em;
@@ -496,6 +698,35 @@
         vertical-align: top;
       }
 
+      .table-yellow tbody tr:nth-child(even) td {
+        background: #fbfbf5;
+      }
+
+      .table-yellow tbody tr {
+        animation: tableRowIn .34s ease both;
+      }
+
+      .table-yellow tbody tr:nth-child(2) {
+        animation-delay: .04s;
+      }
+
+      .table-yellow tbody tr:nth-child(3) {
+        animation-delay: .08s;
+      }
+
+      .table-yellow tbody tr:nth-child(4) {
+        animation-delay: .12s;
+      }
+
+      .table-yellow tbody tr:nth-child(n+5) {
+        animation-delay: .16s;
+      }
+
+      .table-yellow small {
+        color: #595959;
+        font-weight: 700;
+      }
+
       .table-total {
         background: var(--yellow);
         font-weight: 700;
@@ -506,11 +737,104 @@
       }
 
       .payment-info {
-        margin: 20px 28px 0;
+        margin: 20px 30px 0;
         padding: 16px;
         border: 2px solid #050505;
         border-left: 12px solid var(--yellow);
         line-height: 1.45;
+        background: linear-gradient(90deg, #fffef0, #fff);
+        animation: softRise .5s .2s ease both;
+      }
+
+      .design-showcase {
+        margin: 20px 30px 0;
+        display: grid;
+        grid-template-columns: 1.1fr .9fr;
+        gap: 16px;
+        align-items: stretch;
+        border: 2px solid #050505;
+        background: #050505;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        animation: softRise .55s .26s ease both;
+      }
+
+      .design-showcase::before {
+        content: "";
+        position: absolute;
+        inset: -40% -20% auto auto;
+        width: 280px;
+        height: 280px;
+        background: conic-gradient(from 90deg, #fff200, #00d1ff, #ff3d8b, #fff200);
+        opacity: .28;
+        animation: spinAccent 10s linear infinite;
+      }
+
+      .design-copy,
+      .design-tags {
+        position: relative;
+        z-index: 1;
+      }
+
+      .design-copy {
+        padding: 18px 20px;
+      }
+
+      .design-kicker {
+        color: var(--yellow);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      .design-copy strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 22px;
+        line-height: 1.1;
+      }
+
+      .design-copy p {
+        margin: 10px 0 0;
+        color: #e8e8e8;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .design-tags {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 18px;
+        align-content: center;
+        background:
+          linear-gradient(135deg, rgba(255, 242, 0, .16), transparent 46%),
+          rgba(255, 255, 255, .05);
+      }
+
+      .design-tags span {
+        border: 1px solid rgba(255, 242, 0, .55);
+        background: rgba(255, 255, 255, .08);
+        padding: 9px 10px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        animation: tagFloat 4.2s ease-in-out infinite;
+      }
+
+      .design-tags span:nth-child(2) {
+        animation-delay: .25s;
+      }
+
+      .design-tags span:nth-child(3) {
+        animation-delay: .5s;
+      }
+
+      .design-tags span:nth-child(4) {
+        animation-delay: .75s;
       }
 
       .footer-logos {
@@ -536,6 +860,152 @@
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: .08em;
+      }
+
+      @keyframes sheetEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(18px) rotateX(2deg);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0) rotateX(0);
+        }
+      }
+
+      @keyframes spinAccent {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pageDrift {
+        from {
+          background-position: 0% 0%;
+        }
+
+        to {
+          background-position: 100% 100%;
+        }
+      }
+
+      @keyframes panelEntrance {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes softRise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes shineSweep {
+        0%,
+        58% {
+          left: -60%;
+        }
+
+        100% {
+          left: 130%;
+        }
+      }
+
+      @keyframes titlePulse {
+        0%,
+        100% {
+          transform: translateY(-50%) scaleY(.78);
+        }
+
+        50% {
+          transform: translateY(-50%) scaleY(1);
+        }
+      }
+
+      @keyframes scanLine {
+        0%,
+        45% {
+          left: -30%;
+        }
+
+        100% {
+          left: 100%;
+        }
+      }
+
+      @keyframes gridDrift {
+        to {
+          background-position: 56px 28px;
+        }
+      }
+
+      @keyframes cornerFloat {
+        from {
+          transform: rotate(25deg) translate3d(0, 0, 0);
+        }
+
+        to {
+          transform: rotate(25deg) translate3d(-8px, 6px, 0);
+        }
+      }
+
+      @keyframes badgePulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 rgba(255, 242, 0, 0);
+        }
+
+        50% {
+          box-shadow: 0 0 24px rgba(255, 242, 0, .36);
+        }
+      }
+
+      @keyframes titleSweep {
+        0%,
+        62% {
+          left: -45%;
+        }
+
+        100% {
+          left: 120%;
+        }
+      }
+
+      @keyframes tableRowIn {
+        from {
+          opacity: 0;
+          transform: translateX(-8px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes tagFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+
+        50% {
+          transform: translateY(-3px);
+        }
       }
 
       .hint {
@@ -604,6 +1074,7 @@
         .pdf-header,
         .pdf-title,
         .meta,
+        .design-showcase,
         .payment-info,
         .footer-logos {
           padding-left: 18px;
@@ -613,6 +1084,14 @@
         .table-yellow {
           width: calc(100% - 36px);
           margin: 12px 18px 0;
+        }
+
+        .design-showcase {
+          grid-template-columns: 1fr;
+          gap: 0;
+          margin-left: 18px;
+          margin-right: 18px;
+          padding: 0;
         }
       }
 
@@ -638,6 +1117,7 @@
         .pdf-header,
         .pdf-title,
         .meta,
+        .design-showcase,
         .payment-info,
         .footer-logos {
           padding-left: 16px;
@@ -653,10 +1133,21 @@
           flex-direction: column;
           align-items: flex-start;
         }
+
+        .design-tags {
+          grid-template-columns: 1fr;
+        }
+
+        .design-showcase {
+          margin-left: 16px;
+          margin-right: 16px;
+          padding: 0;
+        }
       }
 
       @media print {
         * {
+          animation: none !important;
           print-color-adjust: exact;
           -webkit-print-color-adjust: exact;
         }
@@ -695,6 +1186,22 @@
           margin: 0 auto;
           border: 0;
           box-shadow: none;
+          animation: none;
+        }
+
+        .design-showcase::before {
+          animation: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: .01ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+          transition-duration: .01ms !important;
         }
       }
     </style>
@@ -876,6 +1383,19 @@
             <div class="payment-note">Informe o valor do orçamento manualmente no app do banco.</div>
           </div>
 
+          <section class="design-showcase" aria-label="Design gráfico e comunicacao visual">
+            <div class="design-copy">
+              <div class="design-kicker">Design gráfico + comunicação visual</div>
+              <strong>Projetos pensados para destacar sua marca no digital e no ponto de venda.</strong>
+            </div>
+            <div class="design-tags" aria-hidden="true">
+              <span>Identidade visual</span>
+              <span>Posts e criativos</span>
+              <span>Adesivos e placas</span>
+              <span>Banners e fachadas</span>
+            </div>
+          </section>
+
           <div class="footer-logos">
             <img class="footer-logo" src="assets/logo-innovae.png" alt="Innovae Digital" />
             <div class="footer-note">Design, impressão e comunicação visual</div>
@@ -903,8 +1423,21 @@
           return acc;
         }, {});
 
+      function incrementInvoiceNumber(value) {
+        const match = String(value).trim().match(/^(\d+)(.*)$/);
+        if (!match) return value;
+        return `${Number(match[1]) + 1}${match[2]}`;
+      }
+
+      function getInitialInvoiceNumber() {
+        const saved = localStorage.getItem(storageKey);
+        const next = saved ? incrementInvoiceNumber(saved) : "208-2026";
+        localStorage.setItem(storageKey, next);
+        return next;
+      }
+
       const defaults = {
-        invoiceNumber: localStorage.getItem(storageKey) || "208-2026",
+        invoiceNumber: getInitialInvoiceNumber(),
         clientName: "",
         discount: "0"
       };
@@ -1386,12 +1919,6 @@
           `;
           previewRows.appendChild(tr);
         }
-      }
-
-      function incrementInvoiceNumber(value) {
-        const match = String(value).trim().match(/^(\d+)(.*)$/);
-        if (!match) return value;
-        return `${Number(match[1]) + 1}${match[2]}`;
       }
 
       function sanitizeFileName(value) {
