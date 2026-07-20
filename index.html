@@ -416,6 +416,83 @@
         line-height: 1.35;
       }
 
+      .project-panel {
+        border: 2px solid #050505;
+        border-radius: 8px;
+        padding: 14px;
+        margin-top: 10px;
+        background:
+          linear-gradient(135deg, rgba(255, 242, 0, .18), transparent 34%),
+          #ffffff;
+        position: relative;
+        overflow: hidden;
+        animation: softRise .55s .12s ease both;
+      }
+
+      .project-panel::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 8px;
+        background: var(--yellow);
+      }
+
+      .project-panel > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .project-progress {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        margin: 8px 0 12px;
+      }
+
+      .progress-track {
+        height: 12px;
+        background: #e8e8e8;
+        border: 1px solid #cfcfcf;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        display: block;
+        width: 0;
+        height: 100%;
+        background: linear-gradient(90deg, #050505, var(--yellow));
+        transition: width .3s ease;
+      }
+
+      .progress-value {
+        min-width: 48px;
+        text-align: right;
+        font-weight: 800;
+      }
+
+      .edit-banner {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 12px 0;
+        padding: 10px 12px;
+        border-radius: 6px;
+        background: #050505;
+        color: #fff;
+        font-size: 13px;
+      }
+
+      .edit-banner.active {
+        display: flex;
+      }
+
+      .edit-banner strong {
+        color: var(--yellow);
+      }
+
       .client-link-actions {
         display: flex;
         gap: 8px;
@@ -1344,6 +1421,45 @@
         </div>
         <p class="hint">Pague via PIX para a chave celular 61933004316 em nome de David Peçanha Tomé. Digite o valor do orçamento manualmente no seu app.</p>
 
+        <div class="section-title">Andamento do projeto</div>
+        <div class="project-panel">
+          <div class="row">
+            <div class="field">
+              <label for="projectStatus">Status atual</label>
+              <select id="projectStatus">
+                <option value="Orcamento enviado">Orcamento enviado</option>
+                <option value="Aguardando aprovacao">Aguardando aprovacao</option>
+                <option value="Aprovado">Aprovado</option>
+                <option value="Arte em criacao">Arte em criacao</option>
+                <option value="Producao em andamento">Producao em andamento</option>
+                <option value="Pronto para entrega">Pronto para entrega</option>
+                <option value="Entregue">Entregue</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="deliveryDate">Possivel data de entrega</label>
+              <input id="deliveryDate" type="date" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="projectProgress">Progresso (%)</label>
+            <input id="projectProgress" type="range" min="0" max="100" step="5" value="0" />
+          </div>
+          <div class="project-progress" aria-hidden="true">
+            <div class="progress-track"><span class="progress-fill" id="progressFill"></span></div>
+            <span class="progress-value" id="progressValue">0%</span>
+          </div>
+          <div class="field">
+            <label for="projectUpdate">Atualizacao para o cliente</label>
+            <textarea id="projectUpdate" placeholder="Ex.: Arte aprovada, material em producao e entrega prevista para sexta-feira."></textarea>
+          </div>
+        </div>
+
+        <div class="edit-banner" id="editBanner">
+          <span>Editando <strong id="editingQuoteLabel"></strong>. Ao salvar, o link do cliente sera atualizado.</span>
+          <button class="btn" id="cancelEdit" type="button">Cancelar edicao</button>
+        </div>
+
         <div class="actions">
           <button class="btn primary" id="downloadPdf" type="button">Gerar PDF</button>
           <button class="btn primary" id="createClientLink" type="button">CRIAR LINK PARA CLIENTE</button>
@@ -1463,6 +1579,8 @@
       const statusMessage = document.getElementById("statusMessage");
       const calcIds = ["materialPreset", "calcWidth", "calcHeight", "calcQuantity", "calcCost", "calcPrice"];
       const calcFields = {};
+      const projectIds = ["projectStatus", "deliveryDate", "projectProgress", "projectUpdate"];
+      const projectFields = {};
       const previewTargets = [...document.querySelectorAll("[data-preview]")]
         .reduce((acc, node) => {
           acc[node.dataset.preview] = node;
@@ -1514,6 +1632,7 @@
       let items = [
         { description: "", quantity: 1, unitPrice: 0 }
       ];
+      let editingQuoteId = null;
 
       function byId(id) {
         return document.getElementById(id);
@@ -1568,7 +1687,34 @@
         data.city = company.city;
         data.email = company.email;
         data.social = company.social;
+        data.project = getProjectData();
         return data;
+      }
+
+      function getProjectData() {
+        return {
+          status: projectFields.projectStatus?.value || "Orcamento enviado",
+          deliveryDate: projectFields.deliveryDate?.value || "",
+          progress: Math.min(100, Math.max(0, cleanNumber(projectFields.projectProgress?.value || 0))),
+          update: (projectFields.projectUpdate?.value || "").trim(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      function setProjectData(project = {}) {
+        if (projectFields.projectStatus) projectFields.projectStatus.value = project.status || "Orcamento enviado";
+        if (projectFields.deliveryDate) projectFields.deliveryDate.value = project.deliveryDate || "";
+        if (projectFields.projectProgress) projectFields.projectProgress.value = project.progress ?? 0;
+        if (projectFields.projectUpdate) projectFields.projectUpdate.value = project.update || "";
+        renderProjectProgress();
+      }
+
+      function renderProjectProgress() {
+        const progress = Math.min(100, Math.max(0, cleanNumber(projectFields.projectProgress?.value || 0)));
+        const fill = byId("progressFill");
+        const value = byId("progressValue");
+        if (fill) fill.style.width = `${progress}%`;
+        if (value) value.textContent = `${progress}%`;
       }
 
       function setStatus(message) {
@@ -1631,22 +1777,28 @@
 
       function saveQuoteRecord(data) {
         const quotes = loadSavedQuotes();
-        const existingIndex = quotes.findIndex((quote) => quote.invoiceNumber === data.invoiceNumber);
+        const existingIndex = quotes.findIndex((quote) => (
+          (editingQuoteId && quote.id === editingQuoteId) ||
+          quote.invoiceNumber === data.invoiceNumber
+        ));
+        const previous = existingIndex >= 0 ? quotes[existingIndex] : null;
         const record = {
-          id: existingIndex >= 0 ? quotes[existingIndex].id : `${sanitizeFileName(data.invoiceNumber)}-${Date.now()}`,
-          createdAt: new Date().toISOString(),
+          id: previous?.id || `${sanitizeFileName(data.invoiceNumber)}-${Date.now()}`,
+          createdAt: previous?.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
           invoiceNumber: data.invoiceNumber,
           clientName: data.clientName,
           subtotal: data.subtotal,
           discount: data.discount,
           total: data.total,
           items: data.items,
-          binId: data.binId || null,
+          binId: data.binId || previous?.binId || null,
           providerName: data.providerName,
           phone: data.phone,
           city: data.city,
           email: data.email,
-          social: data.social
+          social: data.social,
+          project: data.project || previous?.project || {}
         };
         if (existingIndex >= 0) {
           quotes.splice(existingIndex, 1);
@@ -1739,8 +1891,9 @@
           const createdAt = quote.createdAt ? new Date(quote.createdAt).toLocaleString("pt-BR") : "-";
           card.innerHTML = `
             <strong>${escapeHtml(quote.clientName || "Cliente")} - ${escapeHtml(quote.invoiceNumber || "")}</strong>
-            <div class="client-link-meta">${createdAt} | ${money(quote.total)}</div>
+            <div class="client-link-meta">${createdAt} | ${money(quote.total)} | ${quote.binId ? "Link enviado ativo" : "Salvo localmente"}</div>
             <div class="client-link-actions">
+              <button class="btn primary" type="button" data-edit-client-link="${escapeHtml(quote.id)}">Editar orcamento</button>
               <button class="btn" type="button" data-copy-client-link="${escapeHtml(quote.id)}">Copiar link</button>
               <button class="btn" type="button" data-open-client-link="${escapeHtml(quote.id)}">Abrir</button>
               <button class="btn danger" type="button" data-delete-client-link="${escapeHtml(quote.id)}">Excluir</button>
@@ -1748,6 +1901,42 @@
           `;
           clientLinks.appendChild(card);
         });
+      }
+
+      function loadQuoteForEditing(record) {
+        editingQuoteId = record.id;
+        fields.invoiceNumber.value = record.invoiceNumber || "";
+        fields.clientName.value = record.clientName || "";
+        fields.discount.value = record.discount || 0;
+        items = Array.isArray(record.items) && record.items.length
+          ? record.items.map((item) => ({
+              description: item.description || "",
+              quantity: item.quantity ?? 1,
+              unitPrice: item.unitPrice ?? 0
+            }))
+          : [{ description: "", quantity: 1, unitPrice: 0 }];
+        setProjectData(record.project || {});
+        renderItems();
+        renderPreview();
+        updateEditState(record);
+        setStatus(`Orcamento ${record.invoiceNumber} carregado para edicao.`);
+        document.querySelector(".controls").scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function updateEditState(record = null) {
+        const banner = byId("editBanner");
+        const label = byId("editingQuoteLabel");
+        const linkButton = byId("createClientLink");
+        const activeRecord = record || loadSavedQuotes().find((quote) => quote.id === editingQuoteId);
+        if (banner) banner.classList.toggle("active", Boolean(editingQuoteId));
+        if (label) label.textContent = activeRecord ? `${activeRecord.clientName || "Cliente"} - ${activeRecord.invoiceNumber || ""}` : "";
+        if (linkButton) linkButton.textContent = editingQuoteId ? "SALVAR ALTERACOES NO LINK DO CLIENTE" : "CRIAR LINK PARA CLIENTE";
+      }
+
+      function cancelEditing() {
+        editingQuoteId = null;
+        updateEditState();
+        setStatus("Edicao cancelada.");
       }
 
       function validateQuoteData(data, action) {
@@ -1768,12 +1957,17 @@
         if (!validateQuoteData(data, "criar o link")) return;
         try {
           setStatus("Salvando orçamento na nuvem...");
-          const previousRecord = loadSavedQuotes().find((quote) => quote.invoiceNumber === data.invoiceNumber);
+          const previousRecord = loadSavedQuotes().find((quote) => (
+            (editingQuoteId && quote.id === editingQuoteId) ||
+            quote.invoiceNumber === data.invoiceNumber
+          ));
           data.cloudSavedAt = new Date().toISOString();
           const binId = await saveQuoteToCloud(data, previousRecord);
           const record = saveQuoteRecord({ ...data, binId });
           const link = getClientLink(record);
           await copyText(link);
+          editingQuoteId = record.id;
+          updateEditState(record);
           setStatus(`Link do cliente copiado: ${link}`);
         } catch (error) {
           console.error(error);
@@ -2353,6 +2547,12 @@
           calcFields[id].addEventListener("input", renderCalculator);
           calcFields[id].addEventListener("change", renderCalculator);
         });
+        projectIds.forEach((id) => {
+          projectFields[id] = byId(id);
+          projectFields[id].addEventListener("input", renderProjectProgress);
+          projectFields[id].addEventListener("change", renderProjectProgress);
+        });
+        setProjectData();
         byId("saveMaterial").addEventListener("click", addMaterialPreset);
         byId("newMaterial").addEventListener("keydown", (event) => {
           if (event.key === "Enter") {
@@ -2391,6 +2591,7 @@
 
         byId("downloadPdf").addEventListener("click", downloadPdf);
         byId("createClientLink").addEventListener("click", createClientLink);
+        byId("cancelEdit").addEventListener("click", cancelEditing);
         byId("downloadPdfFile").addEventListener("click", downloadPdfFile);
         byId("sharePdfWhatsApp").addEventListener("click", sharePdfToWhatsApp);
         byId("downloadJpeg").addEventListener("click", downloadJpegFile);
@@ -2411,11 +2612,15 @@
           const copyId = event.target.dataset.copyClientLink;
           const openId = event.target.dataset.openClientLink;
           const deleteId = event.target.dataset.deleteClientLink;
-          const id = copyId || openId || deleteId;
+          const editId = event.target.dataset.editClientLink;
+          const id = copyId || openId || deleteId || editId;
           if (!id) return;
           const quotes = loadSavedQuotes();
           const record = quotes.find((quote) => quote.id === id);
           if (!record && !deleteId) return;
+          if (editId) {
+            loadQuoteForEditing(record);
+          }
           if (copyId) {
             const link = getClientLink(record);
             await copyText(link);
@@ -2456,6 +2661,9 @@
           fields.clientName.value = "";
           fields.discount.value = "0";
           items = [{ description: "", quantity: 1, unitPrice: 0 }];
+          setProjectData();
+          editingQuoteId = null;
+          updateEditState();
           renderItems();
           renderPreview();
           setStatus("Formulário limpo.");

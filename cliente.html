@@ -298,6 +298,99 @@
         animation: softRise .5s .2s ease both;
       }
 
+      .project-status {
+        margin: 20px 30px 0;
+        border: 2px solid #050505;
+        background:
+          linear-gradient(135deg, rgba(255, 242, 0, .22), transparent 40%),
+          #ffffff;
+        animation: softRise .5s .18s ease both;
+      }
+
+      .project-status-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 16px 18px;
+        background: #050505;
+        color: #fff;
+      }
+
+      .project-status-head span {
+        display: block;
+        color: var(--yellow);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      .project-status-head strong {
+        display: block;
+        margin-top: 5px;
+        font-size: 22px;
+        line-height: 1.1;
+      }
+
+      .delivery-pill {
+        min-width: 160px;
+        border: 1px solid rgba(255, 242, 0, .65);
+        border-radius: 999px;
+        padding: 9px 12px;
+        color: var(--yellow);
+        font-size: 12px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .project-status-body {
+        padding: 16px 18px 18px;
+      }
+
+      .client-progress {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .client-progress-track {
+        height: 14px;
+        border-radius: 999px;
+        border: 1px solid #cfcfcf;
+        background: #eeeeee;
+        overflow: hidden;
+      }
+
+      .client-progress-fill {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, #050505, var(--yellow));
+      }
+
+      .client-progress-value {
+        min-width: 48px;
+        font-size: 18px;
+        font-weight: 900;
+        text-align: right;
+      }
+
+      .project-update {
+        margin: 14px 0 0;
+        padding: 14px;
+        border-left: 8px solid var(--yellow);
+        background: #fffef0;
+        line-height: 1.45;
+      }
+
+      .project-updated-at {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
       .design-showcase {
         margin: 20px 30px 0;
         display: grid;
@@ -526,11 +619,24 @@
         .pdf-header,
         .pdf-title,
         .meta,
+        .project-status,
         .design-showcase,
         .payment-info,
         .footer-logos {
           padding-left: 16px;
           padding-right: 16px;
+        }
+        .project-status {
+          margin-left: 16px;
+          margin-right: 16px;
+          padding: 0;
+        }
+        .project-status-head {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .delivery-pill {
+          width: 100%;
         }
         .meta { grid-template-columns: 1fr; }
         .table-yellow {
@@ -621,6 +727,24 @@
           <div>Informe o valor do orçamento manualmente no app do banco.</div>
         </div>
 
+        <section class="project-status" aria-label="Andamento do projeto">
+          <div class="project-status-head">
+            <div>
+              <span>Andamento do projeto</span>
+              <strong data-project="status">Orcamento enviado</strong>
+            </div>
+            <div class="delivery-pill" data-project="deliveryDate">Entrega a confirmar</div>
+          </div>
+          <div class="project-status-body">
+            <div class="client-progress">
+              <div class="client-progress-track"><span class="client-progress-fill" data-project="progressFill"></span></div>
+              <div class="client-progress-value" data-project="progressValue">0%</div>
+            </div>
+            <div class="project-update" data-project="update">A Innovae atualizara esta area conforme o projeto avancar.</div>
+            <div class="project-updated-at" data-project="updatedAt"></div>
+          </div>
+        </section>
+
         <section class="design-showcase" aria-label="Design grafico e comunicacao visual">
           <div class="design-copy">
             <div class="design-kicker">Design grafico + comunicação visual</div>
@@ -662,6 +786,10 @@
         acc[node.dataset.preview] = node;
         return acc;
       }, {});
+      const projectTargets = [...document.querySelectorAll("[data-project]")].reduce((acc, node) => {
+        acc[node.dataset.project] = node;
+        return acc;
+      }, {});
 
       function money(value) {
         return Number(value || 0).toLocaleString("pt-BR", {
@@ -683,6 +811,20 @@
           .replaceAll("<", "&lt;")
           .replaceAll(">", "&gt;")
           .replaceAll('"', "&quot;");
+      }
+
+      function formatDate(value) {
+        if (!value) return "";
+        const [year, month, day] = String(value).split("-");
+        if (!year || !month || !day) return "";
+        return `${day}/${month}/${year}`;
+      }
+
+      function formatDateTime(value) {
+        if (!value) return "";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "";
+        return date.toLocaleString("pt-BR");
       }
 
       function loadSavedQuotes() {
@@ -709,6 +851,8 @@
         const discount = Number(data.discount || 0);
         const subtotal = items.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.unitPrice || 0), 0);
         const total = Number.isFinite(Number(data.total)) ? Number(data.total) : Math.max(0, subtotal - discount);
+        const project = data.project || {};
+        const progress = Math.min(100, Math.max(0, Number(project.progress || 0)));
 
         previewTargets.invoiceNumber.textContent = data.invoiceNumber || "-";
         previewTargets.clientName.textContent = data.clientName || "-";
@@ -718,6 +862,12 @@
         previewTargets.social.textContent = social;
         previewTargets.phoneCity.textContent = `${phone} - ${city}`;
         previewTargets.grandTotal.textContent = money(total);
+        projectTargets.status.textContent = project.status || "Orcamento enviado";
+        projectTargets.deliveryDate.textContent = project.deliveryDate ? `Entrega prevista: ${formatDate(project.deliveryDate)}` : "Entrega a confirmar";
+        projectTargets.progressFill.style.width = `${progress}%`;
+        projectTargets.progressValue.textContent = `${progress}%`;
+        projectTargets.update.textContent = project.update || "A Innovae atualizara esta area conforme o projeto avancar.";
+        projectTargets.updatedAt.textContent = project.updatedAt ? `Ultima atualizacao: ${formatDateTime(project.updatedAt)}` : "";
 
         previewRows.innerHTML = "";
         items.forEach((item) => {
