@@ -1723,6 +1723,7 @@
         <div class="nav-spacer" aria-hidden="true"></div>
         <div class="home-nav-links">
           <a href="portfolio.html">Portfólio</a>
+          <a href="instagram.html">Instagram</a>
           <a href="https://wa.me/5561933004316?text=Olá%2C%20vim%20pelo%20site%20da%20Innovae%20Digital." target="_blank" rel="noopener noreferrer">Contato</a>
           <button class="system-entry" id="showLogin" type="button">Área interna</button>
         </div>
@@ -2222,25 +2223,81 @@
         if (!oldField || oldField.tagName === "SELECT") return;
         const wrapper = document.createElement("div");
         wrapper.className = "field";
-        wrapper.innerHTML = `<label for="portfolioCategory">Categoria</label><select id="portfolioCategory"><option value="">Selecione uma categoria</option></select><div class="client-link-actions" style="margin-top:8px"><input id="newPortfolioCategory" autocomplete="off" placeholder="Nova categoria" aria-label="Nova categoria" /><button class="btn" id="addPortfolioCategory" type="button">Criar categoria</button></div>`;
+        wrapper.innerHTML = `<label for="portfolioCategory">Categoria</label><select id="portfolioCategory"><option value="">Selecione uma categoria</option></select><div class="client-link-actions" style="margin-top:8px"><input id="newPortfolioCategory" autocomplete="off" placeholder="Nova categoria" aria-label="Nova categoria" /><button class="btn" id="addPortfolioCategory" type="button">Criar categoria</button></div><div class="portfolio-category-manager" id="portfolioCategoriesList" aria-live="polite"></div>`;
         oldField.closest(".field").replaceWith(wrapper);
         byId("addPortfolioCategory").addEventListener("click", addPortfolioCategory);
+        byId("portfolioCategoriesList").addEventListener("click", handlePortfolioCategoryAction);
         renderPortfolioCategoryOptions();
+        renderPortfolioCategoriesManager();
       }
 
       async function addPortfolioCategory() {
         const field = byId("newPortfolioCategory");
         const category = field.value.trim();
         if (!category) return field.focus();
+        const previousCategory = field.dataset.editingCategory || "";
         const categories = getPortfolioCategories();
-        if (!categories.some((saved) => saved.localeCompare(category, "pt-BR", { sensitivity: "accent" }) === 0)) categories.push(category);
+        const duplicate = categories.some((saved) => saved !== previousCategory && saved.localeCompare(category, "pt-BR", { sensitivity: "accent" }) === 0);
+        if (duplicate) {
+          setStatus("Já existe uma categoria com esse nome.");
+          return field.focus();
+        }
         try {
-          await savePortfolioItemsToCloud(loadPortfolioItems(), categories);
-          savePortfolioCategories(categories);
+          let items = loadPortfolioItems();
+          let updatedCategories = categories;
+          if (previousCategory) {
+            updatedCategories = categories.map((saved) => saved === previousCategory ? category : saved);
+            items = items.map((item) => item.category === previousCategory ? { ...item, category } : item);
+          } else if (!categories.some((saved) => saved.localeCompare(category, "pt-BR", { sensitivity: "accent" }) === 0)) {
+            updatedCategories = [...categories, category];
+          }
+          await savePortfolioItemsToCloud(items, updatedCategories);
+          savePortfolioItems(items);
+          savePortfolioCategories(updatedCategories);
           field.value = "";
+          delete field.dataset.editingCategory;
+          byId("addPortfolioCategory").textContent = "Criar categoria";
           renderPortfolioCategoryOptions(category);
-          setStatus("Categoria criada e salva para os proximos trabalhos.");
+          renderPortfolioCategoriesManager();
+          setStatus(previousCategory ? "Categoria e projetos relacionados atualizados." : "Categoria criada e salva para os próximos trabalhos.");
         } catch (error) { setStatus(error.message || "Nao foi possivel salvar a categoria na nuvem."); }
+      }
+
+      function renderPortfolioCategoriesManager() {
+        const target = byId("portfolioCategoriesList");
+        if (!target) return;
+        const categories = getPortfolioCategories();
+        target.innerHTML = `<p class="hint" style="margin:12px 0 6px">Gerenciar categorias</p>${categories.length ? categories.map((category) => `<div class="user-row"><strong>${escapeHtml(category)}</strong><div class="client-link-actions"><button class="btn" type="button" data-edit-category="${escapeHtml(category)}">Editar</button><button class="btn danger" type="button" data-delete-category="${escapeHtml(category)}">Apagar</button></div></div>`).join("") : `<p class="hint">Nenhuma categoria criada.</p>`}`;
+      }
+
+      async function handlePortfolioCategoryAction(event) {
+        const categoryToEdit = event.target.dataset.editCategory;
+        const categoryToDelete = event.target.dataset.deleteCategory;
+        if (categoryToEdit) {
+          const field = byId("newPortfolioCategory");
+          field.value = categoryToEdit;
+          field.dataset.editingCategory = categoryToEdit;
+          byId("addPortfolioCategory").textContent = "Salvar edição";
+          field.focus();
+          return;
+        }
+        if (!categoryToDelete) return;
+        const relatedItems = loadPortfolioItems().filter((item) => item.category === categoryToDelete);
+        const message = relatedItems.length
+          ? `Apagar a categoria “${categoryToDelete}”? Ela será removida de ${relatedItems.length} trabalho(s), mas os trabalhos continuarão no portfólio.`
+          : `Apagar a categoria “${categoryToDelete}”?`;
+        if (!confirm(message)) return;
+        try {
+          const items = loadPortfolioItems().map((item) => item.category === categoryToDelete ? { ...item, category: "" } : item);
+          const categories = loadPortfolioCategories().filter((category) => category !== categoryToDelete);
+          await savePortfolioItemsToCloud(items, categories);
+          savePortfolioItems(items);
+          savePortfolioCategories(categories);
+          renderPortfolioCategoryOptions();
+          renderPortfolioCategoriesManager();
+          renderPortfolioAdmin();
+          setStatus("Categoria apagada.");
+        } catch (error) { setStatus(error.message || "Não foi possível apagar a categoria na nuvem."); }
       }
 
       async function savePortfolioItemsToCloud(items, categories = getPortfolioCategories()) {
@@ -2273,16 +2330,21 @@
         const uploaded = [];
         for (const file of files) {
           if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) throw new Error(`${file.name} nao e uma imagem ou video valido.`);
+          if (file.size > 100 * 1024 * 1024) throw new Error(`${file.name} ultrapassa o limite de 100 MB por arquivo.`);
           const formData = new FormData();
           formData.append("file", file);
           formData.append("upload_preset", cloudinaryUploadPresetForUpload);
-          formData.append("folder", "innovae/portfolio");
           const resourceType = file.type.startsWith("video/") ? "video" : "image";
-          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/${resourceType}/upload`, { method: "POST", body: formData });
+          let response;
+          try {
+            response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/${resourceType}/upload`, { method: "POST", body: formData });
+          } catch {
+            throw new Error(`Não foi possível conectar ao serviço de mídia para enviar ${file.name}. Verifique sua conexão e tente novamente.`);
+          }
           if (!response.ok) {
             let detail = "";
             try { detail = (await response.json()).error?.message || ""; } catch { /* fallback below */ }
-            throw new Error(`Falha ao enviar ${file.name}${detail ? `: ${detail}` : "."}`);
+            throw new Error(`Falha ao enviar ${file.name}${detail ? `: ${detail}` : ` (erro ${response.status})`}.`);
           }
           const data = await response.json();
           uploaded.push({ url: data.secure_url, type: data.resource_type, publicId: data.public_id, name: file.name, duration: data.duration || null });
@@ -2309,6 +2371,7 @@
         });
         byId("savePortfolioItem").textContent = "Salvar trabalho";
         renderPortfolioCategoryOptions();
+        renderPortfolioCategoriesManager();
         byId("portfolioMediaMessage").textContent = "Envie imagens ou vídeos para a nuvem. Você pode selecionar vários arquivos.";
       }
 
@@ -2344,6 +2407,8 @@
         if (!items.length) {
           target.innerHTML = `<div class="portfolio-empty">Nenhum trabalho cadastrado ainda.</div>`;
           renderPublicPortfolio();
+          renderPortfolioCategoryOptions();
+          renderPortfolioCategoriesManager();
           return;
         }
         target.innerHTML = items.map((item) => `
@@ -2358,6 +2423,7 @@
         `).join("");
         renderPublicPortfolio();
         renderPortfolioCategoryOptions();
+        renderPortfolioCategoriesManager();
       }
 
       async function savePortfolioItem() {
@@ -2389,7 +2455,7 @@
           setStatus("Trabalho e mídias salvos no portfólio em nuvem.");
         } catch (error) {
           byId("portfolioMediaMessage").textContent = error.message || "Falha ao enviar a mídia.";
-          setStatus("O projeto não foi salvo. Confira o preset do Cloudinary e tente novamente.");
+          setStatus("O projeto não foi salvo. A mensagem acima indica o motivo do envio.");
         }
       }
 
