@@ -1685,6 +1685,15 @@
       #systemApp:not(.login-view) .edit-banner { border-left:4px solid var(--yellow); border-radius:0; background:#0b0b0b; }
       #systemApp:not(.login-view) .db-panel .section-title { margin-top:18px; }
       #systemApp:not(.login-view) #statusMessage { display:block; min-height:20px; padding:8px 0; color:var(--yellow); }
+      /* Janelas do painel: cada fluxo tem seu próprio espaço de trabalho. */
+      #systemApp:not(.login-view) .workspace-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin:0 0 16px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,.16); }
+      #systemApp:not(.login-view) .workspace-tab { min-height:42px; padding:8px 9px; border:1px solid rgba(255,255,255,.25); background:#0a0a0a; color:#ddd; font:inherit; font-size:11px; font-weight:800; line-height:1.15; letter-spacing:.04em; text-transform:uppercase; cursor:pointer; transition:background .2s ease,color .2s ease,border-color .2s ease,transform .2s ease; }
+      #systemApp:not(.login-view) .workspace-tab:hover { border-color:var(--yellow); color:#fff; transform:translateY(-1px); }
+      #systemApp:not(.login-view) .workspace-tab.is-active { border-color:var(--yellow); background:var(--yellow); color:#050505; box-shadow:3px 3px 0 rgba(255,242,0,.22); }
+      #systemApp:not(.login-view) .workspace-tab:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+      #systemApp:not(.login-view) .workspace-window { animation:windowEnter .28s ease both; }
+      #systemApp:not(.login-view) .workspace-window[hidden] { display:none; }
+      @keyframes windowEnter { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
       @media (max-width:760px) {
         #systemApp:not(.login-view) { grid-template-columns:minmax(0,1fr); gap:18px; padding:12px; }
         #systemApp:not(.login-view) .controls { position:relative; top:auto; max-height:none; overflow:visible; padding:14px; box-shadow:8px 8px 0 rgba(255,242,0,.68); }
@@ -1701,6 +1710,8 @@
         #systemApp:not(.login-view) .item-editor .item-grid { grid-template-columns:1fr; }
         #systemApp:not(.login-view) .item-footer { align-items:flex-start; flex-direction:column; }
         #systemApp:not(.login-view) .db-stats { grid-template-columns:1fr 1fr; }
+        #systemApp:not(.login-view) .workspace-tabs { grid-template-columns:1fr; gap:6px; }
+        #systemApp:not(.login-view) .workspace-tab { min-height:38px; }
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -1782,6 +1793,12 @@
 
         <div id="systemContent" hidden>
         <img class="control-logo" src="assets/logo-innovae.png" alt="Innovae Digital" />
+        <nav class="workspace-tabs" aria-label="Seções do sistema" role="tablist">
+          <button class="workspace-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="windowAdmin" data-window-target="admin">Administração</button>
+          <button class="workspace-tab" type="button" role="tab" aria-selected="false" aria-controls="windowBudget" data-window-target="budget">Orçamento</button>
+          <button class="workspace-tab" type="button" role="tab" aria-selected="false" aria-controls="windowManage" data-window-target="manage">Gestão e backups</button>
+        </nav>
+        <section class="workspace-window is-active" id="windowAdmin" data-window="admin" role="tabpanel">
         <div class="user-admin">
           <h2>Usuários do sistema</h2>
           <div class="row">
@@ -1838,6 +1855,8 @@
           <div class="portfolio-list" id="portfolioList"></div>
           <p class="hint">As alterações aparecem na página inicial deste navegador. Use imagens com link público para que o cliente consiga visualizar.</p>
         </div>
+        </section>
+        <section class="workspace-window" id="windowBudget" data-window="budget" role="tabpanel" hidden>
         <div class="app-splash">
           <div class="splash-copy">
             <strong>Orçamento limpo e pronto para envio</strong>
@@ -1977,6 +1996,8 @@
           <button class="btn" id="sharePdfWhatsApp" type="button">Enviar PDF para WhatsApp</button>
           <button class="btn" id="downloadJpeg" type="button">Gerar imagem para WhatsApp</button>
         </div>
+        </section>
+        <section class="workspace-window" id="windowManage" data-window="manage" role="tabpanel" hidden>
         <div class="db-panel">
           <div class="db-stats">
             <div class="db-stat">Orçamentos salvos<strong id="savedQuotesCount">0</strong></div>
@@ -1993,6 +2014,7 @@
           <p class="hint">Os dados ficam salvos neste navegador. Use o backup para transferir ou guardar uma cópia.</p>
         </div>
         <p class="hint" id="statusMessage" aria-live="polite"></p>
+        </section>
         </div>
       </section>
 
@@ -3476,6 +3498,28 @@
 
       let deferredPrompt = null;
 
+      function setupWorkspaceTabs() {
+        const tabs = Array.from(document.querySelectorAll("[data-window-target]"));
+        const windows = Array.from(document.querySelectorAll("[data-window]"));
+        if (!tabs.length || !windows.length) return;
+
+        function activateWindow(name, moveFocus = false) {
+          tabs.forEach((tab) => {
+            const active = tab.dataset.windowTarget === name;
+            tab.classList.toggle("is-active", active);
+            tab.setAttribute("aria-selected", String(active));
+            if (active && moveFocus) tab.focus();
+          });
+          windows.forEach((windowPanel) => {
+            const active = windowPanel.dataset.window === name;
+            windowPanel.hidden = !active;
+            windowPanel.classList.toggle("is-active", active);
+          });
+        }
+
+        tabs.forEach((tab) => tab.addEventListener("click", () => activateWindow(tab.dataset.windowTarget)));
+      }
+
       function bind() {
         byId("showLogin").addEventListener("click", showLoginOnly);
         byId("backToSite").addEventListener("click", showPublicSite);
@@ -3697,6 +3741,7 @@
         });
       }
 
+      setupWorkspaceTabs();
       bind();
       setupPortfolioCategoryControl();
       renderCalculator();
