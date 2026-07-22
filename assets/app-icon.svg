@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Innovae Digital</title>
+  <rect width="512" height="512" rx="96" fill="#070707"/>
+  <path d="M112 118h72l144 276h-72z" fill="#fff200"/>
+  <path d="M240 118h72l88 276h-72z" fill="#fff200" opacity=".78"/>
+  <circle cx="151" cy="356" r="40" fill="#fff200"/>
+</svg>

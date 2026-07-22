@@ -1,12 +1,14 @@
-const CACHE_NAME = "innovae-site-cache-v7";
+const CACHE_NAME = "innovae-site-cache-v8";
 const ASSETS = [
   "/",
   "/index.html",
   "/portfolio.html",
+  "/instagram.html",
   "/cliente.html",
   "/manifest.webmanifest",
   "/assets/logo-innovae.png",
-  "/assets/app-cover.jpg"
+  "/assets/app-icon.svg",
+  "/assets/analytics.js"
 ];
 
 self.addEventListener("install", (event) => {
