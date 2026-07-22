@@ -2086,6 +2086,7 @@
       const loginViewStorageKey = "innovae.loginViewOpen";
       const portfolioStorageKey = "innovae.portfolioItems";
       const portfolioRegistryBinId = "6a60f489da38895dfe80518a";
+      const quotesRegistryBinId = "6a610c32da38895dfe80bcbc";
       const cloudinaryCloudName = "c03o3ski";
       const cloudinaryUploadPreset = "Portfólio Innovae Site";
       const jsonBinApiKey = "$2a$10$mVMcYrxiKOYeXPcU5F8JT.p/b/APp9ptSaW01qH3Aq2hGnq.7Lzu2";
@@ -2604,6 +2605,44 @@
         renderClientLinks(quotes);
       }
 
+      async function saveQuotesRegistryToCloud(quotes = loadSavedQuotes()) {
+        const response = await fetch(`${jsonBinBaseUrl}/${quotesRegistryBinId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", "X-Access-Key": jsonBinApiKey },
+          body: JSON.stringify({ items: quotes.slice(0, 100), updatedAt: new Date().toISOString() })
+        });
+        if (!response.ok) throw new Error("Não foi possível atualizar o índice de orçamentos na nuvem.");
+      }
+
+      async function syncQuotesFromCloud() {
+        try {
+          const response = await fetch(`${jsonBinBaseUrl}/${quotesRegistryBinId}/latest?meta=false`);
+          if (!response.ok) throw new Error();
+          const remote = await response.json();
+          const remoteQuotes = Array.isArray(remote.items) ? remote.items : [];
+          const localQuotes = loadSavedQuotes();
+          if (!remoteQuotes.length && localQuotes.length) {
+            await saveQuotesRegistryToCloud(localQuotes);
+            setStatus("Banco de dados sincronizado com a nuvem.");
+            return;
+          }
+          if (remoteQuotes.length) {
+            const merged = new Map(remoteQuotes.map((quote) => [quote.id, quote]));
+            localQuotes.forEach((quote) => {
+              const saved = merged.get(quote.id);
+              if (!saved || new Date(quote.updatedAt || 0) > new Date(saved.updatedAt || 0)) merged.set(quote.id, quote);
+            });
+            const quotes = [...merged.values()].sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0)).slice(0, 100);
+            localStorage.setItem(quotesStorageKey, JSON.stringify(quotes));
+            renderDbStats();
+            await saveQuotesRegistryToCloud(quotes);
+          }
+        } catch (error) {
+          console.warn("Não foi possível sincronizar o banco de orçamentos.", error);
+          setStatus("Modo local: não foi possível sincronizar o banco de dados agora.");
+        }
+      }
+
       function getClientLink(record) {
         const url = new URL("cliente.html", window.location.href);
         if (record.binId) {
@@ -2752,11 +2791,18 @@
           data.cloudSavedAt = new Date().toISOString();
           const binId = await saveQuoteToCloud(data, previousRecord);
           const record = saveQuoteRecord({ ...data, binId });
+          let registrySynced = true;
+          try {
+            await saveQuotesRegistryToCloud(loadSavedQuotes());
+          } catch (error) {
+            console.error(error);
+            registrySynced = false;
+          }
           const link = getClientLink(record);
           await copyText(link);
           editingQuoteId = record.id;
           updateEditState(record);
-          setStatus(`Link do cliente copiado: ${link}`);
+          setStatus(registrySynced ? `Link do cliente copiado: ${link}` : `Link criado, mas a lista em nuvem ainda precisa sincronizar: ${link}`);
         } catch (error) {
           console.error(error);
           alert("Não foi possível criar o link na nuvem. Confira sua chave do JSONBin e tente novamente.");
@@ -2800,6 +2846,7 @@
             }
             if (Array.isArray(payload.quotes)) {
               localStorage.setItem(quotesStorageKey, JSON.stringify(payload.quotes.slice(0, 500)));
+              saveQuotesRegistryToCloud(loadSavedQuotes()).catch(() => setStatus("Backup importado localmente, mas a nuvem não respondeu."));
             }
             renderDbStats();
             renderCalculator();
@@ -2812,14 +2859,19 @@
         reader.readAsText(file);
       }
 
-      function clearDatabase() {
+      async function clearDatabase() {
         if (!confirm("Tem certeza que deseja limpar histórico e materiais salvos deste navegador?")) return;
         localStorage.removeItem(materialStorageKey);
         localStorage.removeItem(quotesStorageKey);
         materialPresets = loadMaterialPresets();
         renderMaterialPresets();
         renderDbStats();
-        setStatus("Banco local limpo. A numeração atual foi mantida.");
+        try {
+          await saveQuotesRegistryToCloud([]);
+          setStatus("Banco de dados limpo e sincronizado. A numeração atual foi mantida.");
+        } catch {
+          setStatus("Banco local limpo. Não foi possível sincronizar a nuvem agora.");
+        }
       }
 
       function formatArea(value) {
@@ -3473,7 +3525,16 @@
               alert("Não foi possível excluir no JSONBin. Tente novamente.");
               return;
             }
-            localStorage.setItem(quotesStorageKey, JSON.stringify(quotes.filter((quote) => quote.id !== deleteId)));
+            const updatedQuotes = quotes.filter((quote) => quote.id !== deleteId);
+            localStorage.setItem(quotesStorageKey, JSON.stringify(updatedQuotes));
+            try {
+              await saveQuotesRegistryToCloud(updatedQuotes);
+            } catch (error) {
+              console.error(error);
+              setStatus("Link removido localmente, mas a sincronização da lista falhou.");
+              renderDbStats();
+              return;
+            }
             renderDbStats();
             setStatus("Link de cliente excluído.");
           }
@@ -3531,6 +3592,7 @@
       renderItems();
       renderPreview();
       renderDbStats();
+      syncQuotesFromCloud();
       renderPublicPortfolio();
       syncPortfolioFromCloud();
       // Mantém a tela de login aberta após recarregar, sem abrir o sistema automaticamente.
