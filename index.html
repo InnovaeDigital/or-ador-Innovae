@@ -2085,12 +2085,15 @@
       const sessionStorageKey = "innovae.activeUser";
       const loginViewStorageKey = "innovae.loginViewOpen";
       const portfolioStorageKey = "innovae.portfolioItems";
+      const portfolioCategoriesStorageKey = "innovae.portfolioCategories";
       const portfolioRegistryBinId = "6a60f489da38895dfe80518a";
       const quotesRegistryBinId = "6a610c32da38895dfe80bcbc";
       const usersRegistryBinId = "6a610d67da38895dfe80c26b";
       const cloudinaryCloudName = "c03o3ski";
       const cloudinaryUploadPreset = "Portfólio Innovae Site";
       const jsonBinApiKey = "$2a$10$mVMcYrxiKOYeXPcU5F8JT.p/b/APp9ptSaW01qH3Aq2hGnq.7Lzu2";
+      // Kept separately so the upload uses the exact Unicode name configured in Cloudinary.
+      const cloudinaryUploadPresetForUpload = "Portf\u00f3lio Innovae Site";
       const jsonBinBaseUrl = "https://api.jsonbin.io/v3/b";
       const fields = {};
       const itemList = document.getElementById("items");
@@ -2168,11 +2171,61 @@
         localStorage.setItem(portfolioStorageKey, JSON.stringify(items));
       }
 
-      async function savePortfolioItemsToCloud(items) {
+      function loadPortfolioCategories() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(portfolioCategoriesStorageKey) || "[]");
+          return Array.isArray(saved) ? saved.filter((category) => typeof category === "string" && category.trim()) : [];
+        } catch { return []; }
+      }
+
+      function savePortfolioCategories(categories) {
+        localStorage.setItem(portfolioCategoriesStorageKey, JSON.stringify(categories));
+      }
+
+      function getPortfolioCategories() {
+        return [...new Set([...loadPortfolioCategories(), ...loadPortfolioItems().map((item) => item.category).filter(Boolean)])]
+          .sort((a, b) => a.localeCompare(b, "pt-BR"));
+      }
+
+      function renderPortfolioCategoryOptions(selected = byId("portfolioCategory")?.value || "") {
+        const field = byId("portfolioCategory");
+        if (!field) return;
+        const categories = getPortfolioCategories();
+        field.innerHTML = `<option value="">Selecione uma categoria</option>${categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("")}`;
+        field.value = categories.includes(selected) ? selected : "";
+      }
+
+      function setupPortfolioCategoryControl() {
+        const oldField = byId("portfolioCategory");
+        if (!oldField || oldField.tagName === "SELECT") return;
+        const wrapper = document.createElement("div");
+        wrapper.className = "field";
+        wrapper.innerHTML = `<label for="portfolioCategory">Categoria</label><select id="portfolioCategory"><option value="">Selecione uma categoria</option></select><div class="client-link-actions" style="margin-top:8px"><input id="newPortfolioCategory" autocomplete="off" placeholder="Nova categoria" aria-label="Nova categoria" /><button class="btn" id="addPortfolioCategory" type="button">Criar categoria</button></div>`;
+        oldField.closest(".field").replaceWith(wrapper);
+        byId("addPortfolioCategory").addEventListener("click", addPortfolioCategory);
+        renderPortfolioCategoryOptions();
+      }
+
+      async function addPortfolioCategory() {
+        const field = byId("newPortfolioCategory");
+        const category = field.value.trim();
+        if (!category) return field.focus();
+        const categories = getPortfolioCategories();
+        if (!categories.some((saved) => saved.localeCompare(category, "pt-BR", { sensitivity: "accent" }) === 0)) categories.push(category);
+        try {
+          await savePortfolioItemsToCloud(loadPortfolioItems(), categories);
+          savePortfolioCategories(categories);
+          field.value = "";
+          renderPortfolioCategoryOptions(category);
+          setStatus("Categoria criada e salva para os proximos trabalhos.");
+        } catch (error) { setStatus(error.message || "Nao foi possivel salvar a categoria na nuvem."); }
+      }
+
+      async function savePortfolioItemsToCloud(items, categories = getPortfolioCategories()) {
         const response = await fetch(`${jsonBinBaseUrl}/${portfolioRegistryBinId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", "X-Access-Key": jsonBinApiKey },
-          body: JSON.stringify({ items, updatedAt: new Date().toISOString() })
+          body: JSON.stringify({ items, categories, updatedAt: new Date().toISOString() })
         });
         if (!response.ok) throw new Error("Não foi possível salvar o portfólio na nuvem.");
       }
@@ -2184,8 +2237,10 @@
           const data = await response.json();
           if (Array.isArray(data.items)) {
             savePortfolioItems(data.items);
+            if (Array.isArray(data.categories)) savePortfolioCategories(data.categories);
             renderPublicPortfolio();
             renderPortfolioAdmin();
+            renderPortfolioCategoryOptions();
           }
         } catch {
           console.warn("Portfólio em nuvem indisponível; usando cópia local.");
@@ -2195,12 +2250,18 @@
       async function uploadPortfolioMedia(files) {
         const uploaded = [];
         for (const file of files) {
+          if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) throw new Error(`${file.name} nao e uma imagem ou video valido.`);
           const formData = new FormData();
           formData.append("file", file);
-          formData.append("upload_preset", cloudinaryUploadPreset);
+          formData.append("upload_preset", cloudinaryUploadPresetForUpload);
           formData.append("folder", "innovae/portfolio");
-          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/auto/upload`, { method: "POST", body: formData });
-          if (!response.ok) throw new Error(`Falha ao enviar ${file.name}.`);
+          const resourceType = file.type.startsWith("video/") ? "video" : "image";
+          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/${resourceType}/upload`, { method: "POST", body: formData });
+          if (!response.ok) {
+            let detail = "";
+            try { detail = (await response.json()).error?.message || ""; } catch { /* fallback below */ }
+            throw new Error(`Falha ao enviar ${file.name}${detail ? `: ${detail}` : "."}`);
+          }
           const data = await response.json();
           uploaded.push({ url: data.secure_url, type: data.resource_type, publicId: data.public_id, name: file.name, duration: data.duration || null });
         }
@@ -2220,11 +2281,12 @@
       }
 
       function clearPortfolioForm() {
-        ["portfolioEditingId", "portfolioTitle", "portfolioCategory", "portfolioImage", "portfolioDescription", "portfolioLink", "portfolioMedia"].forEach((id) => {
+        ["portfolioEditingId", "portfolioTitle", "portfolioImage", "portfolioDescription", "portfolioLink", "portfolioMedia", "newPortfolioCategory"].forEach((id) => {
           const field = byId(id);
           if (field) field.value = "";
         });
         byId("savePortfolioItem").textContent = "Salvar trabalho";
+        renderPortfolioCategoryOptions();
         byId("portfolioMediaMessage").textContent = "Envie imagens ou vídeos para a nuvem. Você pode selecionar vários arquivos.";
       }
 
@@ -2273,6 +2335,7 @@
           </div>
         `).join("");
         renderPublicPortfolio();
+        renderPortfolioCategoryOptions();
       }
 
       async function savePortfolioItem() {
@@ -2297,6 +2360,7 @@
           else items.unshift(item);
           await savePortfolioItemsToCloud(items);
           savePortfolioItems(items);
+          savePortfolioCategories(getPortfolioCategories());
           clearPortfolioForm();
           byId("portfolioMediaMessage").textContent = "Arquivos salvos na nuvem com sucesso.";
           renderPortfolioAdmin();
@@ -2312,7 +2376,7 @@
         if (!item) return;
         byId("portfolioEditingId").value = item.id;
         byId("portfolioTitle").value = item.title || "";
-        byId("portfolioCategory").value = item.category || "";
+        renderPortfolioCategoryOptions(item.category || "");
         byId("portfolioImage").value = item.image || "";
         byId("portfolioMediaMessage").textContent = `${(item.media || []).length} mídia(s) já salva(s) na nuvem. Novos arquivos serão adicionados.`;
         byId("portfolioDescription").value = item.description || "";
@@ -3634,6 +3698,7 @@
       }
 
       bind();
+      setupPortfolioCategoryControl();
       renderCalculator();
       renderItems();
       renderPreview();
