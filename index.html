@@ -2087,6 +2087,7 @@
       const portfolioStorageKey = "innovae.portfolioItems";
       const portfolioRegistryBinId = "6a60f489da38895dfe80518a";
       const quotesRegistryBinId = "6a610c32da38895dfe80bcbc";
+      const usersRegistryBinId = "6a610d67da38895dfe80c26b";
       const cloudinaryCloudName = "c03o3ski";
       const cloudinaryUploadPreset = "Portfólio Innovae Site";
       const jsonBinApiKey = "$2a$10$mVMcYrxiKOYeXPcU5F8JT.p/b/APp9ptSaW01qH3Aq2hGnq.7Lzu2";
@@ -2152,6 +2153,7 @@
         { description: "", quantity: 1, unitPrice: 0 }
       ];
       let editingQuoteId = null;
+      let usersSyncPromise = Promise.resolve();
 
       function loadPortfolioItems() {
         try {
@@ -2332,6 +2334,36 @@
         localStorage.setItem(usersStorageKey, JSON.stringify(users));
       }
 
+      async function saveUsersToCloud(users = loadUsers()) {
+        const response = await fetch(`${jsonBinBaseUrl}/${usersRegistryBinId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", "X-Access-Key": jsonBinApiKey },
+          body: JSON.stringify({ items: users, updatedAt: new Date().toISOString() })
+        });
+        if (!response.ok) throw new Error("Não foi possível sincronizar os usuários na nuvem.");
+      }
+
+      async function syncUsersFromCloud() {
+        try {
+          const response = await fetch(`${jsonBinBaseUrl}/${usersRegistryBinId}/latest?meta=false`, {
+            headers: { "X-Access-Key": jsonBinApiKey }
+          });
+          if (!response.ok) throw new Error();
+          const remote = await response.json();
+          const remoteUsers = Array.isArray(remote.items) ? remote.items : [];
+          const localUsers = loadUsers();
+          if (!remoteUsers.length) {
+            await saveUsersToCloud(localUsers);
+          } else {
+            saveUsers(remoteUsers);
+          }
+          renderUsers();
+          renderLoginUsers();
+        } catch (error) {
+          console.warn("Não foi possível sincronizar os usuários.", error);
+        }
+      }
+
       function renderUsers() {
         const list = byId("userList");
         if (!list) return;
@@ -2401,13 +2433,14 @@
         showSystem();
       }
 
-      function saveUserFromForm() {
+      async function saveUserFromForm() {
         const loginValue = byId("newUserLogin").value.trim();
         const passwordValue = byId("newUserPassword").value;
         if (!loginValue || !passwordValue) {
           alert("Informe login e senha para salvar o usuário.");
           return;
         }
+        await usersSyncPromise;
         const users = loadUsers();
         const existing = users.find((user) => user.login === loginValue);
         if (existing) {
@@ -2420,7 +2453,12 @@
         byId("newUserLogin").value = "";
         byId("newUserPassword").value = "";
         renderUsers();
-        setStatus(`Usuário ${loginValue} salvo.`);
+        try {
+          await saveUsersToCloud(users);
+          setStatus(`Usuário ${loginValue} salvo e sincronizado.`);
+        } catch {
+          setStatus(`Usuário ${loginValue} salvo neste dispositivo, mas a nuvem não respondeu.`);
+        }
       }
 
       function byId(id) {
@@ -3408,18 +3446,26 @@
           sessionStorage.removeItem(sessionStorageKey);
           showPublicSite();
         });
-        byId("userList").addEventListener("click", (event) => {
+        byId("userList").addEventListener("click", async (event) => {
           const loginToRemove = event.target.dataset.removeUser;
           if (!loginToRemove) return;
+          await usersSyncPromise;
           const users = loadUsers();
           if (users.length === 1) {
             alert("Mantenha pelo menos um usuário cadastrado.");
             return;
           }
           if (!confirm(`Remover o usuário ${loginToRemove}?`)) return;
-          saveUsers(users.filter((user) => user.login !== loginToRemove));
+          const updatedUsers = users.filter((user) => user.login !== loginToRemove);
+          saveUsers(updatedUsers);
           renderUsers();
           renderLoginUsers();
+          try {
+            await saveUsersToCloud(updatedUsers);
+            setStatus("Usuário removido e sincronizado.");
+          } catch {
+            setStatus("Usuário removido neste dispositivo, mas a nuvem não respondeu.");
+          }
         });
 
         Object.keys(defaults).forEach((key) => {
@@ -3593,6 +3639,7 @@
       renderPreview();
       renderDbStats();
       syncQuotesFromCloud();
+      usersSyncPromise = syncUsersFromCloud();
       renderPublicPortfolio();
       syncPortfolioFromCloud();
       // Mantém a tela de login aberta após recarregar, sem abrir o sistema automaticamente.
