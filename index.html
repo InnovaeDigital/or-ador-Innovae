@@ -1641,6 +1641,8 @@
       @media (max-width: 700px) { .home-nav-links a { display: none; } .home-hero, .home-statement, .home-portfolio-call { grid-template-columns: 1fr; } .home-hero { min-height: auto; padding-top: 34px; } .home-statement, .home-portfolio-call { padding-top: 64px; padding-bottom: 64px; } .service-card { min-height: 126px; padding: 15px; } .home-footer { flex-direction: column; } .home-visual { width:440px; height:440px; right:-165px; top:0; opacity:.32; } .service-grid { margin-top:14px; } }
       /* Acesso interno: mesma atmosfera visual da página institucional. */
       #systemApp.login-view { display:block; position:relative; min-height:100vh; padding:clamp(48px,10vh,110px) 0; overflow:hidden; background:#070707; }
+      #systemApp.login-view.login-overlay { position:fixed; z-index:20; inset:0; min-height:100dvh; padding:clamp(42px,8vh,96px) 0; overflow:auto; background:rgba(5,5,5,.64); backdrop-filter:blur(5px); }
+      #systemApp.login-view.login-overlay::before { opacity:.38; }
       #systemApp.login-view::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 82% 18%,rgba(255,242,0,.23),transparent 25%),linear-gradient(90deg,rgba(255,242,0,.08) 1px,transparent 1px),linear-gradient(rgba(255,242,0,.08) 1px,transparent 1px); background-size:auto,34px 34px,34px 34px; mask-image:linear-gradient(90deg,black,transparent 80%); animation:gridTurn 24s linear infinite; }
       #systemApp.login-view .preview-wrap { display:none; }
       #systemApp.login-view .controls { position:relative; z-index:1; top:auto; width:min(440px,calc(100% - 40px)); max-height:none; margin:0 auto; padding:0; overflow:visible; border:1px solid rgba(255,242,0,.58); border-radius:0; background:rgba(12,12,12,.91); box-shadow:22px 22px 0 rgba(255,242,0,.88),0 35px 90px rgba(0,0,0,.55); transform:translateY(0); }
@@ -2299,15 +2301,18 @@
       function showPublicSite() {
         byId("siteHome").hidden = false;
         byId("systemApp").hidden = true;
-        byId("systemApp").classList.remove("login-view");
+        byId("systemApp").classList.remove("login-view", "login-overlay");
+        document.body.classList.remove("login-active");
         byId("loginPanel").hidden = false;
         byId("systemContent").hidden = true;
       }
 
       function showLoginOnly() {
-        byId("siteHome").hidden = true;
+        byId("siteHome").hidden = false;
         byId("systemApp").hidden = false;
-        byId("systemApp").classList.add("login-view");
+        byId("systemApp").classList.add("login-view", "login-overlay");
+        document.body.classList.add("login-active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
         byId("loginPanel").hidden = false;
         byId("systemContent").hidden = true;
         byId("loginUser").focus();
@@ -2316,7 +2321,8 @@
       function showSystem() {
         byId("siteHome").hidden = true;
         byId("systemApp").hidden = false;
-        byId("systemApp").classList.remove("login-view");
+        byId("systemApp").classList.remove("login-view", "login-overlay");
+        document.body.classList.remove("login-active");
         byId("loginPanel").hidden = true;
         byId("systemContent").hidden = false;
         renderUsers();
