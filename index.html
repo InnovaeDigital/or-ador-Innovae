@@ -1672,6 +1672,33 @@
       #systemApp:not(.login-view) .item-editor,#systemApp:not(.login-view) .user-row,#systemApp:not(.login-view) .portfolio-admin-card,#systemApp:not(.login-view) .client-link { background:#111; border-color:rgba(255,255,255,.16); border-radius:0; color:#fff; }
       #systemApp:not(.login-view) .btn { border-radius:0; }
       #systemApp:not(.login-view) .btn.primary { box-shadow:4px 4px 0 rgba(255,242,0,.25); }
+      #systemApp:not(.login-view) .controls h1 { color:#fff; }
+      #systemApp:not(.login-view) .app-splash,#systemApp:not(.login-view) .calc-panel,#systemApp:not(.login-view) .project-panel,#systemApp:not(.login-view) .db-panel { border-color:rgba(255,242,0,.35); border-radius:0; background:#151515; color:#fff; }
+      #systemApp:not(.login-view) .app-splash strong,#systemApp:not(.login-view) .calc-panel strong,#systemApp:not(.login-view) .project-panel strong { color:#fff; }
+      #systemApp:not(.login-view) .app-splash span { color:#bbb; }
+      #systemApp:not(.login-view) .calc-panel::before,#systemApp:not(.login-view) .project-panel::before { background:var(--yellow); }
+      #systemApp:not(.login-view) .client-link-card { border-color:rgba(255,255,255,.17); border-radius:0; background:#0b0b0b; color:#fff; }
+      #systemApp:not(.login-view) .client-link-card:hover { border-color:var(--yellow); }
+      #systemApp:not(.login-view) .edit-banner { border-left:4px solid var(--yellow); border-radius:0; background:#0b0b0b; }
+      #systemApp:not(.login-view) .db-panel .section-title { margin-top:18px; }
+      #systemApp:not(.login-view) #statusMessage { display:block; min-height:20px; padding:8px 0; color:var(--yellow); }
+      @media (max-width:760px) {
+        #systemApp:not(.login-view) { grid-template-columns:minmax(0,1fr); gap:18px; padding:12px; }
+        #systemApp:not(.login-view) .controls { position:relative; top:auto; max-height:none; overflow:visible; padding:14px; box-shadow:8px 8px 0 rgba(255,242,0,.68); }
+        #systemApp:not(.login-view) .preview-wrap { min-width:0; overflow-x:auto; }
+        #systemApp:not(.login-view) .controls .actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+        #systemApp:not(.login-view) .controls .actions .btn { width:100%; min-height:46px; padding:9px 8px; font-size:13px; }
+        #quoteActions #createClientLink,#quoteActions #downloadJpeg { grid-column:1 / -1; }
+        #systemApp:not(.login-view) .edit-banner { align-items:stretch; flex-direction:column; padding:13px; font-size:13px; }
+        #systemApp:not(.login-view) .edit-banner .btn { width:100%; }
+        #systemApp:not(.login-view) .client-link-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+        #systemApp:not(.login-view) .client-link-actions .btn { min-height:42px; padding:8px 6px; font-size:12px; }
+        #systemApp:not(.login-view) .client-link-actions [data-edit-client-link] { grid-column:1 / -1; }
+        #systemApp:not(.login-view) .row,#systemApp:not(.login-view) .row.three,#systemApp:not(.login-view) .preset-actions { grid-template-columns:1fr; }
+        #systemApp:not(.login-view) .item-editor .item-grid { grid-template-columns:1fr; }
+        #systemApp:not(.login-view) .item-footer { align-items:flex-start; flex-direction:column; }
+        #systemApp:not(.login-view) .db-stats { grid-template-columns:1fr 1fr; }
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1940,7 +1967,7 @@
           <button class="btn" id="cancelEdit" type="button">Cancelar edição</button>
         </div>
 
-        <div class="actions">
+        <div class="actions" id="quoteActions">
           <button class="btn primary" id="downloadPdf" type="button">Gerar PDF</button>
           <button class="btn primary" id="createClientLink" type="button">CRIAR LINK PARA CLIENTE</button>
           <button class="btn" id="downloadPdfFile" type="button">Baixar PDF</button>

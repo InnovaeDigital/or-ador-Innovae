@@ -47,7 +47,8 @@
     footer { display:flex; justify-content:space-between; gap:20px; padding:24px clamp(20px,5vw,72px); border-top:1px solid var(--line); color:#777; font-size:12px; }
     @keyframes up { from { opacity:0; transform:translateY(25px); } to { opacity:1; transform:none; } }
     @keyframes drift { to { transform:translate(-10%,12%) scale(1.12); } }
-    @media(max-width:760px) { header { padding-top:40px; } .intro,footer { display:block; } .count { margin-top:22px; } .project,.project:nth-child(3n+2),.project:nth-child(3n) { grid-column:span 12; min-height:360px; } footer span+span { display:block; margin-top:8px; } }
+    @media(max-width:760px) { nav { padding:18px 16px; } nav img { width:145px; } header { padding:40px 16px 34px; } main { padding:28px 16px 56px; } .intro,footer { display:block; } .count { display:block; margin-top:22px; } .filters { gap:7px; margin-bottom:24px; } .filter { padding:9px 12px; } .project,.project:nth-child(3n+2),.project:nth-child(3n) { grid-column:span 12; min-height:330px; } .project-copy { padding:18px; } footer { padding:20px 16px; } footer span+span { display:block; margin-top:8px; } }
+    @media(max-width:380px) { nav a:last-child { font-size:10px; } nav img { width:128px; } .project { min-height:290px; } }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
   </style>
 </head>
