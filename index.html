@@ -1658,6 +1658,22 @@
       #systemApp.login-view .login-brand { position:absolute; top:36px; left:34px; width:min(255px,calc(100% - 68px)); opacity:.96; }
       #systemApp.login-view .login-brand img { display:block; width:100%; height:auto; }
       @media (max-width:600px) { #systemApp.login-view .controls { width:calc(100% - 32px); margin-top:60px; } #systemApp.login-view .controls::before { padding:158px 24px 28px; } #systemApp.login-view .login-brand { top:32px; left:24px; width:min(225px,calc(100% - 48px)); } #systemApp.login-view .login-panel { padding:26px 24px 32px; } }
+      /* Painel administrativo no mesmo sistema visual da home. */
+      #systemApp:not(.login-view) { position:relative; isolation:isolate; background:#070707; color:#fff; }
+      #systemApp:not(.login-view)::before { content:""; position:fixed; z-index:-1; inset:0; pointer-events:none; background:radial-gradient(circle at 8% 9%,rgba(255,242,0,.18),transparent 24%),linear-gradient(90deg,rgba(255,242,0,.045) 1px,transparent 1px),linear-gradient(rgba(255,242,0,.045) 1px,transparent 1px); background-size:auto,32px 32px,32px 32px; }
+      #systemApp:not(.login-view) .controls { border-color:rgba(255,242,0,.4); border-radius:0; background:rgba(16,16,16,.96); box-shadow:14px 14px 0 rgba(255,242,0,.78),0 24px 60px rgba(0,0,0,.42); }
+      #systemApp:not(.login-view) .control-logo { width:245px; padding:10px; background:#050505; border:1px solid rgba(255,242,0,.45); }
+      #systemApp:not(.login-view) .user-admin,#systemApp:not(.login-view) .portfolio-admin,#systemApp:not(.login-view) .login-panel { border-color:rgba(255,255,255,.18); border-radius:0; background:#151515; }
+      #systemApp:not(.login-view) .user-admin h2,#systemApp:not(.login-view) .portfolio-admin h2 { color:var(--yellow); font-size:14px; letter-spacing:.08em; text-transform:uppercase; }
+      #systemApp:not(.login-view) .section-title { color:var(--yellow); border-color:rgba(255,242,0,.35); }
+      #systemApp:not(.login-view) label,#systemApp:not(.login-view) .hint,#systemApp:not(.login-view) .client-link-meta { color:#c5c5c5; }
+      #systemApp:not(.login-view) input,#systemApp:not(.login-view) select,#systemApp:not(.login-view) textarea { color:#fff; background:#0b0b0b; border-color:rgba(255,255,255,.25); border-radius:0; }
+      #systemApp:not(.login-view) input:focus,#systemApp:not(.login-view) select:focus,#systemApp:not(.login-view) textarea:focus { outline:2px solid var(--yellow); outline-offset:1px; }
+      #systemApp:not(.login-view) .item-editor,#systemApp:not(.login-view) .user-row,#systemApp:not(.login-view) .portfolio-admin-card,#systemApp:not(.login-view) .client-link { background:#111; border-color:rgba(255,255,255,.16); border-radius:0; color:#fff; }
+      #systemApp:not(.login-view) .btn { border-radius:0; }
+      #systemApp:not(.login-view) .btn.primary { box-shadow:4px 4px 0 rgba(255,242,0,.25); }
+      #systemApp:not(.login-view) .preview-wrap { border:1px solid rgba(255,242,0,.34); border-radius:0; background:#101010; box-shadow:0 24px 60px rgba(0,0,0,.4); }
+      #systemApp:not(.login-view) .preview-header { background:#050505; color:#fff; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
