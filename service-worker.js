@@ -1,7 +1,8 @@
-const CACHE_NAME = "innovae-orcamentos-cache-v1";
+const CACHE_NAME = "innovae-site-cache-v3";
 const ASSETS = [
   "/",
   "/index.html",
+  "/portfolio.html",
   "/cliente.html",
   "/manifest.webmanifest",
   "/assets/logo-innovae.png",

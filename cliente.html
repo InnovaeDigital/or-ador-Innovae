@@ -600,8 +600,8 @@
 
       @media (max-width: 640px) {
         .client-page { padding: 10px; }
-        .client-top { border-radius: 18px; }
-        .sheet { border-radius: 18px; }
+        .client-top { border-radius: 8px; }
+        .sheet { border-radius: 8px; }
         .brand { flex-wrap: wrap; gap: 10px 14px; }
         .brand-social {
           width: 100%;
@@ -642,7 +642,63 @@
         .table-yellow {
           width: calc(100% - 32px);
           margin: 12px 16px 0;
+          border: 0;
         }
+        .table-yellow thead { display: none; }
+        .table-yellow,
+        .table-yellow tbody,
+        .table-yellow tfoot,
+        .table-yellow tr,
+        .table-yellow td {
+          display: block;
+        }
+        .table-yellow tbody tr {
+          border: 1px solid #050505;
+          border-radius: 8px;
+          margin-bottom: 10px;
+          overflow: hidden;
+          background: #fff;
+        }
+        .table-yellow td {
+          display: grid;
+          grid-template-columns: minmax(92px, .44fr) 1fr;
+          gap: 10px;
+          border: 0;
+          border-bottom: 1px solid #e8e8e8;
+          padding: 10px 12px;
+          text-align: left;
+        }
+        .table-yellow td::before {
+          content: attr(data-label);
+          font-size: 11px;
+          font-weight: 900;
+          color: #050505;
+          text-transform: uppercase;
+        }
+        .table-yellow td.right { text-align: right; }
+        .table-yellow tbody td:first-child {
+          grid-template-columns: 1fr;
+          background: #fffde8;
+          font-weight: 800;
+        }
+        .table-yellow tbody td:first-child::before { display: none; }
+        .table-total {
+          border-radius: 8px;
+          overflow: hidden;
+          margin-top: 8px;
+        }
+        .table-total td {
+          grid-template-columns: 1fr;
+          background: var(--yellow);
+          border: 0;
+          font-size: 18px;
+        }
+        .table-total td:first-child {
+          font-size: 12px;
+          text-align: left;
+          padding-bottom: 0;
+        }
+        .table-total td::before { display: none; }
         .design-showcase {
           grid-template-columns: 1fr;
           gap: 0;
@@ -715,7 +771,7 @@
           <tfoot>
             <tr class="table-total">
               <td colspan="3" class="right">TOTAL C/ DESCONTO APLICADO:</td>
-              <td class="right" data-preview="grandTotal"></td>
+              <td class="right" data-label="Total final" data-preview="grandTotal"></td>
             </tr>
           </tfoot>
         </table>
@@ -745,9 +801,9 @@
           </div>
         </section>
 
-        <section class="design-showcase" aria-label="Design grafico e comunicacao visual">
+        <section class="design-showcase" aria-label="Design gráfico e comunicação visual">
           <div class="design-copy">
-            <div class="design-kicker">Design grafico + comunicação visual</div>
+            <div class="design-kicker">Design gráfico + comunicação visual</div>
             <strong>Projetos pensados para destacar sua marca no digital e no ponto de venda.</strong>
           </div>
           <div class="design-tags" aria-hidden="true">
@@ -862,12 +918,12 @@
         previewTargets.social.textContent = social;
         previewTargets.phoneCity.textContent = `${phone} - ${city}`;
         previewTargets.grandTotal.textContent = money(total);
-        projectTargets.status.textContent = project.status || "Orcamento enviado";
+        projectTargets.status.textContent = project.status || "Orçamento enviado";
         projectTargets.deliveryDate.textContent = project.deliveryDate ? `Entrega prevista: ${formatDate(project.deliveryDate)}` : "Entrega a confirmar";
         projectTargets.progressFill.style.width = `${progress}%`;
         projectTargets.progressValue.textContent = `${progress}%`;
-        projectTargets.update.textContent = project.update || "A Innovae atualizara esta area conforme o projeto avancar.";
-        projectTargets.updatedAt.textContent = project.updatedAt ? `Ultima atualizacao: ${formatDateTime(project.updatedAt)}` : "";
+        projectTargets.update.textContent = project.update || "A Innovae atualizará esta área conforme o projeto avançar.";
+        projectTargets.updatedAt.textContent = project.updatedAt ? `Última atualização: ${formatDateTime(project.updatedAt)}` : "";
 
         previewRows.innerHTML = "";
         items.forEach((item) => {
@@ -876,10 +932,10 @@
           const quantity = Number(item.quantity || 0);
           const unitPrice = Number(item.unitPrice || 0);
           tr.innerHTML = `
-            <td>${escapeHtml(main || "-")}${small.length ? `<br><small>${escapeHtml(small.join(" "))}</small>` : ""}</td>
-            <td class="right">${quantity ? formatQuantity(quantity) : "-"}</td>
-            <td class="right">${money(unitPrice)}</td>
-            <td class="right">${money(quantity * unitPrice)}</td>
+            <td data-label="Descrição">${escapeHtml(main || "-")}${small.length ? `<br><small>${escapeHtml(small.join(" "))}</small>` : ""}</td>
+            <td class="right" data-label="Qtd">${quantity ? formatQuantity(quantity) : "-"}</td>
+            <td class="right" data-label="Preço unitário">${money(unitPrice)}</td>
+            <td class="right" data-label="Total">${money(quantity * unitPrice)}</td>
           `;
           previewRows.appendChild(tr);
         });
@@ -887,10 +943,10 @@
         if (discount > 0) {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>DESCONTO</td>
-            <td class="right">-</td>
-            <td class="right">-</td>
-            <td class="right">${money(discount)}</td>
+            <td data-label="Descrição">DESCONTO</td>
+            <td class="right" data-label="Qtd">-</td>
+            <td class="right" data-label="Preço unitário">-</td>
+            <td class="right" data-label="Total">${money(discount)}</td>
           `;
           previewRows.appendChild(tr);
         }

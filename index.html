@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="assets/app-cover.jpg" />
-    <title>Gerador de Orçamentos - Innovae Digital</title>
+    <title>Innovae Digital — Design que faz presença</title>
     <style>
       :root {
         --yellow: #fff200;
@@ -38,6 +38,249 @@
         background-size: 140% 140%;
         color: var(--ink);
         animation: pageDrift 16s ease-in-out infinite alternate;
+      }
+
+      .site-home {
+        min-height: 100vh;
+        background: #050505;
+        color: #fff;
+      }
+
+      .home-hero {
+        min-height: 88vh;
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
+        gap: 32px;
+        align-items: center;
+        padding: 32px clamp(18px, 5vw, 72px);
+        background:
+          linear-gradient(135deg, rgba(255, 242, 0, .2), transparent 34%),
+          linear-gradient(315deg, rgba(255, 255, 255, .08), transparent 32%),
+          #050505;
+      }
+
+      .home-logo {
+        width: min(310px, 76vw);
+        height: auto;
+        margin-bottom: 24px;
+      }
+
+      .home-kicker {
+        color: var(--yellow);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      .home-hero h1 {
+        margin: 12px 0 16px;
+        max-width: 780px;
+        font-size: clamp(36px, 6vw, 76px);
+        line-height: .96;
+      }
+
+      .home-hero p {
+        max-width: 650px;
+        color: #dedede;
+        font-size: clamp(16px, 2vw, 20px);
+        line-height: 1.55;
+      }
+
+      .home-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .home-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        border-radius: 6px;
+        padding: 12px 16px;
+        color: #050505;
+        background: var(--yellow);
+        font-weight: 800;
+        text-decoration: none;
+        border: 0;
+        cursor: pointer;
+      }
+
+      .home-button.secondary {
+        background: transparent;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, .28);
+      }
+
+      .service-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .service-card {
+        border: 1px solid rgba(255, 255, 255, .16);
+        border-radius: 8px;
+        padding: 16px;
+        background: rgba(255, 255, 255, .06);
+      }
+
+      .service-card strong {
+        display: block;
+        color: var(--yellow);
+        margin-bottom: 8px;
+      }
+
+      .service-card span {
+        color: #d6d6d6;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .portfolio-section {
+        padding: 42px clamp(18px, 5vw, 72px) 56px;
+        background: #ffffff;
+        color: #050505;
+      }
+
+      .portfolio-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: end;
+        margin-bottom: 20px;
+      }
+
+      .portfolio-head h2 {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 48px);
+      }
+
+      .portfolio-head p {
+        max-width: 520px;
+        margin: 0;
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .portfolio-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, .08);
+      }
+
+      .portfolio-card img {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        display: block;
+        background: #050505;
+      }
+
+      .portfolio-card-body {
+        padding: 14px;
+      }
+
+      .portfolio-category {
+        display: inline-flex;
+        margin-bottom: 8px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--yellow);
+        color: #050505;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .portfolio-card h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .portfolio-card p {
+        margin: 0;
+        color: #555;
+        line-height: 1.45;
+        font-size: 14px;
+      }
+
+      .portfolio-card a {
+        display: inline-flex;
+        margin-top: 12px;
+        color: #050505;
+        font-weight: 800;
+      }
+
+      .portfolio-empty {
+        border: 1px dashed #b8b8b8;
+        border-radius: 8px;
+        padding: 18px;
+        color: #555;
+        background: #fafafa;
+      }
+
+      .login-panel,
+      .user-admin,
+      .portfolio-admin {
+        border: 1px solid #d9d9d9;
+        border-radius: 8px;
+        background: #fff;
+        padding: 14px;
+        margin-bottom: 14px;
+      }
+
+      .login-panel h2,
+      .user-admin h2,
+      .portfolio-admin h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+      }
+
+      .user-list {
+        display: grid;
+        gap: 8px;
+        margin: 10px 0;
+      }
+
+      .user-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid #e3e3e3;
+        border-radius: 6px;
+        padding: 8px;
+        background: #fafafa;
+      }
+
+      .portfolio-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .portfolio-admin-card {
+        border: 1px solid #e3e3e3;
+        border-radius: 8px;
+        padding: 10px;
+        background: #fafafa;
+      }
+
+      .portfolio-admin-card strong {
+        display: block;
+        margin-bottom: 4px;
       }
 
       button,
@@ -1200,6 +1443,21 @@
       }
 
       @media (max-width: 640px) {
+        .home-hero {
+          grid-template-columns: 1fr;
+          min-height: auto;
+          padding: 24px 16px 36px;
+        }
+
+        .service-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .home-actions,
+        .home-button {
+          width: 100%;
+        }
+
         .app {
           padding: 10px 10px 0;
         }
@@ -1320,14 +1578,220 @@
           transition-duration: .01ms !important;
         }
       }
+      /* Página institucional */
+      html { scroll-behavior: smooth; }
+      .site-home { position: relative; overflow: hidden; background: #070707; }
+      /* O CSS do painel usa display:grid; esta regra mantém o orçamento fora da home. */
+      #systemApp[hidden] { display: none !important; }
+      .site-home::before, .site-home::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+      .site-home::before { width: 54vw; height: 54vw; top: -27vw; right: -14vw; background: radial-gradient(circle, rgba(255,242,0,.32), transparent 68%); animation: orbDrift 14s ease-in-out infinite alternate; }
+      .site-home::after { width: 42vw; height: 42vw; bottom: 4%; left: -23vw; background: radial-gradient(circle, rgba(255,242,0,.13), transparent 70%); animation: orbDrift 18s ease-in-out infinite alternate-reverse; }
+      .home-nav { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 24px clamp(20px, 5vw, 72px); }
+      .nav-spacer { width:1px; }
+      .home-nav-links { display: flex; align-items: center; gap: 22px; }
+      .home-nav a, .system-entry { color: rgba(255,255,255,.74); background: transparent; border: 0; font: inherit; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: color .25s ease; }
+      .home-nav a:hover, .system-entry:hover { color: var(--yellow); }
+      .system-entry { opacity: .55; font-size: 10px; }
+      .home-hero { position: relative; z-index: 1; min-height: calc(100vh - 92px); grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); padding-top: 12px; padding-bottom: 78px; background: transparent; }
+      .home-copy { animation: revealUp .85s cubic-bezier(.16,1,.3,1) both; }
+      .home-logo { display: none; }
+      .hero-logo { display:block; width:min(325px,72vw); height:auto; margin:0 0 26px; filter:drop-shadow(0 12px 28px rgba(0,0,0,.34)); animation:revealUp .75s .05s cubic-bezier(.16,1,.3,1) both; }
+      .home-kicker { display: flex; gap: 10px; align-items: center; font-size: 11px; }
+      .home-kicker::before { content: ""; display: block; width: 32px; height: 2px; background: var(--yellow); }
+      .home-hero h1 { max-width: 900px; margin: 18px 0 22px; font-size: clamp(53px, 8vw, 118px); line-height: .86; letter-spacing: -.065em; }
+      .home-hero h1 em { color: var(--yellow); font-style: normal; }
+      .home-hero p { font-size: clamp(16px, 1.55vw, 20px); color: #aaa; }
+      .home-actions { margin-top: 34px; }
+      .home-button { min-height: 52px; padding: 14px 21px; border-radius: 0; transition: transform .25s ease, box-shadow .25s ease, background .25s ease; }
+      .home-button:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(255,242,0,.22); }
+      .home-button.secondary:hover { background: #fff; color: #050505; box-shadow: none; }
+      .service-grid { position: relative; align-self: end; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.18); animation: revealUp 1s .18s cubic-bezier(.16,1,.3,1) both; }
+      .service-card { min-height: 152px; border: 0; border-radius: 0; padding: 20px; background: rgba(13,13,13,.94); transition: background .35s ease, transform .35s ease; }
+      .service-card:hover { background: var(--yellow); transform: scale(.98); }
+      .service-card:hover strong, .service-card:hover span { color: #050505; }
+      .service-card strong { font-size: 16px; transition: color .35s ease; }
+      .service-card span { transition: color .35s ease; }
+      .home-statement { position: relative; z-index: 1; display: grid; grid-template-columns: .9fr 1.1fr; gap: 30px; padding: 96px clamp(20px, 5vw, 72px); background: var(--yellow); color: #050505; }
+      .home-statement strong { font-size: clamp(28px, 4vw, 58px); line-height: .95; letter-spacing: -.05em; }
+      .home-statement p { margin: 0; max-width: 530px; font-size: 18px; line-height: 1.55; }
+      .home-portfolio-call { position: relative; z-index: 1; display: grid; grid-template-columns: 1.1fr .9fr; gap: 36px; align-items: end; padding: 108px clamp(20px, 5vw, 72px); background: #111; }
+      .home-portfolio-call h2 { margin: 14px 0 0; max-width: 730px; font-size: clamp(36px, 5.6vw, 78px); line-height: .9; letter-spacing: -.055em; }
+      .home-portfolio-call p { color: #aaa; font-size: 17px; line-height: 1.6; }
+      .portfolio-link { display: inline-flex; align-items: center; gap: 22px; margin-top: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--yellow); color: #fff; font-weight: 800; text-decoration: none; }
+      .portfolio-link span { color: var(--yellow); font-size: 24px; transition: transform .25s ease; }
+      .portfolio-link:hover span { transform: translateX(8px); }
+      .home-footer { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 20px; padding: 24px clamp(20px, 5vw, 72px); color: #777; background: #050505; font-size: 12px; }
+      @keyframes revealUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes orbDrift { to { transform: translate3d(-8%, 12%, 0) scale(1.16); } }
+      .home-visual { position:absolute; z-index:0; width:min(42vw,590px); height:min(42vw,590px); right:clamp(20px,7vw,118px); top:46px; pointer-events:none; }
+      .visual-grid { position:absolute; inset:8%; opacity:.32; background-image:linear-gradient(rgba(255,242,0,.33) 1px,transparent 1px),linear-gradient(90deg,rgba(255,242,0,.33) 1px,transparent 1px); background-size:30px 30px; mask-image:radial-gradient(circle,black 35%,transparent 70%); animation:gridTurn 18s linear infinite; }
+      .visual-ring { position:absolute; inset:6%; border:1px solid rgba(255,242,0,.45); border-radius:50%; animation:ringOrbit 14s linear infinite; }
+      .visual-ring::before,.visual-ring::after { content:""; position:absolute; width:9px; height:9px; border-radius:50%; background:var(--yellow); box-shadow:0 0 18px var(--yellow); }
+      .visual-ring::before { top:7%; left:21%; }.visual-ring::after { right:10%; bottom:15%; }
+      .visual-ring.ring-two { inset:17%; border-color:rgba(255,255,255,.26); animation-direction:reverse; animation-duration:10s; }
+      .visual-logo { position:absolute; z-index:2; top:50%; left:50%; width:58%; padding:20px; transform:translate(-50%,-50%) rotate(-7deg); background:linear-gradient(135deg,#1a1a1a,rgba(5,5,5,.78)); border:1px solid rgba(255,242,0,.72); box-shadow:18px 18px 0 rgba(255,242,0,.9),0 22px 55px rgba(0,0,0,.55); animation:logoFloat 6s ease-in-out infinite; }
+      .visual-logo img { display:block; width:100%; height:auto; }
+      .visual-chip { position:absolute; z-index:3; padding:9px 11px; background:var(--yellow); color:#050505; font-size:10px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; box-shadow:0 9px 18px rgba(0,0,0,.22); animation:chipFloat 5s ease-in-out infinite alternate; }
+      .visual-chip.one { top:11%; right:0; }.visual-chip.two { bottom:13%; left:1%; background:#fff; animation-delay:-2s; }
+      .visual-cmyk { position:absolute; z-index:2; bottom:3%; right:6%; display:flex; gap:5px; transform:rotate(-8deg); }
+      .visual-cmyk i { display:block; width:26px; height:26px; border-radius:50%; mix-blend-mode:screen; animation:inkPulse 2.5s ease-in-out infinite; }.visual-cmyk i:nth-child(1){background:#00c8e8}.visual-cmyk i:nth-child(2){background:#ee2475;animation-delay:-.6s}.visual-cmyk i:nth-child(3){background:#fff200;animation-delay:-1.2s}.visual-cmyk i:nth-child(4){background:#fff;animation-delay:-1.8s}
+      .home-hero > div:first-child,.service-grid { z-index:1; }
+      @keyframes gridTurn { to { transform:rotate(360deg) scale(1.14); } } @keyframes ringOrbit { to { transform:rotate(360deg); } } @keyframes logoFloat { 50% { transform:translate(-50%,-54%) rotate(-3deg); } } @keyframes chipFloat { to { transform:translateY(-12px) rotate(4deg); } } @keyframes inkPulse { 50% { transform:scale(1.35); } }
+      @media (max-width: 900px) { .home-visual { opacity:.62; right:-60px; top:80px; } }
+      @media (max-width: 700px) { .home-nav-links a { display: none; } .home-hero, .home-statement, .home-portfolio-call { grid-template-columns: 1fr; } .home-hero { min-height: auto; padding-top: 34px; } .home-statement, .home-portfolio-call { padding-top: 64px; padding-bottom: 64px; } .service-card { min-height: 126px; padding: 15px; } .home-footer { flex-direction: column; } .home-visual { width:440px; height:440px; right:-165px; top:0; opacity:.32; } .service-grid { margin-top:14px; } }
+      /* Acesso interno: mesma atmosfera visual da página institucional. */
+      #systemApp.login-view { display:block; position:relative; min-height:100vh; padding:clamp(48px,10vh,110px) 0; overflow:hidden; background:#070707; }
+      #systemApp.login-view::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 82% 18%,rgba(255,242,0,.23),transparent 25%),linear-gradient(90deg,rgba(255,242,0,.08) 1px,transparent 1px),linear-gradient(rgba(255,242,0,.08) 1px,transparent 1px); background-size:auto,34px 34px,34px 34px; mask-image:linear-gradient(90deg,black,transparent 80%); animation:gridTurn 24s linear infinite; }
+      #systemApp.login-view .preview-wrap { display:none; }
+      #systemApp.login-view .controls { position:relative; z-index:1; top:auto; width:min(440px,calc(100% - 40px)); max-height:none; margin:0 auto; padding:0; overflow:visible; border:1px solid rgba(255,242,0,.58); border-radius:0; background:rgba(12,12,12,.91); box-shadow:22px 22px 0 rgba(255,242,0,.88),0 35px 90px rgba(0,0,0,.55); transform:translateY(0); }
+      #systemApp.login-view .controls::before { content:"ÁREA INTERNA"; white-space:pre; display:block; padding:180px 34px 32px; color:#fff; font-weight:900; font-size:clamp(25px,4vw,38px); line-height:.94; letter-spacing:-.06em; background:linear-gradient(135deg,rgba(255,242,0,.17),transparent 65%); }
+      #systemApp.login-view .login-panel { margin:0; padding:30px 34px 38px; border:0; border-radius:0; background:transparent; }
+      #systemApp.login-view .login-panel h2 { color:var(--yellow); font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
+      #systemApp.login-view .field label { color:#eee; font-size:12px; }
+      #systemApp.login-view .field input { border-color:rgba(255,255,255,.34); border-radius:0; background:rgba(255,255,255,.07); color:#fff; }
+      #systemApp.login-view .field input:focus { outline:2px solid var(--yellow); outline-offset:2px; }
+      #systemApp.login-view .btn { border-radius:0; }
+      #systemApp.login-view .btn.primary { background:var(--yellow); color:#050505; }
+      #systemApp.login-view .btn:not(.primary) { color:#fff; border-color:rgba(255,255,255,.35); background:transparent; }
+      #systemApp.login-view .login-brand { position:absolute; top:36px; left:34px; width:min(255px,calc(100% - 68px)); opacity:.96; }
+      #systemApp.login-view .login-brand img { display:block; width:100%; height:auto; }
+      @media (max-width:600px) { #systemApp.login-view .controls { width:calc(100% - 32px); margin-top:60px; } #systemApp.login-view .controls::before { padding:158px 24px 28px; } #systemApp.login-view .login-brand { top:32px; left:24px; width:min(225px,calc(100% - 48px)); } #systemApp.login-view .login-panel { padding:26px 24px 32px; } }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </head>
   <body>
-    <main class="app">
+    <main class="site-home" id="siteHome">
+      <nav class="home-nav" aria-label="Navegação principal">
+        <div class="nav-spacer" aria-hidden="true"></div>
+        <div class="home-nav-links">
+          <a href="portfolio.html">Portfólio</a>
+          <a href="https://wa.me/5561933004316?text=Olá%2C%20vim%20pelo%20site%20da%20Innovae%20Digital." target="_blank" rel="noopener noreferrer">Contato</a>
+          <button class="system-entry" id="showLogin" type="button">Área interna</button>
+        </div>
+      </nav>
+      <section class="home-hero">
+        <div class="home-visual" aria-hidden="true">
+          <div class="visual-grid"></div>
+          <div class="visual-ring"></div>
+          <div class="visual-ring ring-two"></div>
+          <div class="visual-logo"><img src="assets/logo-innovae.png" alt="" /></div>
+          <span class="visual-chip one">Criar · Impactar</span>
+          <span class="visual-chip two">Design em movimento</span>
+          <div class="visual-cmyk"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="home-copy">
+          <img class="hero-logo" src="assets/logo-innovae.png" alt="Innovae Digital" />
+          <div class="home-kicker">Design gráfico · mídia digital · comunicação visual</div>
+          <h1>Sua marca<br />não passa.<br /><em>Ela fica.</em></h1>
+          <p>Estratégia, design e presença visual para negócios que querem ser percebidos, lembrados e escolhidos.</p>
+          <div class="home-actions">
+            <a class="home-button" href="https://wa.me/5561933004316?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20Innovae%20Digital%20e%20quero%20um%20atendimento%20humanizado." target="_blank" rel="noopener noreferrer">Atendimento no WhatsApp</a>
+            <a class="home-button secondary" href="portfolio.html">Explorar portfólio</a>
+          </div>
+        </div>
+        <div class="service-grid" aria-label="Serviços da Innovae Digital">
+          <div class="service-card"><strong>Social media</strong><span>Posts, criativos e peças digitais para fortalecer sua presença online.</span></div>
+          <div class="service-card"><strong>Identidade visual</strong><span>Direção visual para marcas que precisam transmitir confiança desde o primeiro contato.</span></div>
+          <div class="service-card"><strong>Comunicação visual</strong><span>Banners, fachadas, adesivos, placas e materiais para ponto de venda.</span></div>
+          <div class="service-card"><strong>Impressos & PDV</strong><span>Materiais que orientam, encantam e transformam o espaço em experiência de marca.</span></div>
+        </div>
+      </section>
+      <section class="home-statement">
+        <strong>Ideias que chamam atenção.<br />Design que gera valor.</strong>
+        <p>Da primeira impressão ao ponto de venda, criamos sistemas visuais consistentes para deixar cada contato com a sua marca mais forte.</p>
+      </section>
+      <section class="home-portfolio-call" aria-label="Conheça o portfólio">
+        <div>
+          <div class="home-kicker">Projetos selecionados</div>
+          <h2>O impacto começa antes da primeira palavra.</h2>
+        </div>
+        <div>
+          <p>Veja identidades, campanhas, peças digitais e comunicação visual desenvolvidas para marcas que decidiram ocupar seu espaço.</p>
+          <a class="portfolio-link" href="portfolio.html">Conhecer o portfólio <span>→</span></a>
+        </div>
+      </section>
+      <footer class="home-footer"><span>© Innovae Digital</span><span>Design, impressão e comunicação visual · Luziânia/GO</span></footer>
+    </main>
+
+    <main class="app" id="systemApp" hidden>
       <section class="controls" aria-label="Dados do orçamento">
+        <div class="login-panel" id="loginPanel">
+          <div class="login-brand"><img src="assets/logo-innovae.png" alt="Innovae Digital" /></div>
+          <h2>Acesso ao sistema</h2>
+          <div class="field">
+            <label for="loginUser">Login</label>
+            <input id="loginUser" autocomplete="username" />
+          </div>
+          <div class="field">
+            <label for="loginPassword">Senha</label>
+            <input id="loginPassword" type="password" autocomplete="current-password" />
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="loginButton" type="button">Entrar</button>
+            <button class="btn" id="backToSite" type="button">Voltar ao site</button>
+          </div>
+          <p class="hint" id="loginMessage" aria-live="polite"></p>
+        </div>
+
+        <div id="systemContent" hidden>
         <img class="control-logo" src="assets/logo-innovae.png" alt="Innovae Digital" />
+        <div class="user-admin">
+          <h2>Usuários do sistema</h2>
+          <div class="row">
+            <div class="field">
+              <label for="newUserLogin">Novo login</label>
+              <input id="newUserLogin" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="newUserPassword">Nova senha</label>
+              <input id="newUserPassword" type="password" autocomplete="new-password" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="saveUser" type="button">Salvar usuário</button>
+            <button class="btn" id="logoutButton" type="button">Sair</button>
+          </div>
+          <div class="user-list" id="userList"></div>
+          <p class="hint">Os usuários ficam salvos neste navegador. Para trocar a senha de um login existente, cadastre o mesmo login com a nova senha.</p>
+        </div>
+        <div class="portfolio-admin">
+          <h2>Editor de portfólio</h2>
+          <div class="field">
+            <label for="portfolioTitle">Título do trabalho</label>
+            <input id="portfolioTitle" autocomplete="off" placeholder="Ex.: Fachada loja X" />
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="portfolioCategory">Categoria</label>
+              <input id="portfolioCategory" autocomplete="off" placeholder="Ex.: Comunicação visual" />
+            </div>
+            <div class="field">
+              <label for="portfolioImage">URL de capa (opcional)</label>
+              <input id="portfolioImage" autocomplete="off" placeholder="https://..." />
+            </div>
+          </div>
+          <div class="field">
+            <label for="portfolioMedia">Fotos e vídeos do projeto</label>
+            <input id="portfolioMedia" type="file" accept="image/*,video/*" multiple />
+            <p class="hint" id="portfolioMediaMessage">Envie imagens ou vídeos para a nuvem. Você pode selecionar vários arquivos.</p>
+          </div>
+          <div class="field">
+            <label for="portfolioDescription">Descrição</label>
+            <textarea id="portfolioDescription" placeholder="Conte rapidamente o que foi produzido para o cliente."></textarea>
+          </div>
+          <div class="field">
+            <label for="portfolioLink">Link opcional</label>
+            <input id="portfolioLink" autocomplete="off" placeholder="Instagram, Behance, pasta pública..." />
+          </div>
+          <input id="portfolioEditingId" type="hidden" />
+          <div class="actions">
+            <button class="btn primary" id="savePortfolioItem" type="button">Salvar trabalho</button>
+            <button class="btn" id="clearPortfolioForm" type="button">Limpar</button>
+          </div>
+          <div class="portfolio-list" id="portfolioList"></div>
+          <p class="hint">As alterações aparecem na página inicial deste navegador. Use imagens com link público para que o cliente consiga visualizar.</p>
+        </div>
         <div class="app-splash">
           <div class="splash-copy">
             <strong>Orçamento limpo e pronto para envio</strong>
@@ -1427,11 +1891,11 @@
             <div class="field">
               <label for="projectStatus">Status atual</label>
               <select id="projectStatus">
-                <option value="Orcamento enviado">Orcamento enviado</option>
-                <option value="Aguardando aprovacao">Aguardando aprovação</option>
+                <option value="Orçamento enviado">Orçamento enviado</option>
+                <option value="Aguardando aprovação">Aguardando aprovação</option>
                 <option value="Aprovado">Aprovado</option>
-                <option value="Arte em criacao">Arte em criação</option>
-                <option value="Producao em andamento">Produção em andamento</option>
+                <option value="Arte em criação">Arte em criação</option>
+                <option value="Produção em andamento">Produção em andamento</option>
                 <option value="Pronto para entrega">Pronto para entrega</option>
                 <option value="Entregue">Entregue</option>
               </select>
@@ -1450,14 +1914,14 @@
             <span class="progress-value" id="progressValue">0%</span>
           </div>
           <div class="field">
-            <label for="projectUpdate">Atualizacao para o cliente</label>
-            <textarea id="projectUpdate" placeholder="Ex.: Arte aprovada, material em producao e entrega prevista para sexta-feira."></textarea>
+            <label for="projectUpdate">Atualização para o cliente</label>
+            <textarea id="projectUpdate" placeholder="Ex.: Arte aprovada, material em produção e entrega prevista para sexta-feira."></textarea>
           </div>
         </div>
 
         <div class="edit-banner" id="editBanner">
-          <span>Editando <strong id="editingQuoteLabel"></strong>. Ao salvar, o link do cliente sera atualizado.</span>
-          <button class="btn" id="cancelEdit" type="button">Cancelar edicao</button>
+          <span>Editando <strong id="editingQuoteLabel"></strong>. Ao salvar, o link do cliente será atualizado.</span>
+          <button class="btn" id="cancelEdit" type="button">Cancelar edição</button>
         </div>
 
         <div class="actions">
@@ -1483,6 +1947,7 @@
           <p class="hint">Os dados ficam salvos neste navegador. Use o backup para transferir ou guardar uma cópia.</p>
         </div>
         <p class="hint" id="statusMessage" aria-live="polite"></p>
+        </div>
       </section>
 
       <section class="preview-wrap" aria-label="Prévia do orçamento">
@@ -1545,7 +2010,7 @@
             <div class="payment-note">Informe o valor do orçamento manualmente no app do banco.</div>
           </div>
 
-          <section class="design-showcase" aria-label="Design gráfico e comunicacao visual">
+          <section class="design-showcase" aria-label="Design gráfico e comunicação visual">
             <div class="design-copy">
               <div class="design-kicker">Design gráfico + comunicação visual</div>
               <strong>Projetos pensados para destacar sua marca no digital e no ponto de venda.</strong>
@@ -1570,6 +2035,12 @@
       const storageKey = "innovae.nextInvoiceNumber";
       const materialStorageKey = "innovae.materialPresets";
       const quotesStorageKey = "innovae.savedQuotes";
+      const usersStorageKey = "innovae.systemUsers";
+      const sessionStorageKey = "innovae.activeUser";
+      const portfolioStorageKey = "innovae.portfolioItems";
+      const portfolioRegistryBinId = "6a60f489da38895dfe80518a";
+      const cloudinaryCloudName = "c03o3ski";
+      const cloudinaryUploadPreset = "Portfólio Innovae Site";
       const jsonBinApiKey = "$2a$10$mVMcYrxiKOYeXPcU5F8JT.p/b/APp9ptSaW01qH3Aq2hGnq.7Lzu2";
       const jsonBinBaseUrl = "https://api.jsonbin.io/v3/b";
       const fields = {};
@@ -1634,6 +2105,259 @@
       ];
       let editingQuoteId = null;
 
+      function loadPortfolioItems() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(portfolioStorageKey) || "[]");
+          return Array.isArray(saved) ? saved : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function savePortfolioItems(items) {
+        localStorage.setItem(portfolioStorageKey, JSON.stringify(items));
+      }
+
+      async function savePortfolioItemsToCloud(items) {
+        const response = await fetch(`${jsonBinBaseUrl}/${portfolioRegistryBinId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", "X-Access-Key": jsonBinApiKey },
+          body: JSON.stringify({ items, updatedAt: new Date().toISOString() })
+        });
+        if (!response.ok) throw new Error("Não foi possível salvar o portfólio na nuvem.");
+      }
+
+      async function syncPortfolioFromCloud() {
+        try {
+          const response = await fetch(`${jsonBinBaseUrl}/${portfolioRegistryBinId}/latest?meta=false`);
+          if (!response.ok) throw new Error();
+          const data = await response.json();
+          if (Array.isArray(data.items)) {
+            savePortfolioItems(data.items);
+            renderPublicPortfolio();
+            renderPortfolioAdmin();
+          }
+        } catch {
+          console.warn("Portfólio em nuvem indisponível; usando cópia local.");
+        }
+      }
+
+      async function uploadPortfolioMedia(files) {
+        const uploaded = [];
+        for (const file of files) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", cloudinaryUploadPreset);
+          formData.append("folder", "innovae/portfolio");
+          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/auto/upload`, { method: "POST", body: formData });
+          if (!response.ok) throw new Error(`Falha ao enviar ${file.name}.`);
+          const data = await response.json();
+          uploaded.push({ url: data.secure_url, type: data.resource_type, publicId: data.public_id, name: file.name, duration: data.duration || null });
+        }
+        return uploaded;
+      }
+
+      function getPortfolioFormData() {
+        return {
+          id: byId("portfolioEditingId").value || `portfolio-${Date.now()}`,
+          title: byId("portfolioTitle").value.trim(),
+          category: byId("portfolioCategory").value.trim(),
+          image: byId("portfolioImage").value.trim(),
+          media: [],
+          description: byId("portfolioDescription").value.trim(),
+          link: byId("portfolioLink").value.trim()
+        };
+      }
+
+      function clearPortfolioForm() {
+        ["portfolioEditingId", "portfolioTitle", "portfolioCategory", "portfolioImage", "portfolioDescription", "portfolioLink", "portfolioMedia"].forEach((id) => {
+          const field = byId(id);
+          if (field) field.value = "";
+        });
+        byId("savePortfolioItem").textContent = "Salvar trabalho";
+        byId("portfolioMediaMessage").textContent = "Envie imagens ou vídeos para a nuvem. Você pode selecionar vários arquivos.";
+      }
+
+      function renderPublicPortfolio() {
+        const target = byId("publicPortfolio");
+        if (!target) return;
+        const items = loadPortfolioItems();
+        if (!items.length) {
+          target.innerHTML = `<div class="portfolio-empty">O portfólio ainda não possui trabalhos cadastrados.</div>`;
+          return;
+        }
+        target.innerHTML = items.map((item) => {
+          const image = item.image || "assets/logo-innovae.png";
+          const body = `
+            <article class="portfolio-card">
+              <img src="${escapeHtml(image)}" alt="${escapeHtml(item.title || "Trabalho da Innovae Digital")}" loading="lazy" />
+              <div class="portfolio-card-body">
+                <span class="portfolio-category">${escapeHtml(item.category || "Projeto")}</span>
+                <h3>${escapeHtml(item.title || "Trabalho sem título")}</h3>
+                <p>${escapeHtml(item.description || "Projeto desenvolvido pela Innovae Digital.")}</p>
+                ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">Ver trabalho</a>` : ""}
+              </div>
+            </article>
+          `;
+          return body;
+        }).join("");
+      }
+
+      function renderPortfolioAdmin() {
+        const target = byId("portfolioList");
+        if (!target) return;
+        const items = loadPortfolioItems();
+        if (!items.length) {
+          target.innerHTML = `<div class="portfolio-empty">Nenhum trabalho cadastrado ainda.</div>`;
+          renderPublicPortfolio();
+          return;
+        }
+        target.innerHTML = items.map((item) => `
+          <div class="portfolio-admin-card">
+            <strong>${escapeHtml(item.title || "Trabalho sem título")}</strong>
+            <div class="client-link-meta">${escapeHtml(item.category || "Projeto")} ${item.image ? "• imagem cadastrada" : "• sem imagem"}</div>
+            <div class="client-link-actions">
+              <button class="btn primary" type="button" data-edit-portfolio="${escapeHtml(item.id)}">Editar</button>
+              <button class="btn danger" type="button" data-delete-portfolio="${escapeHtml(item.id)}">Excluir</button>
+            </div>
+          </div>
+        `).join("");
+        renderPublicPortfolio();
+      }
+
+      async function savePortfolioItem() {
+        const item = getPortfolioFormData();
+        if (!item.title || !item.description) {
+          alert("Informe pelo menos o título e a descrição do trabalho.");
+          return;
+        }
+        const items = loadPortfolioItems();
+        const index = items.findIndex((saved) => saved.id === item.id);
+        const previous = index >= 0 ? items[index] : null;
+        const files = [...byId("portfolioMedia").files];
+        try {
+          if (files.length) {
+            byId("portfolioMediaMessage").textContent = `Enviando ${files.length} arquivo(s) para a nuvem...`;
+            item.media = [...(previous?.media || []), ...await uploadPortfolioMedia(files)];
+          } else {
+            item.media = previous?.media || [];
+          }
+          if (!item.image) item.image = item.media.find((media) => media.type === "image")?.url || previous?.image || "";
+          if (index >= 0) items[index] = item;
+          else items.unshift(item);
+          await savePortfolioItemsToCloud(items);
+          savePortfolioItems(items);
+          clearPortfolioForm();
+          byId("portfolioMediaMessage").textContent = "Arquivos salvos na nuvem com sucesso.";
+          renderPortfolioAdmin();
+          setStatus("Trabalho e mídias salvos no portfólio em nuvem.");
+        } catch (error) {
+          byId("portfolioMediaMessage").textContent = error.message || "Falha ao enviar a mídia.";
+          setStatus("O projeto não foi salvo. Confira o preset do Cloudinary e tente novamente.");
+        }
+      }
+
+      function editPortfolioItem(id) {
+        const item = loadPortfolioItems().find((saved) => saved.id === id);
+        if (!item) return;
+        byId("portfolioEditingId").value = item.id;
+        byId("portfolioTitle").value = item.title || "";
+        byId("portfolioCategory").value = item.category || "";
+        byId("portfolioImage").value = item.image || "";
+        byId("portfolioMediaMessage").textContent = `${(item.media || []).length} mídia(s) já salva(s) na nuvem. Novos arquivos serão adicionados.`;
+        byId("portfolioDescription").value = item.description || "";
+        byId("portfolioLink").value = item.link || "";
+        byId("savePortfolioItem").textContent = "Salvar alterações";
+      }
+
+      function loadUsers() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(usersStorageKey) || "[]");
+          if (Array.isArray(saved) && saved.length) return saved;
+        } catch {}
+        const defaults = [{ login: "CEO", password: "3103001199" }];
+        localStorage.setItem(usersStorageKey, JSON.stringify(defaults));
+        return defaults;
+      }
+
+      function saveUsers(users) {
+        localStorage.setItem(usersStorageKey, JSON.stringify(users));
+      }
+
+      function renderUsers() {
+        const list = byId("userList");
+        if (!list) return;
+        const users = loadUsers();
+        list.innerHTML = users.map((user) => `
+          <div class="user-row">
+            <strong>${escapeHtml(user.login)}</strong>
+            <button class="btn danger" type="button" data-remove-user="${escapeHtml(user.login)}">Remover</button>
+          </div>
+        `).join("");
+      }
+
+      function showPublicSite() {
+        byId("siteHome").hidden = false;
+        byId("systemApp").hidden = true;
+        byId("systemApp").classList.remove("login-view");
+        byId("loginPanel").hidden = false;
+        byId("systemContent").hidden = true;
+      }
+
+      function showLoginOnly() {
+        byId("siteHome").hidden = true;
+        byId("systemApp").hidden = false;
+        byId("systemApp").classList.add("login-view");
+        byId("loginPanel").hidden = false;
+        byId("systemContent").hidden = true;
+        byId("loginUser").focus();
+      }
+
+      function showSystem() {
+        byId("siteHome").hidden = true;
+        byId("systemApp").hidden = false;
+        byId("systemApp").classList.remove("login-view");
+        byId("loginPanel").hidden = true;
+        byId("systemContent").hidden = false;
+        renderUsers();
+        renderPortfolioAdmin();
+      }
+
+      function login() {
+        const loginValue = byId("loginUser").value.trim();
+        const passwordValue = byId("loginPassword").value;
+        const user = loadUsers().find((item) => item.login === loginValue && item.password === passwordValue);
+        if (!user) {
+          byId("loginMessage").textContent = "Login ou senha inválidos.";
+          return;
+        }
+        sessionStorage.setItem(sessionStorageKey, user.login);
+        byId("loginPassword").value = "";
+        byId("loginMessage").textContent = "";
+        showSystem();
+      }
+
+      function saveUserFromForm() {
+        const loginValue = byId("newUserLogin").value.trim();
+        const passwordValue = byId("newUserPassword").value;
+        if (!loginValue || !passwordValue) {
+          alert("Informe login e senha para salvar o usuário.");
+          return;
+        }
+        const users = loadUsers();
+        const existing = users.find((user) => user.login === loginValue);
+        if (existing) {
+          existing.password = passwordValue;
+        } else {
+          users.push({ login: loginValue, password: passwordValue });
+        }
+        saveUsers(users);
+        byId("newUserLogin").value = "";
+        byId("newUserPassword").value = "";
+        renderUsers();
+        setStatus(`Usuário ${loginValue} salvo.`);
+      }
+
       function byId(id) {
         return document.getElementById(id);
       }
@@ -1693,7 +2417,7 @@
 
       function getProjectData() {
         return {
-          status: projectFields.projectStatus?.value || "Orcamento enviado",
+          status: projectFields.projectStatus?.value || "Orçamento enviado",
           deliveryDate: projectFields.deliveryDate?.value || "",
           progress: Math.min(100, Math.max(0, cleanNumber(projectFields.projectProgress?.value || 0))),
           update: (projectFields.projectUpdate?.value || "").trim(),
@@ -1702,7 +2426,7 @@
       }
 
       function setProjectData(project = {}) {
-        if (projectFields.projectStatus) projectFields.projectStatus.value = project.status || "Orcamento enviado";
+        if (projectFields.projectStatus) projectFields.projectStatus.value = project.status || "Orçamento enviado";
         if (projectFields.deliveryDate) projectFields.deliveryDate.value = project.deliveryDate || "";
         if (projectFields.projectProgress) projectFields.projectProgress.value = project.progress ?? 0;
         if (projectFields.projectUpdate) projectFields.projectUpdate.value = project.update || "";
@@ -1834,7 +2558,7 @@
         };
         if (!previousRecord?.binId) {
           headers["X-Bin-Private"] = "false";
-          headers["X-Bin-Name"] = `Orcamento ${data.invoiceNumber}`;
+          headers["X-Bin-Name"] = `Orçamento ${data.invoiceNumber}`;
         }
         const response = await fetch(endpoint, {
           method: previousRecord?.binId ? "PUT" : "POST",
@@ -1893,7 +2617,7 @@
             <strong>${escapeHtml(quote.clientName || "Cliente")} - ${escapeHtml(quote.invoiceNumber || "")}</strong>
             <div class="client-link-meta">${createdAt} | ${money(quote.total)} | ${quote.binId ? "Link enviado ativo" : "Salvo localmente"}</div>
             <div class="client-link-actions">
-              <button class="btn primary" type="button" data-edit-client-link="${escapeHtml(quote.id)}">Editar orcamento</button>
+              <button class="btn primary" type="button" data-edit-client-link="${escapeHtml(quote.id)}">Editar orçamento</button>
               <button class="btn" type="button" data-copy-client-link="${escapeHtml(quote.id)}">Copiar link</button>
               <button class="btn" type="button" data-open-client-link="${escapeHtml(quote.id)}">Abrir</button>
               <button class="btn danger" type="button" data-delete-client-link="${escapeHtml(quote.id)}">Excluir</button>
@@ -1919,7 +2643,7 @@
         renderItems();
         renderPreview();
         updateEditState(record);
-        setStatus(`Orcamento ${record.invoiceNumber} carregado para edicao.`);
+        setStatus(`Orçamento ${record.invoiceNumber} carregado para edição.`);
         document.querySelector(".controls").scrollTo({ top: 0, behavior: "smooth" });
       }
 
@@ -1930,13 +2654,13 @@
         const activeRecord = record || loadSavedQuotes().find((quote) => quote.id === editingQuoteId);
         if (banner) banner.classList.toggle("active", Boolean(editingQuoteId));
         if (label) label.textContent = activeRecord ? `${activeRecord.clientName || "Cliente"} - ${activeRecord.invoiceNumber || ""}` : "";
-        if (linkButton) linkButton.textContent = editingQuoteId ? "SALVAR ALTERACOES NO LINK DO CLIENTE" : "CRIAR LINK PARA CLIENTE";
+        if (linkButton) linkButton.textContent = editingQuoteId ? "SALVAR ALTERAÇÕES NO LINK DO CLIENTE" : "CRIAR LINK PARA CLIENTE";
       }
 
       function cancelEditing() {
         editingQuoteId = null;
         updateEditState();
-        setStatus("Edicao cancelada.");
+        setStatus("Edição cancelada.");
       }
 
       function validateQuoteData(data, action) {
@@ -1946,7 +2670,7 @@
           return false;
         }
         if (!data.items.some((item) => item.description !== "-" && item.quantity > 0 && item.unitPrice >= 0)) {
-          alert("Adicione pelo menos um item vÃ¡lido ao orÃ§amento.");
+          alert("Adicione pelo menos um item válido ao orçamento.");
           return false;
         }
         return true;
@@ -2535,6 +3259,52 @@
       let deferredPrompt = null;
 
       function bind() {
+        byId("showLogin").addEventListener("click", showLoginOnly);
+        byId("backToSite").addEventListener("click", showPublicSite);
+        byId("loginButton").addEventListener("click", login);
+        byId("loginPassword").addEventListener("keydown", (event) => {
+          if (event.key === "Enter") login();
+        });
+        byId("saveUser").addEventListener("click", saveUserFromForm);
+        byId("savePortfolioItem").addEventListener("click", savePortfolioItem);
+        byId("clearPortfolioForm").addEventListener("click", clearPortfolioForm);
+        byId("portfolioList").addEventListener("click", async (event) => {
+          const editId = event.target.dataset.editPortfolio;
+          const deleteId = event.target.dataset.deletePortfolio;
+          if (editId) {
+            editPortfolioItem(editId);
+          }
+          if (deleteId) {
+            if (!confirm("Excluir este trabalho do portfólio?")) return;
+            try {
+              const items = loadPortfolioItems().filter((item) => item.id !== deleteId);
+              await savePortfolioItemsToCloud(items);
+              savePortfolioItems(items);
+              clearPortfolioForm();
+              renderPortfolioAdmin();
+              setStatus("Trabalho removido do portfólio em nuvem.");
+            } catch {
+              setStatus("Não foi possível remover o trabalho da nuvem.");
+            }
+          }
+        });
+        byId("logoutButton").addEventListener("click", () => {
+          sessionStorage.removeItem(sessionStorageKey);
+          showPublicSite();
+        });
+        byId("userList").addEventListener("click", (event) => {
+          const loginToRemove = event.target.dataset.removeUser;
+          if (!loginToRemove) return;
+          const users = loadUsers();
+          if (users.length === 1) {
+            alert("Mantenha pelo menos um usuário cadastrado.");
+            return;
+          }
+          if (!confirm(`Remover o usuário ${loginToRemove}?`)) return;
+          saveUsers(users.filter((user) => user.login !== loginToRemove));
+          renderUsers();
+        });
+
         Object.keys(defaults).forEach((key) => {
           fields[key] = byId(key);
           fields[key].value = defaults[key];
@@ -2630,7 +3400,7 @@
             window.open(getClientLink(record), "_blank", "noopener");
           }
           if (deleteId) {
-            if (!confirm("Excluir este link de cliente? O cliente nÃ£o conseguirÃ¡ mais consultar esse orÃ§amento neste navegador.")) return;
+            if (!confirm("Excluir este link de cliente? O cliente não conseguirá mais consultar esse orçamento neste navegador.")) return;
             try {
               await deleteQuoteFromCloud(record);
             } catch (error) {
@@ -2640,7 +3410,7 @@
             }
             localStorage.setItem(quotesStorageKey, JSON.stringify(quotes.filter((quote) => quote.id !== deleteId)));
             renderDbStats();
-            setStatus("Link de cliente excluÃ­do.");
+            setStatus("Link de cliente excluído.");
           }
         });
         const installButton = byId("installButton");
@@ -2696,6 +3466,11 @@
       renderItems();
       renderPreview();
       renderDbStats();
+      renderPublicPortfolio();
+      syncPortfolioFromCloud();
+      // A página inicial é sempre institucional. Mesmo com sessão ativa, o painel
+      // de orçamentos só é aberto quando o usuário escolhe "Área interna".
+      showPublicSite();
     </script>
   </body>
 </html>
