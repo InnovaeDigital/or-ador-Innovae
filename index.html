@@ -1736,8 +1736,8 @@
           <div class="login-brand"><img src="assets/logo-innovae.png" alt="Innovae Digital" /></div>
           <h2>Acesso ao sistema</h2>
           <div class="field">
-            <label for="loginUser">Login</label>
-            <input id="loginUser" autocomplete="username" />
+            <label for="loginUser">Usuário</label>
+            <select id="loginUser" autocomplete="username" aria-label="Selecione o usuário"></select>
           </div>
           <div class="field">
             <label for="loginPassword">Senha</label>
@@ -2053,6 +2053,7 @@
       const quotesStorageKey = "innovae.savedQuotes";
       const usersStorageKey = "innovae.systemUsers";
       const sessionStorageKey = "innovae.activeUser";
+      const loginViewStorageKey = "innovae.loginViewOpen";
       const portfolioStorageKey = "innovae.portfolioItems";
       const portfolioRegistryBinId = "6a60f489da38895dfe80518a";
       const cloudinaryCloudName = "c03o3ski";
@@ -2312,11 +2313,20 @@
         `).join("");
       }
 
+      function renderLoginUsers(selectedLogin = "") {
+        const select = byId("loginUser");
+        if (!select) return;
+        const users = loadUsers();
+        select.innerHTML = `<option value="">Selecione seu usuário</option>${users.map((user) => `<option value="${escapeHtml(user.login)}">${escapeHtml(user.login)}</option>`).join("")}`;
+        select.value = selectedLogin || "";
+      }
+
       function showPublicSite() {
         byId("siteHome").hidden = false;
         byId("systemApp").hidden = true;
         byId("systemApp").classList.remove("login-view", "login-overlay");
         document.body.classList.remove("login-active");
+        sessionStorage.removeItem(loginViewStorageKey);
         byId("loginPanel").hidden = false;
         byId("systemContent").hidden = true;
       }
@@ -2326,7 +2336,9 @@
         byId("systemApp").hidden = false;
         byId("systemApp").classList.add("login-view", "login-overlay");
         document.body.classList.add("login-active");
+        sessionStorage.setItem(loginViewStorageKey, "true");
         window.scrollTo({ top: 0, behavior: "smooth" });
+        renderLoginUsers(byId("loginUser").value);
         byId("loginPanel").hidden = false;
         byId("systemContent").hidden = true;
         byId("loginUser").focus();
@@ -2337,6 +2349,7 @@
         byId("systemApp").hidden = false;
         byId("systemApp").classList.remove("login-view", "login-overlay");
         document.body.classList.remove("login-active");
+        sessionStorage.removeItem(loginViewStorageKey);
         byId("loginPanel").hidden = true;
         byId("systemContent").hidden = false;
         renderUsers();
@@ -2372,6 +2385,7 @@
           users.push({ login: loginValue, password: passwordValue });
         }
         saveUsers(users);
+        renderLoginUsers(loginValue);
         byId("newUserLogin").value = "";
         byId("newUserPassword").value = "";
         renderUsers();
@@ -3323,6 +3337,7 @@
           if (!confirm(`Remover o usuário ${loginToRemove}?`)) return;
           saveUsers(users.filter((user) => user.login !== loginToRemove));
           renderUsers();
+          renderLoginUsers();
         });
 
         Object.keys(defaults).forEach((key) => {
@@ -3488,9 +3503,12 @@
       renderDbStats();
       renderPublicPortfolio();
       syncPortfolioFromCloud();
-      // A página inicial é sempre institucional. Mesmo com sessão ativa, o painel
-      // de orçamentos só é aberto quando o usuário escolhe "Área interna".
-      showPublicSite();
+      // Mantém a tela de login aberta após recarregar, sem abrir o sistema automaticamente.
+      if (sessionStorage.getItem(loginViewStorageKey) === "true") {
+        showLoginOnly();
+      } else {
+        showPublicSite();
+      }
     </script>
   </body>
 </html>
