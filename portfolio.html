@@ -111,6 +111,11 @@
     let categories = [];
     const filters = document.getElementById('filters');
     const target = document.getElementById('projects');
+    window.portfolioGalleryState = {
+      get projects() { return projects; },
+      get active() { return active; },
+      escapeHtml
+    };
     function render() {
       categories = ['Todos', ...new Set(projects.map(item => item.category || 'Projetos'))];
       filters.innerHTML = categories.map(category => `<button class="filter ${category === active ? 'active' : ''}" data-category="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join('');
@@ -143,6 +148,10 @@
   </script>
   <script>
     (() => {
+      const state = window.portfolioGalleryState;
+      if (!state) return;
+      const portfolioTarget = document.getElementById('projects');
+      const escape = state.escapeHtml;
       const gallery = document.getElementById('gallery');
       const stage = document.getElementById('galleryStage');
       const thumbs = document.getElementById('galleryThumbs');
@@ -175,8 +184,8 @@
         const selected = media[selectedIndex];
         const isVideo = mediaType(selected) === 'video';
         stage.innerHTML = isVideo
-          ? `<video src="${escapeHtml(selected.url)}" controls autoplay playsinline aria-label="Project video"></video>`
-          : `<img src="${escapeHtml(selected.url)}" alt="${escapeHtml(selectedProject.title || 'Innovae project')} - image ${selectedIndex + 1}" />`;
+          ? `<video src="${escape(selected.url)}" controls autoplay playsinline aria-label="Project video"></video>`
+          : `<img src="${escape(selected.url)}" alt="${escape(selectedProject.title || 'Innovae project')} - image ${selectedIndex + 1}" />`;
         title.textContent = selectedProject.title || 'Projeto Innovae';
         category.textContent = selectedProject.category || 'Projeto';
         description.textContent = selectedProject.description || 'Comunicação visual desenvolvida pela Innovae Digital.';
@@ -185,8 +194,8 @@
         if (selectedProject.link) external.href = selectedProject.link;
         thumbs.innerHTML = media.map((entry, index) => {
           const preview = mediaType(entry) === 'video'
-            ? `<video src="${escapeHtml(entry.url)}" muted playsinline></video>`
-            : `<img src="${escapeHtml(entry.url)}" alt="Imagem ${index + 1}" />`;
+            ? `<video src="${escape(entry.url)}" muted playsinline></video>`
+            : `<img src="${escape(entry.url)}" alt="Imagem ${index + 1}" />`;
           return `<button class="gallery-thumb ${index === selectedIndex ? 'active' : ''}" type="button" data-gallery-index="${index}" aria-label="Abrir mídia ${index + 1}">${preview}</button>`;
         }).join('');
         previousButton.hidden = nextButton.hidden = media.length < 2;
@@ -202,15 +211,15 @@
       }
       function move(step) { selectedIndex += step; renderGallery(); }
 
-      target.addEventListener('click', event => {
+      portfolioTarget.addEventListener('click', event => {
         const card = event.target.closest('.project');
         if (!card) return;
         event.preventDefault();
-        openGallery(projects.find(project => String(project.id) === card.dataset.projectId));
+        openGallery(state.projects.find(project => String(project.id) === card.dataset.projectId));
       });
       function enhanceProjectCards() {
-        const visible = active === 'Todos' ? projects : projects.filter(item => (item.category || 'Projetos') === active);
-        target.querySelectorAll('.project').forEach((card, index) => {
+        const visible = state.active === 'Todos' ? state.projects : state.projects.filter(item => (item.category || 'Projetos') === state.active);
+        portfolioTarget.querySelectorAll('.project').forEach((card, index) => {
           const project = visible[index];
           if (!project) return;
           card.dataset.projectId = project.id || '';
@@ -226,7 +235,7 @@
           if (oldLink) oldLink.setAttribute('tabindex', '-1');
         });
       }
-      new MutationObserver(enhanceProjectCards).observe(target, { childList:true });
+      new MutationObserver(enhanceProjectCards).observe(portfolioTarget, { childList:true });
       enhanceProjectCards();
       gallery.addEventListener('click', event => {
         if (event.target === gallery || event.target.closest('[data-gallery-close]')) closeGallery();
