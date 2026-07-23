@@ -2253,6 +2253,7 @@
       const materialStorageKey = "innovae.materialPresets";
       const quotesStorageKey = "innovae.savedQuotes";
       const usersStorageKey = "innovae.systemUsers";
+      const usersPendingSyncStorageKey = "innovae.systemUsersPendingSync";
       const sessionStorageKey = "innovae.activeUser";
       const loginViewStorageKey = "innovae.loginViewOpen";
       const portfolioStorageKey = "innovae.portfolioItems";
@@ -2263,12 +2264,11 @@
       const cloudinaryCloudName = "c03o3ski";
       const cloudinaryUploadPreset = "Portfólio Innovae Site";
       // Chave de acesso à sincronização JSONBin.
-      const jsonBinApiKey = "$2a$10$jf4Zh0g5aWUkv71y0BzQ8ORxIsKhWUqARbJ2wEHO5S3yolMSiukXS";
+      const jsonBinApiKey = "$2a$10$kK9lc8wQd0G8RmsiJbXr7OrwRuCeVc6u.ASb7rvLgHfxvUqZo3mhW";
       // Kept separately so the upload uses the exact Unicode name configured in Cloudinary.
       const cloudinaryUploadPresetForUpload = "Portf\u00f3lio Innovae Site";
       const jsonBinBaseUrl = "https://api.jsonbin.io/v3/b";
-      // Esta é a chave principal do projeto JSONBin. O cabeçalho X-Access-Key
-      // aceita apenas chaves de acesso criadas com permissões explícitas.
+      // Chave principal do JSONBin, usada para leitura e atualização dos registros.
       const jsonBinHeaders = { "X-Master-Key": jsonBinApiKey };
       const fields = {};
       const itemList = document.getElementById("items");
@@ -2332,6 +2332,8 @@
       ];
       let editingQuoteId = null;
       let usersSyncPromise = Promise.resolve();
+      let usersSyncInProgress = false;
+      let usersCloudWasRead = false;
 
       function loadPortfolioItems() {
         try {
@@ -2636,47 +2638,75 @@
         localStorage.setItem(usersStorageKey, JSON.stringify(users));
       }
 
+      function hasPendingUsersSync() {
+        return localStorage.getItem(usersPendingSyncStorageKey) === "true";
+      }
+
+      function markUsersPendingSync(isPending) {
+        if (isPending) localStorage.setItem(usersPendingSyncStorageKey, "true");
+        else localStorage.removeItem(usersPendingSyncStorageKey);
+      }
+
+      function mergeUsers(localUsers, remoteUsers) {
+        const users = new Map(remoteUsers.map((user) => [user.login, user]));
+        localUsers.forEach((user) => {
+          const remoteUser = users.get(user.login);
+          if (!remoteUser || new Date(user.updatedAt || 0) > new Date(remoteUser.updatedAt || 0)) {
+            users.set(user.login, user);
+          }
+        });
+        return [...users.values()];
+      }
+
       async function saveUsersToCloud(users = loadUsers()) {
         const response = await fetch(`${jsonBinBaseUrl}/${usersRegistryBinId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", ...jsonBinHeaders },
           body: JSON.stringify({ items: users, updatedAt: new Date().toISOString() })
         });
-        if (!response.ok) throw new Error("Não foi possível sincronizar os usuários na nuvem.");
+        if (!response.ok) throw new Error(`Não foi possível sincronizar os usuários na nuvem (erro ${response.status}).`);
       }
 
       async function syncUsersFromCloud() {
+        if (usersSyncInProgress) return;
+        usersSyncInProgress = true;
         try {
           const response = await fetch(`${jsonBinBaseUrl}/${usersRegistryBinId}/latest?meta=false`, {
-            headers: jsonBinHeaders
+            headers: jsonBinHeaders,
+            cache: "no-store"
           });
           if (!response.ok) throw new Error();
           const remote = await response.json();
           const remoteUsers = Array.isArray(remote.items) ? remote.items : [];
           const localUsers = loadUsers();
           if (!remoteUsers.length) {
-            await saveUsersToCloud(localUsers);
+            if (localUsers.length) {
+              await saveUsersToCloud(localUsers);
+              markUsersPendingSync(false);
+            }
           } else {
-            // Não descarte um cadastro feito em outro dispositivo enquanto a
-            // sincronização ainda estava em andamento. Para o mesmo login,
-            // conserva a versão mais recente; para logins distintos, une as listas.
-            const merged = new Map(remoteUsers.map((user) => [user.login, user]));
-            localUsers.forEach((user) => {
-              const remoteUser = merged.get(user.login);
-              if (!remoteUser || new Date(user.updatedAt || 0) > new Date(remoteUser.updatedAt || 0)) {
-                merged.set(user.login, user);
+            // A primeira leitura preserva cadastros legados deste dispositivo.
+            // Depois disso, a nuvem é a fonte oficial, exceto se houve uma
+            // alteração local que ainda não conseguiu ser enviada.
+            if (!usersCloudWasRead || hasPendingUsersSync()) {
+              const users = mergeUsers(localUsers, remoteUsers);
+              const cloudNeedsUpdate = JSON.stringify(users) !== JSON.stringify(remoteUsers);
+              saveUsers(users);
+              if (cloudNeedsUpdate) {
+                await saveUsersToCloud(users);
               }
-            });
-            const users = [...merged.values()];
-            saveUsers(users);
-            if (users.length !== remoteUsers.length || users.some((user, index) => user !== remoteUsers[index])) {
-              await saveUsersToCloud(users);
+              markUsersPendingSync(false);
+            } else {
+              saveUsers(remoteUsers);
             }
           }
+          usersCloudWasRead = true;
           renderUsers();
           renderLoginUsers();
         } catch (error) {
           console.warn("Não foi possível sincronizar os usuários.", error);
+        } finally {
+          usersSyncInProgress = false;
         }
       }
 
@@ -2692,7 +2722,7 @@
         `).join("");
       }
 
-      function renderLoginUsers(selectedLogin = "") {
+      function renderLoginUsers(selectedLogin = byId("loginUser")?.value || "") {
         const select = byId("loginUser");
         if (!select) return;
         const users = loadUsers();
@@ -2766,12 +2796,14 @@
         }
         if (existing) existing.updatedAt = new Date().toISOString();
         saveUsers(users);
+        markUsersPendingSync(true);
         renderLoginUsers(loginValue);
         byId("newUserLogin").value = "";
         byId("newUserPassword").value = "";
         renderUsers();
         try {
           await saveUsersToCloud(users);
+          markUsersPendingSync(false);
           setStatus(`Usuário ${loginValue} salvo e sincronizado.`);
         } catch {
           setStatus(`Usuário ${loginValue} salvo neste dispositivo, mas a nuvem não respondeu.`);
@@ -3797,10 +3829,12 @@
           if (!confirm(`Remover o usuário ${loginToRemove}?`)) return;
           const updatedUsers = users.filter((user) => user.login !== loginToRemove);
           saveUsers(updatedUsers);
+          markUsersPendingSync(true);
           renderUsers();
           renderLoginUsers();
           try {
             await saveUsersToCloud(updatedUsers);
+            markUsersPendingSync(false);
             setStatus("Usuário removido e sincronizado.");
           } catch {
             setStatus("Usuário removido neste dispositivo, mas a nuvem não respondeu.");
@@ -3981,6 +4015,17 @@
       renderDbStats();
       syncQuotesFromCloud();
       usersSyncPromise = syncUsersFromCloud();
+      usersSyncPromise.then(() => {
+        // JSONBin não envia eventos em tempo real ao navegador; esta checagem
+        // curta atualiza outros dispositivos abertos sem exigir recarregamento.
+        window.setInterval(() => {
+          if (document.visibilityState === "visible") syncUsersFromCloud();
+        }, 10000);
+        window.addEventListener("focus", syncUsersFromCloud);
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") syncUsersFromCloud();
+        });
+      });
       renderPublicPortfolio();
       syncPortfolioFromCloud();
       // Mantém a tela de login aberta após recarregar, sem abrir o sistema automaticamente.
