@@ -148,6 +148,15 @@
         line-height: 1.45;
       }
 
+      .reference-upload { padding:14px; border:1px dashed rgba(255,242,0,.7); background:rgba(255,242,0,.05); }
+      .reference-preview { display:grid; grid-template-columns:repeat(auto-fill,minmax(92px,1fr)); gap:9px; margin-top:10px; }
+      .reference-photo { position:relative; aspect-ratio:1; overflow:hidden; background:#111; border:1px solid rgba(255,255,255,.2); }
+      .reference-photo img { width:100%; height:100%; object-fit:cover; }
+      .reference-photo button { position:absolute; top:4px; right:4px; width:26px; height:26px; border:0; border-radius:50%; background:#fff; color:#900; font-weight:900; cursor:pointer; }
+      .quote-references { margin:16px 28px; padding:14px; border:1px solid #d8d8d0; background:#fafaf6; }
+      .quote-references strong { display:block; margin-bottom:9px; font-size:12px; letter-spacing:.05em; }
+      .quote-references-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }.quote-references-grid img { width:100%; max-height:180px; object-fit:cover; }
+
       .portfolio-section {
         padding: 42px clamp(18px, 5vw, 72px) 56px;
         background: #ffffff;
@@ -2099,6 +2108,9 @@
         <div id="items"></div>
         <button class="btn" id="addItem" type="button">Adicionar item</button>
 
+        <div class="section-title">Fotos de referência (opcional)</div>
+        <div class="reference-upload"><label for="referencePhotos">Fotos enviadas pelo cliente</label><input id="referencePhotos" type="file" accept="image/*" multiple /><p class="hint">Adicione até 3 fotos leves para orientar a produção. Elas ficarão anexadas ao orçamento.</p><div class="reference-preview" id="referencePreview"></div></div>
+
         <div class="section-title">Desconto</div>
         <div class="field">
           <label for="discount">Desconto (R$)</label>
@@ -2227,6 +2239,8 @@
             </tfoot>
           </table>
 
+          <section class="quote-references" id="quoteReferences" hidden><strong>FOTOS DE REFERÊNCIA DO CLIENTE</strong><div class="quote-references-grid" id="quoteReferencesGrid"></div></section>
+
           <div class="payment-info">
             <div><strong>FORMA DE PAGAMENTO</strong></div>
             <div class="payment-note">PIX Celular: <strong>61933004316</strong></div>
@@ -2338,6 +2352,7 @@
         { description: "", quantity: 1, unitPrice: 0 }
       ];
       let editingQuoteId = null;
+      let referencePhotos = [];
       let usersSyncPromise = Promise.resolve();
       let usersSyncInProgress = false;
 
@@ -2850,7 +2865,7 @@
         });
         data.discount = cleanNumber(data.discount);
         data.items = items.map((item) => ({
-          description: item.description.trim() || "-",
+          description: item.description.trim() || "Serviço a definir",
           quantity: cleanNumber(item.quantity),
           unitPrice: cleanNumber(item.unitPrice)
         }));
@@ -2862,7 +2877,29 @@
         data.email = company.email;
         data.social = company.social;
         data.project = getProjectData();
+        data.references = referencePhotos;
         return data;
+      }
+
+      function renderReferencePhotos() {
+        const target = byId("referencePreview");
+        if (!target) return;
+        target.innerHTML = referencePhotos.map((photo, index) => `<div class="reference-photo"><img src="${escapeHtml(photo.url)}" alt="Referência ${index + 1}" /><button type="button" data-remove-reference="${index}" aria-label="Remover foto">×</button></div>`).join("");
+      }
+
+      async function addReferencePhotos(files) {
+        const selected = [...files].filter((file) => file.type.startsWith("image/")).slice(0, Math.max(0, 3 - referencePhotos.length));
+        if (!selected.length) return;
+        const photos = await Promise.all(selected.map((file) => new Promise((resolve, reject) => {
+          if (file.size > 900 * 1024) return reject(new Error(`${file.name} ultrapassa o limite de 900 KB.`));
+          const reader = new FileReader();
+          reader.onload = () => resolve({ name:file.name, url:reader.result });
+          reader.onerror = () => reject(new Error(`Não foi possível ler ${file.name}.`));
+          reader.readAsDataURL(file);
+        })));
+        referencePhotos = [...referencePhotos, ...photos];
+        renderReferencePhotos();
+        renderPreview();
       }
 
       function getProjectData() {
@@ -3117,6 +3154,8 @@
 
       function loadQuoteForEditing(record) {
         editingQuoteId = record.id;
+        referencePhotos = Array.isArray(record.references) ? record.references : [];
+        renderReferencePhotos();
         fields.invoiceNumber.value = record.invoiceNumber || "";
         fields.clientName.value = record.clientName || "";
         fields.discount.value = record.discount || 0;
@@ -3357,6 +3396,12 @@
         previewTargets.providerName.textContent = data.providerName || "-";
         previewTargets.phone.textContent = data.phone || "-";
         previewTargets.email.textContent = data.email || "-";
+        const references = byId("quoteReferences");
+        const referenceGrid = byId("quoteReferencesGrid");
+        if (references && referenceGrid) {
+          references.hidden = !data.references?.length;
+          referenceGrid.innerHTML = (data.references || []).map((photo, index) => `<img src="${escapeHtml(photo.url)}" alt="Referência ${index + 1}" />`).join("");
+        }
         previewTargets.social.textContent = data.social || "";
         previewTargets.phoneCity.textContent = `${data.phone || "-"} — ${data.city || "-"}`;
         previewTargets.grandTotal.textContent = money(data.total);
@@ -3891,6 +3936,18 @@
           renderPreview();
           setStatus("");
         });
+        byId("referencePhotos").addEventListener("change", async (event) => {
+          try { await addReferencePhotos(event.target.files); }
+          catch (error) { alert(error.message || "Não foi possível adicionar a foto."); }
+          event.target.value = "";
+        });
+        byId("referencePreview").addEventListener("click", (event) => {
+          const button = event.target.closest("[data-remove-reference]");
+          if (!button) return;
+          referencePhotos.splice(Number(button.dataset.removeReference), 1);
+          renderReferencePhotos();
+          renderPreview();
+        });
         byId("addCalcItem").addEventListener("click", addCalculatorItem);
 
         byId("downloadPdf").addEventListener("click", downloadPdf);
@@ -3974,6 +4031,8 @@
           fields.clientName.value = "";
           fields.discount.value = "0";
           items = [{ description: "", quantity: 1, unitPrice: 0 }];
+          referencePhotos = [];
+          renderReferencePhotos();
           setProjectData();
           editingQuoteId = null;
           updateEditState();
