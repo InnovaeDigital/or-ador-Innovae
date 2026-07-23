@@ -206,9 +206,28 @@
         const card = event.target.closest('.project');
         if (!card) return;
         event.preventDefault();
-        const visible = active === 'Todos' ? projects : projects.filter(item => (item.category || 'Projetos') === active);
-        openGallery(visible[Array.from(target.querySelectorAll('.project')).indexOf(card)]);
+        openGallery(projects.find(project => String(project.id) === card.dataset.projectId));
       });
+      function enhanceProjectCards() {
+        const visible = active === 'Todos' ? projects : projects.filter(item => (item.category || 'Projetos') === active);
+        target.querySelectorAll('.project').forEach((card, index) => {
+          const project = visible[index];
+          if (!project) return;
+          card.dataset.projectId = project.id || '';
+          if (!card.querySelector('.project-open')) {
+            const opener = document.createElement('button');
+            opener.type = 'button';
+            opener.className = 'project-open';
+            opener.setAttribute('aria-label', `Abrir galeria de ${project.title || 'projeto'}`);
+            opener.textContent = 'Abrir projeto';
+            card.appendChild(opener);
+          }
+          const oldLink = card.querySelector('.project-link');
+          if (oldLink) oldLink.setAttribute('tabindex', '-1');
+        });
+      }
+      new MutationObserver(enhanceProjectCards).observe(target, { childList:true });
+      enhanceProjectCards();
       gallery.addEventListener('click', event => {
         if (event.target === gallery || event.target.closest('[data-gallery-close]')) closeGallery();
         else if (event.target.closest('[data-gallery-prev]')) move(-1);
