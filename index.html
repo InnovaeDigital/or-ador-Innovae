@@ -2157,6 +2157,9 @@
       // Kept separately so the upload uses the exact Unicode name configured in Cloudinary.
       const cloudinaryUploadPresetForUpload = "Portf\u00f3lio Innovae Site";
       const jsonBinBaseUrl = "https://api.jsonbin.io/v3/b";
+      // Esta é a chave principal do projeto JSONBin. O cabeçalho X-Access-Key
+      // aceita apenas chaves de acesso criadas com permissões explícitas.
+      const jsonBinHeaders = { "X-Master-Key": jsonBinApiKey };
       const fields = {};
       const itemList = document.getElementById("items");
       const clientLinks = document.getElementById("clientLinks");
@@ -2342,7 +2345,7 @@
       async function savePortfolioItemsToCloud(items, categories = getPortfolioCategories()) {
         const response = await fetch(`${jsonBinBaseUrl}/${portfolioRegistryBinId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", "X-Access-Key": jsonBinApiKey },
+          headers: { "Content-Type": "application/json", ...jsonBinHeaders },
           body: JSON.stringify({ items, categories, updatedAt: new Date().toISOString() })
         });
         if (!response.ok) throw new Error("Não foi possível salvar o portfólio na nuvem.");
@@ -2350,7 +2353,7 @@
 
       async function syncPortfolioFromCloud() {
         try {
-          const response = await fetch(`${jsonBinBaseUrl}/${portfolioRegistryBinId}/latest?meta=false`);
+          const response = await fetch(`${jsonBinBaseUrl}/${portfolioRegistryBinId}/latest?meta=false`, { headers: jsonBinHeaders });
           if (!response.ok) throw new Error();
           const data = await response.json();
           if (Array.isArray(data.items)) {
@@ -2526,7 +2529,7 @@
       async function saveUsersToCloud(users = loadUsers()) {
         const response = await fetch(`${jsonBinBaseUrl}/${usersRegistryBinId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", "X-Access-Key": jsonBinApiKey },
+          headers: { "Content-Type": "application/json", ...jsonBinHeaders },
           body: JSON.stringify({ items: users, updatedAt: new Date().toISOString() })
         });
         if (!response.ok) throw new Error("Não foi possível sincronizar os usuários na nuvem.");
@@ -2535,7 +2538,7 @@
       async function syncUsersFromCloud() {
         try {
           const response = await fetch(`${jsonBinBaseUrl}/${usersRegistryBinId}/latest?meta=false`, {
-            headers: { "X-Access-Key": jsonBinApiKey }
+            headers: jsonBinHeaders
           });
           if (!response.ok) throw new Error();
           const remote = await response.json();
@@ -2544,7 +2547,21 @@
           if (!remoteUsers.length) {
             await saveUsersToCloud(localUsers);
           } else {
-            saveUsers(remoteUsers);
+            // Não descarte um cadastro feito em outro dispositivo enquanto a
+            // sincronização ainda estava em andamento. Para o mesmo login,
+            // conserva a versão mais recente; para logins distintos, une as listas.
+            const merged = new Map(remoteUsers.map((user) => [user.login, user]));
+            localUsers.forEach((user) => {
+              const remoteUser = merged.get(user.login);
+              if (!remoteUser || new Date(user.updatedAt || 0) > new Date(remoteUser.updatedAt || 0)) {
+                merged.set(user.login, user);
+              }
+            });
+            const users = [...merged.values()];
+            saveUsers(users);
+            if (users.length !== remoteUsers.length || users.some((user, index) => user !== remoteUsers[index])) {
+              await saveUsersToCloud(users);
+            }
           }
           renderUsers();
           renderLoginUsers();
@@ -2635,8 +2652,9 @@
         if (existing) {
           existing.password = passwordValue;
         } else {
-          users.push({ login: loginValue, password: passwordValue });
+          users.push({ login: loginValue, password: passwordValue, updatedAt: new Date().toISOString() });
         }
+        if (existing) existing.updatedAt = new Date().toISOString();
         saveUsers(users);
         renderLoginUsers(loginValue);
         byId("newUserLogin").value = "";
@@ -2835,7 +2853,7 @@
       async function saveQuotesRegistryToCloud(quotes = loadSavedQuotes()) {
         const response = await fetch(`${jsonBinBaseUrl}/${quotesRegistryBinId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", "X-Access-Key": jsonBinApiKey },
+          headers: { "Content-Type": "application/json", ...jsonBinHeaders },
           body: JSON.stringify({ items: quotes.slice(0, 100), updatedAt: new Date().toISOString() })
         });
         if (!response.ok) throw new Error("Não foi possível atualizar o índice de orçamentos na nuvem.");
@@ -2843,7 +2861,7 @@
 
       async function syncQuotesFromCloud() {
         try {
-          const response = await fetch(`${jsonBinBaseUrl}/${quotesRegistryBinId}/latest?meta=false`);
+          const response = await fetch(`${jsonBinBaseUrl}/${quotesRegistryBinId}/latest?meta=false`, { headers: jsonBinHeaders });
           if (!response.ok) throw new Error();
           const remote = await response.json();
           const remoteQuotes = Array.isArray(remote.items) ? remote.items : [];
@@ -2884,7 +2902,7 @@
         const endpoint = previousRecord?.binId ? `${jsonBinBaseUrl}/${previousRecord.binId}` : jsonBinBaseUrl;
         const headers = {
           "Content-Type": "application/json",
-          "X-Access-Key": jsonBinApiKey
+          ...jsonBinHeaders
         };
         if (!previousRecord?.binId) {
           headers["X-Bin-Private"] = "false";
@@ -2907,7 +2925,7 @@
         const response = await fetch(`${jsonBinBaseUrl}/${record.binId}`, {
           method: "DELETE",
           headers: {
-            "X-Access-Key": jsonBinApiKey
+            ...jsonBinHeaders
           }
         });
         if (!response.ok && response.status !== 404) {
