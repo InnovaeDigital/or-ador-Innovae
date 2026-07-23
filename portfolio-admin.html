@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#090909" />
+  <title>Novo projeto — Innovae Digital</title>
+  <style>
+    :root { --yellow:#fff200; --ink:#090909; --line:rgba(255,255,255,.2); }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; background:#090909; color:#fff; font-family:Arial,Helvetica,sans-serif; }
+    body::before { content:""; position:fixed; z-index:-1; inset:-25vw -20vw auto auto; width:65vw; height:65vw; border-radius:50%; background:radial-gradient(circle,rgba(255,242,0,.2),transparent 66%); }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:22px clamp(18px,5vw,70px); border-bottom:1px solid var(--line); }
+    .top img { width:min(170px,42vw); height:auto; }.top a { color:var(--yellow); font-size:12px; font-weight:800; letter-spacing:.08em; text-decoration:none; text-transform:uppercase; }
+    .wrap { width:min(980px,100%); margin:0 auto; padding:clamp(32px,6vw,76px) clamp(16px,5vw,48px) 72px; }
+    .eyebrow { display:flex; align-items:center; gap:9px; color:var(--yellow); font-size:11px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }.eyebrow::before { content:""; width:28px; height:2px; background:currentColor; }
+    h1 { max-width:720px; margin:16px 0 12px; font-size:clamp(42px,7vw,82px); line-height:.88; letter-spacing:-.065em; }.intro { max-width:560px; color:#aaa; line-height:1.55; }
+    .form { display:grid; gap:20px; margin-top:38px; padding:clamp(20px,4vw,38px); border:1px solid var(--line); background:rgba(18,18,18,.92); box-shadow:14px 14px 0 rgba(255,242,0,.8); }
+    .field { display:grid; gap:8px; }.field label { font-size:12px; font-weight:800; letter-spacing:.04em; }.field input,.field textarea { width:100%; border:1px solid rgba(255,255,255,.3); border-radius:0; padding:14px; background:#090909; color:#fff; font:inherit; }.field textarea { min-height:116px; resize:vertical; }.field input:focus,.field textarea:focus { outline:2px solid var(--yellow); outline-offset:2px; }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:16px; }.upload { position:relative; min-height:150px; display:grid; place-items:center; padding:20px; border:1px dashed rgba(255,242,0,.75); background:rgba(255,242,0,.06); color:#ddd; text-align:center; cursor:pointer; }.upload strong { display:block; color:var(--yellow); }.upload input { position:absolute; inset:0; width:100%; opacity:0; cursor:pointer; }
+    .previews { display:grid; grid-template-columns:repeat(auto-fill,minmax(105px,1fr)); gap:10px; }.preview { aspect-ratio:1; overflow:hidden; background:#202020; border:1px solid var(--line); }.preview img,.preview video { width:100%; height:100%; object-fit:cover; }
+    .actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding-top:4px; }.button { min-height:52px; border:1px solid var(--yellow); padding:14px 18px; background:var(--yellow); color:#090909; font:800 13px Arial; cursor:pointer; }.button.secondary { background:transparent; color:#fff; border-color:rgba(255,255,255,.35); text-decoration:none; }.button:disabled { opacity:.55; cursor:wait; }.status { min-height:20px; margin:0; color:var(--yellow); font-size:13px; line-height:1.4; }
+    .login-needed { max-width:640px; margin-top:38px; padding:26px; border:1px solid var(--yellow); background:#121212; }.login-needed h2 { margin:0 0 10px; }.login-needed p { color:#bbb; line-height:1.5; }
+    @media(max-width:600px) { .top { padding:18px 16px; }.wrap { padding:36px 16px 52px; }.two { grid-template-columns:1fr; }.form { padding:20px 16px; box-shadow:8px 8px 0 rgba(255,242,0,.7); }.actions,.button { width:100%; }.button { text-align:center; }.upload { min-height:132px; } }
+  </style>
+</head>
+<body>
+  <header class="top"><a href="index.html"><img src="assets/logo-innovae.png" alt="Innovae Digital" /></a><a href="portfolio.html">Ver portfólio ↗</a></header>
+  <main class="wrap" id="app" hidden>
+    <div class="eyebrow">Publicação rápida</div><h1>Novo projeto,<br /><span style="color:var(--yellow)">sem complicação.</span></h1><p class="intro">Adicione as imagens, escreva o essencial e publique. O primeiro arquivo de imagem vira automaticamente a capa do card.</p>
+    <form class="form" id="postForm">
+      <div class="field"><label for="title">Título do projeto</label><input id="title" required autocomplete="off" placeholder="Ex.: Campanha Castor Carpintaria" /></div>
+      <div class="two"><div class="field"><label for="category">Categoria</label><input id="category" list="categories" required autocomplete="off" placeholder="Ex.: Social media" /><datalist id="categories"></datalist></div><div class="field"><label for="link">Link externo (opcional)</label><input id="link" type="url" placeholder="https://..." /></div></div>
+      <label class="upload"><input id="media" type="file" accept="image/*,video/*" multiple /><span><strong>Selecionar fotos e vídeos</strong><br />Você pode adicionar vários arquivos de uma vez.</span></label>
+      <div class="previews" id="previews" aria-live="polite"></div>
+      <div class="field"><label for="description">Descrição</label><textarea id="description" required placeholder="Conte em poucas linhas o que foi criado."></textarea></div>
+      <div class="actions"><button class="button" id="publish" type="submit">Publicar no portfólio</button><a class="button secondary" href="index.html">Voltar ao painel</a><p class="status" id="status" aria-live="polite"></p></div>
+    </form>
+  </main>
+  <main class="wrap" id="loginNeeded" hidden><section class="login-needed"><h2>Entre pelo painel primeiro.</h2><p>Para publicar, faça login na área interna e depois use o atalho “Postar no Portfólio”.</p><a class="button" href="index.html">Ir para a área interna</a></section></main>
+  <script>
+    const sessionKey = 'innovae.activeUser';
+    const cloudName = 'c03o3ski';
+    const preset = 'Portf\u00f3lio Innovae Site';
+    const binId = '6a60f489da38895dfe80518a';
+    const apiKey = '$2a$10$kK9lc8wQd0G8RmsiJbXr7OrwRuCeVc6u.ASb7rvLgHfxvUqZo3mhW';
+    const base = 'https://api.jsonbin.io/v3/b';
+    const headers = { 'Content-Type':'application/json', 'X-Master-Key':apiKey };
+    const byId = id => document.getElementById(id);
+    const status = message => byId('status').textContent = message;
+    let registry = { items:[], categories:[] };
+    if (!sessionStorage.getItem(sessionKey)) { byId('loginNeeded').hidden = false; } else { byId('app').hidden = false; }
+    async function loadRegistry() {
+      const response = await fetch(`${base}/${binId}/latest?meta=false&ts=${Date.now()}`, { headers, cache:'no-store' });
+      if (!response.ok) throw new Error(`Não foi possível carregar o portfólio (erro ${response.status}).`);
+      const data = await response.json();
+      registry = { items:Array.isArray(data.items) ? data.items : [], categories:Array.isArray(data.categories) ? data.categories : [] };
+      const categories = [...new Set([...registry.categories, ...registry.items.map(item => item.category).filter(Boolean)])].sort();
+      byId('categories').innerHTML = categories.map(category => `<option value="${category.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}"></option>`).join('');
+    }
+    function renderPreviews() {
+      const files = [...byId('media').files];
+      byId('previews').innerHTML = files.map(file => { const url = URL.createObjectURL(file); return `<div class="preview">${file.type.startsWith('video/') ? `<video src="${url}" muted></video>` : `<img src="${url}" alt="Prévia de ${file.name}" />`}</div>`; }).join('');
+    }
+    async function upload(files) {
+      const uploaded = [];
+      for (const file of files) {
+        if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) throw new Error(`${file.name} não é uma imagem ou vídeo válido.`);
+        if (file.size > 100 * 1024 * 1024) throw new Error(`${file.name} ultrapassa 100 MB.`);
+        const data = new FormData(); data.append('file', file); data.append('upload_preset', preset);
+        const type = file.type.startsWith('video/') ? 'video' : 'image';
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${type}/upload`, { method:'POST', body:data });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error?.message || `Falha ao enviar ${file.name}.`);
+        uploaded.push({ url:result.secure_url, type:result.resource_type, publicId:result.public_id, name:file.name, duration:result.duration || null });
+      }
+      return uploaded;
+    }
+    byId('media').addEventListener('change', renderPreviews);
+    byId('postForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const files = [...byId('media').files];
+      if (!files.length) return status('Selecione pelo menos uma imagem ou vídeo.');
+      const publish = byId('publish'); publish.disabled = true;
+      try {
+        status(`Enviando ${files.length} arquivo(s)...`);
+        const media = await upload(files);
+        const item = { id:`portfolio-${Date.now()}`, title:byId('title').value.trim(), category:byId('category').value.trim(), description:byId('description').value.trim(), link:byId('link').value.trim(), media, image:media.find(entry => entry.type === 'image')?.url || '', createdAt:new Date().toISOString() };
+        const categories = [...new Set([...registry.categories, item.category].filter(Boolean))];
+        const response = await fetch(`${base}/${binId}`, { method:'PUT', headers, body:JSON.stringify({ items:[item, ...registry.items], categories, updatedAt:new Date().toISOString() }) });
+        if (!response.ok) throw new Error(`As mídias foram enviadas, mas o projeto não foi salvo (erro ${response.status}).`);
+        localStorage.setItem('innovae.portfolioItems', JSON.stringify([item, ...registry.items]));
+        status('Publicado com sucesso. Abrindo o portfólio...');
+        setTimeout(() => location.href = 'portfolio.html', 900);
+      } catch (error) { status(error.message || 'Não foi possível publicar agora.'); }
+      finally { publish.disabled = false; }
+    });
+    if (!byId('app').hidden) loadRegistry().catch(error => status(error.message));
+  </script>
+</body>
+</html>

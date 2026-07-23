@@ -1,8 +1,9 @@
-const CACHE_NAME = "innovae-site-cache-v19";
+const CACHE_NAME = "innovae-site-cache-v21";
 const ASSETS = [
   "/",
   "/index.html",
   "/portfolio.html",
+  "/portfolio-admin.html",
   "/instagram.html",
   "/cliente.html",
   "/manifest.webmanifest",

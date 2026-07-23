@@ -122,7 +122,7 @@
       const visible = active === 'Todos' ? projects : projects.filter(item => (item.category || 'Projetos') === active);
       document.getElementById('count').textContent = `${visible.length} projeto${visible.length === 1 ? '' : 's'} em destaque`;
       target.innerHTML = visible.length ? visible.map((item,index) => {
-        const link = item.link ? `<a class="project-link" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" aria-label="Ver ${escapeHtml(item.title || 'projeto')}"></a>` : '';
+        const link = `<button class="project-open" type="button" data-open-project="${escapeHtml(item.id)}" aria-label="Abrir galeria de ${escapeHtml(item.title || 'projeto')}">Abrir galeria</button>`;
         const cover = item.media?.find(media => media.type === 'image')?.url || item.image;
         const video = item.media?.find(media => media.type === 'video')?.url;
         const visual = cover ? `<img src="${escapeHtml(cover)}" alt="${escapeHtml(item.title || 'Projeto Innovae')}" loading="${index > 2 ? 'lazy' : 'eager'}" />` : video ? `<video src="${escapeHtml(video)}" muted loop autoplay playsinline aria-label="Vídeo do projeto ${escapeHtml(item.title || 'Innovae')}"></video>` : '<div class="project-fallback"></div>';
@@ -212,31 +212,11 @@
       function move(step) { selectedIndex += step; renderGallery(); }
 
       portfolioTarget.addEventListener('click', event => {
-        const card = event.target.closest('.project');
-        if (!card) return;
+        const trigger = event.target.closest('[data-open-project]');
+        if (!trigger) return;
         event.preventDefault();
-        openGallery(state.projects.find(project => String(project.id) === card.dataset.projectId));
+        openGallery(state.projects.find(project => String(project.id) === trigger.dataset.openProject));
       });
-      function enhanceProjectCards() {
-        const visible = state.active === 'Todos' ? state.projects : state.projects.filter(item => (item.category || 'Projetos') === state.active);
-        portfolioTarget.querySelectorAll('.project').forEach((card, index) => {
-          const project = visible[index];
-          if (!project) return;
-          card.dataset.projectId = project.id || '';
-          if (!card.querySelector('.project-open')) {
-            const opener = document.createElement('button');
-            opener.type = 'button';
-            opener.className = 'project-open';
-            opener.setAttribute('aria-label', `Abrir galeria de ${project.title || 'projeto'}`);
-            opener.textContent = 'Abrir projeto';
-            card.appendChild(opener);
-          }
-          const oldLink = card.querySelector('.project-link');
-          if (oldLink) oldLink.setAttribute('tabindex', '-1');
-        });
-      }
-      new MutationObserver(enhanceProjectCards).observe(portfolioTarget, { childList:true });
-      enhanceProjectCards();
       gallery.addEventListener('click', event => {
         if (event.target === gallery || event.target.closest('[data-gallery-close]')) closeGallery();
         else if (event.target.closest('[data-gallery-prev]')) move(-1);
