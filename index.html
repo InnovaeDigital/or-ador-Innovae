@@ -1859,6 +1859,27 @@
         .home-statement, .home-portfolio-call, .home-process, .home-faq { padding-left: 16px; padding-right: 16px; }
         .home-footer { padding-left: 16px; padding-right: 16px; }
       }
+
+      /* Ferramentas rápidas para quem está começando a marca. */
+      .brand-tools { position:relative; z-index:1; padding:88px clamp(20px,5vw,72px); background:#fff200; color:#090909; }
+      .brand-tools-head { display:grid; grid-template-columns:.82fr 1.18fr; gap:54px; align-items:end; margin-bottom:30px; }
+      .brand-tools h2 { margin:12px 0 0; max-width:680px; font-size:clamp(38px,5.6vw,72px); line-height:.88; letter-spacing:-.065em; }
+      .brand-tools-head p { max-width:540px; margin:0; font-size:17px; line-height:1.55; }
+      .brand-tool-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+      .brand-tool-tab { border:1px solid #090909; padding:11px 14px; background:transparent; color:#090909; font:800 12px Arial,Helvetica,sans-serif; letter-spacing:.035em; cursor:pointer; transition:transform .2s ease,background .2s ease,color .2s ease; }
+      .brand-tool-tab:hover { transform:translateY(-2px); }.brand-tool-tab.is-active { background:#090909; color:#fff200; }
+      .brand-tool-panel { min-height:350px; padding:clamp(22px,4vw,42px); background:#0b0b0b; color:#fff; box-shadow:12px 12px 0 rgba(9,9,9,.3); animation:toolPanelIn .36s cubic-bezier(.16,1,.3,1) both; }
+      .brand-tool-panel[hidden] { display:none; }.tool-kicker { color:#fff200; font-size:11px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }.brand-tool-panel h3 { max-width:710px; margin:12px 0 10px; font-size:clamp(29px,4vw,52px); line-height:.92; letter-spacing:-.055em; }.brand-tool-panel > p { max-width:690px; color:#c7c7c7; line-height:1.55; }
+      .quiz-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:24px; }.quiz-option { min-height:64px; border:1px solid rgba(255,255,255,.32); padding:14px; background:#141414; color:#fff; font:800 14px Arial,Helvetica,sans-serif; text-align:left; cursor:pointer; transition:.2s ease; }.quiz-option:hover,.quiz-option:focus-visible { border-color:#fff200; color:#fff200; transform:translateX(4px); }.quiz-progress { margin-top:22px; color:#aaa; font-size:12px; font-weight:800; letter-spacing:.06em; }.tool-result { margin-top:24px; padding:20px; border-left:4px solid #fff200; background:#161616; }.tool-result strong { display:block; color:#fff200; font-size:24px; }.tool-result p { margin:8px 0 0; color:#ddd; line-height:1.5; }.tool-reset { margin-top:16px; border:1px solid #fff200; padding:10px 13px; background:transparent; color:#fff200; font:800 12px Arial,Helvetica,sans-serif; cursor:pointer; }
+      .diagnostic-list { display:grid; gap:11px; margin-top:24px; }.diagnostic-item { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.18); }.diagnostic-item span { font-weight:800; }.score-options { display:flex; gap:7px; }.score-options button { width:37px; height:37px; border:1px solid rgba(255,255,255,.35); background:transparent; color:#fff; font-weight:900; cursor:pointer; }.score-options button.is-selected,.score-options button:hover { border-color:#fff200; background:#fff200; color:#090909; }.diagnostic-score { display:flex; gap:20px; align-items:center; margin-top:25px; padding:18px; background:#fff200; color:#090909; }.diagnostic-score strong { font-size:50px; letter-spacing:-.07em; }.diagnostic-score p { margin:0; font-weight:800; line-height:1.35; }
+      .micro-faq { display:grid; gap:0; margin-top:23px; }.micro-faq details { border-bottom:1px solid rgba(255,255,255,.22); padding:17px 0; }.micro-faq summary { position:relative; padding-right:35px; color:#fff; font-size:17px; font-weight:800; cursor:pointer; list-style:none; }.micro-faq summary::-webkit-details-marker { display:none; }.micro-faq summary::after { content:'+'; position:absolute; right:4px; color:#fff200; font-size:24px; line-height:.7; }.micro-faq details[open] summary::after { content:'−'; }.micro-faq p { max-width:680px; margin:12px 30px 0 0; color:#c7c7c7; line-height:1.55; }
+      @keyframes toolPanelIn { from { opacity:0; transform:translateY(14px) skewY(1deg); } to { opacity:1; transform:none; } }
+      /* Tipografia em movimento: presente nas entradas de cada página, sem comprometer leitura. */
+      @keyframes typeLift { from { opacity:0; transform:translateY(.45em) skewY(3deg); letter-spacing:-.11em; } to { opacity:1; transform:translateY(0) skewY(0); } }
+      .site-home h1,.site-home h2,#systemApp h1,#systemApp h2 { animation:typeLift .72s cubic-bezier(.16,1,.3,1) both; }
+      .site-home .home-kicker,.site-home .service-card strong { animation:typeLift .55s .12s cubic-bezier(.16,1,.3,1) both; }
+      @media (max-width:700px) { .brand-tools { padding:58px 20px; }.brand-tools-head { grid-template-columns:1fr; gap:18px; }.brand-tools-head p { font-size:16px; }.quiz-options { grid-template-columns:1fr; }.diagnostic-item { align-items:flex-start; flex-direction:column; gap:10px; }.brand-tool-panel { min-height:0; }.micro-faq p { margin-right:0; } }
+      @media (prefers-reduced-motion:reduce) { .site-home h1,.site-home h2,#systemApp h1,#systemApp h2,.site-home .home-kicker,.site-home .service-card strong,.brand-tool-panel { animation:none!important; } }
     </style>
     <script src="assets/analytics.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -1926,6 +1947,23 @@
         </div>
       </section>
       <section class="home-faq" aria-labelledby="faqTitle"><div class="home-faq-grid"><div><div class="home-kicker">Dúvidas frequentes</div><h2 id="faqTitle">Vamos tirar sua ideia do papel?</h2></div><div class="faq-list"><details><summary>Quais serviços a Innovae realiza?</summary><p>Identidade visual, criativos digitais, materiais impressos, fachadas, adesivos, banners, placas e outras soluções de comunicação visual.</p></details><details><summary>Como solicito um orçamento?</summary><p>Chame no WhatsApp, conte o que precisa e envie medidas, referências e prazo quando tiver. Assim a proposta fica mais objetiva.</p></details><details><summary>O atendimento é somente em Luziânia?</summary><p>Os projetos digitais podem ser atendidos à distância. Para produção e instalação, a disponibilidade é confirmada conforme a demanda e a localização.</p></details><details><summary>Posso acompanhar meu projeto?</summary><p>Sim. Após a confirmação, você recebe atualizações sobre as etapas e a previsão de entrega do serviço contratado.</p></details></div></div></section>
+      <section class="brand-tools" aria-labelledby="toolsTitle">
+        <div class="brand-tools-head"><div><div class="home-kicker" style="color:#090909">Ferramentas para sua marca</div><h2 id="toolsTitle">Descubra o próximo passo da sua presença visual.</h2></div><p>Três experiências rápidas para tirar dúvidas, encontrar uma direção criativa e olhar sua marca com mais clareza.</p></div>
+        <div class="brand-tool-tabs" role="tablist" aria-label="Ferramentas para microempresários">
+          <button class="brand-tool-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="toolBriefing" data-tool-target="briefing">Simulador de briefing</button>
+          <button class="brand-tool-tab" type="button" role="tab" aria-selected="false" aria-controls="toolDiagnostic" data-tool-target="diagnostic">Diagnóstico de marca grátis</button>
+          <button class="brand-tool-tab" type="button" role="tab" aria-selected="false" aria-controls="toolFaq" data-tool-target="faq">FAQ de microempresário</button>
+        </div>
+        <section class="brand-tool-panel" id="toolBriefing" data-tool-panel="briefing" role="tabpanel">
+          <div class="tool-kicker">Simulador de briefing</div><h3 id="briefingQuestion">Qual sensação sua marca precisa passar primeiro?</h3><p id="briefingSupport">Escolha a alternativa que mais parece com o momento do seu negócio.</p><div class="quiz-options" id="briefingOptions"></div><div class="quiz-progress" id="briefingProgress">Pergunta 1 de 3</div><div class="tool-result" id="briefingResult" hidden></div><button class="tool-reset" id="briefingReset" type="button" hidden>Refazer simulador</button>
+        </section>
+        <section class="brand-tool-panel" id="toolDiagnostic" data-tool-panel="diagnostic" role="tabpanel" hidden>
+          <div class="tool-kicker">Diagnóstico de marca grátis</div><h3>Em dois minutos, dê uma nota ao seu logo atual.</h3><p>Marque de 1 a 5 em cada ponto. A nota é calculada na hora e mostra qual conversa vale priorizar.</p><div class="diagnostic-list" id="diagnosticList"></div><div class="diagnostic-score" aria-live="polite"><strong id="diagnosticScore">—</strong><p id="diagnosticMessage">Selecione as notas para ver seu diagnóstico.</p></div>
+        </section>
+        <section class="brand-tool-panel" id="toolFaq" data-tool-panel="faq" role="tabpanel" hidden>
+          <div class="tool-kicker">FAQ de microempresário</div><h3>Respostas sem enrolação.</h3><p>O básico para contratar design com mais segurança.</p><div class="micro-faq"><details><summary>Eu mudo o design se não gostar?</summary><p>Sim. O processo inclui apresentação e ajustes alinhados ao briefing contratado. Assim refinamos a solução com direção, sem recomeçar do zero a cada etapa.</p></details><details><summary>Como funciona o pagamento?</summary><p>O formato e as etapas de pagamento são definidos na proposta, antes de começar. Você recebe tudo organizado para aprovar com clareza.</p></details><details><summary>Os arquivos são meus?</summary><p>Após a quitação do projeto, você recebe os arquivos finais combinados na proposta para usar sua marca e seus materiais com autonomia.</p></details><details><summary>Quanto tempo leva?</summary><p>O prazo depende do escopo e da agilidade nas aprovações. A previsão de entrega é apresentada já no orçamento.</p></details></div>
+        </section>
+      </section>
       <footer class="home-footer"><span>© Innovae Digital</span><span>Design, impressão e comunicação visual · Luziânia/GO</span></footer>
     </main>
 
@@ -3826,6 +3864,32 @@
         tabs.forEach((tab) => tab.addEventListener("click", () => activateWindow(tab.dataset.windowTarget)));
       }
 
+      function setupBrandTools() {
+        const tabs = [...document.querySelectorAll("[data-tool-target]")];
+        const panels = [...document.querySelectorAll("[data-tool-panel]")];
+        tabs.forEach((tab) => tab.addEventListener("click", () => {
+          tabs.forEach((item) => { const active = item === tab; item.classList.toggle("is-active", active); item.setAttribute("aria-selected", String(active)); });
+          panels.forEach((panel) => { panel.hidden = panel.dataset.toolPanel !== tab.dataset.toolTarget; });
+        }));
+
+        const questions = [
+          { text:"Qual sensação sua marca precisa passar primeiro?", support:"Escolha a alternativa que mais parece com o momento do seu negócio.", options:[["Confiança e organização", "classic"],["Criatividade e atitude", "bold"],["Leveza e proximidade", "human"]] },
+          { text:"Quando alguém encontra sua marca, o que deve perceber?", support:"Não existe resposta certa — existe a que deixa sua marca mais reconhecível.", options:[["Profissional e estabelecida", "classic"],["Fora do óbvio", "bold"],["Acolhedora e fácil de entender", "human"]] },
+          { text:"Qual ambiente combina mais com o seu negócio?", support:"Sua escolha ajuda a definir o tom visual da marca.", options:[["Um espaço elegante e bem resolvido", "classic"],["Um lugar cheio de contrastes e energia", "bold"],["Um canto claro, próximo e convidativo", "human"]] }
+        ];
+        const profiles = { classic:{ name:"Clássico contemporâneo", text:"Sua marca pede estrutura, tipografia precisa e uma paleta sóbria com pontos de destaque. É uma direção que constrói confiança sem ficar distante." }, bold:{ name:"Impacto criativo", text:"Sua marca pode ocupar espaço com contrastes, cores marcantes e composições expressivas. O segredo é ter atitude com uma mensagem simples." }, human:{ name:"Humano e acolhedor", text:"Sua marca combina com cores gentis, elementos orgânicos e uma linguagem direta. O visual deve aproximar antes mesmo do primeiro atendimento." } };
+        let step = 0; const answers = [];
+        const question = byId("briefingQuestion"), support = byId("briefingSupport"), options = byId("briefingOptions"), progress = byId("briefingProgress"), result = byId("briefingResult"), reset = byId("briefingReset");
+        const renderQuestion = () => { const current = questions[step]; question.textContent = current.text; support.textContent = current.support; options.hidden = false; progress.hidden = false; result.hidden = true; reset.hidden = true; progress.textContent = `Pergunta ${step + 1} de ${questions.length}`; options.innerHTML = current.options.map(([label,value]) => `<button class="quiz-option" type="button" data-briefing-answer="${value}">${label}</button>`).join(""); };
+        options.addEventListener("click", (event) => { const answer = event.target.closest("[data-briefing-answer]"); if (!answer) return; answers.push(answer.dataset.briefingAnswer); step += 1; if (step < questions.length) return renderQuestion(); const profile = Object.entries(answers.reduce((count, value) => ({ ...count, [value]:(count[value] || 0) + 1 }), {})).sort((a,b) => b[1] - a[1])[0][0]; const selected = profiles[profile]; options.hidden = true; progress.hidden = true; question.textContent = "Sua direção visual apareceu."; support.textContent = "Use este resultado como ponto de partida para uma conversa de briefing mais objetiva."; result.innerHTML = `<strong>${selected.name}</strong><p>${selected.text}</p>`; result.hidden = false; reset.hidden = false; });
+        reset.addEventListener("click", () => { step = 0; answers.length = 0; renderQuestion(); }); renderQuestion();
+
+        const criteria = ["É fácil de ler em tamanho pequeno?", "As cores combinam com o seu público?", "Você usaria esse logo com orgulho por mais 2 anos?", "Ele parece diferente dos concorrentes?"];
+        const diagnostic = byId("diagnosticList"), score = byId("diagnosticScore"), message = byId("diagnosticMessage"); const ratings = Array(criteria.length).fill(null);
+        diagnostic.innerHTML = criteria.map((criterion,index) => `<div class="diagnostic-item"><span>${criterion}</span><div class="score-options" aria-label="Nota para: ${criterion}">${[1,2,3,4,5].map(value => `<button type="button" data-score-index="${index}" data-score-value="${value}" aria-label="Nota ${value}">${value}</button>`).join("")}</div></div>`).join("");
+        diagnostic.addEventListener("click", (event) => { const button = event.target.closest("[data-score-index]"); if (!button) return; const index = Number(button.dataset.scoreIndex); ratings[index] = Number(button.dataset.scoreValue); diagnostic.querySelectorAll(`[data-score-index="${index}"]`).forEach((item) => item.classList.toggle("is-selected", Number(item.dataset.scoreValue) === ratings[index])); if (ratings.some((value) => value === null)) return; const total = ratings.reduce((sum,value) => sum + value, 0); const grade = (total / ratings.length).toFixed(1).replace(".", ","); score.textContent = `${grade}/5`; message.textContent = total >= 16 ? "Boa base: um refinamento estratégico pode deixar a marca ainda mais consistente." : total >= 11 ? "Há potencial: vale alinhar tipografia, cores e aplicações para ganhar clareza." : "Hora de dar atenção à marca: uma identidade bem resolvida ajuda seu negócio a ser reconhecido."; });
+      }
+
       function bind() {
         byId("showLogin").addEventListener("click", showLoginOnly);
         byId("backToSite").addEventListener("click", showPublicSite);
@@ -4064,6 +4128,7 @@
       }
 
       setupWorkspaceTabs();
+      setupBrandTools();
       bind();
       setupPortfolioCategoryControl();
       renderCalculator();
