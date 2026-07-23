@@ -2333,7 +2333,6 @@
       let editingQuoteId = null;
       let usersSyncPromise = Promise.resolve();
       let usersSyncInProgress = false;
-      let usersCloudWasRead = false;
 
       function loadPortfolioItems() {
         try {
@@ -2671,7 +2670,7 @@
         if (usersSyncInProgress) return;
         usersSyncInProgress = true;
         try {
-          const response = await fetch(`${jsonBinBaseUrl}/${usersRegistryBinId}/latest?meta=false`, {
+          const response = await fetch(`${jsonBinBaseUrl}/${usersRegistryBinId}/latest?meta=false&sync=${Date.now()}`, {
             headers: jsonBinHeaders,
             cache: "no-store"
           });
@@ -2679,28 +2678,17 @@
           const remote = await response.json();
           const remoteUsers = Array.isArray(remote.items) ? remote.items : [];
           const localUsers = loadUsers();
-          if (!remoteUsers.length) {
-            if (localUsers.length) {
-              await saveUsersToCloud(localUsers);
-              markUsersPendingSync(false);
-            }
+          // A nuvem é a fonte definitiva. Só mesclamos se este próprio
+          // aparelho tiver uma alteração pendente por falha de rede; assim um
+          // usuário apagado em outro dispositivo jamais é recriado localmente.
+          if (hasPendingUsersSync()) {
+            const users = mergeUsers(localUsers, remoteUsers);
+            saveUsers(users);
+            await saveUsersToCloud(users);
+            markUsersPendingSync(false);
           } else {
-            // A primeira leitura preserva cadastros legados deste dispositivo.
-            // Depois disso, a nuvem é a fonte oficial, exceto se houve uma
-            // alteração local que ainda não conseguiu ser enviada.
-            if (!usersCloudWasRead || hasPendingUsersSync()) {
-              const users = mergeUsers(localUsers, remoteUsers);
-              const cloudNeedsUpdate = JSON.stringify(users) !== JSON.stringify(remoteUsers);
-              saveUsers(users);
-              if (cloudNeedsUpdate) {
-                await saveUsersToCloud(users);
-              }
-              markUsersPendingSync(false);
-            } else {
-              saveUsers(remoteUsers);
-            }
+            saveUsers(remoteUsers);
           }
-          usersCloudWasRead = true;
           renderUsers();
           renderLoginUsers();
         } catch (error) {
@@ -4020,7 +4008,7 @@
         // curta atualiza outros dispositivos abertos sem exigir recarregamento.
         window.setInterval(() => {
           if (document.visibilityState === "visible") syncUsersFromCloud();
-        }, 10000);
+        }, 5000);
         window.addEventListener("focus", syncUsersFromCloud);
         document.addEventListener("visibilitychange", () => {
           if (document.visibilityState === "visible") syncUsersFromCloud();
