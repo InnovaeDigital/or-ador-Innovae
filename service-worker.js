@@ -1,4 +1,4 @@
-const CACHE_NAME = "innovae-site-cache-v14";
+const CACHE_NAME = "innovae-site-cache-v15";
 const ASSETS = [
   "/",
   "/index.html",

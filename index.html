@@ -2678,10 +2678,13 @@
           const remote = await response.json();
           const remoteUsers = Array.isArray(remote.items) ? remote.items : [];
           const localUsers = loadUsers();
+          const remoteUpdatedAt = new Date(remote.updatedAt || 0).getTime();
+          const hasNewerLocalChange = localUsers.some((user) => new Date(user.updatedAt || 0).getTime() > remoteUpdatedAt);
           // A nuvem é a fonte definitiva. Só mesclamos se este próprio
-          // aparelho tiver uma alteração pendente por falha de rede; assim um
-          // usuário apagado em outro dispositivo jamais é recriado localmente.
-          if (hasPendingUsersSync()) {
+          // aparelho tiver uma alteração pendente, ou uma edição mais recente
+          // que a versão remota; assim um usuário apagado em outro dispositivo
+          // jamais é recriado por uma cópia antiga.
+          if (hasPendingUsersSync() || hasNewerLocalChange) {
             const users = mergeUsers(localUsers, remoteUsers);
             saveUsers(users);
             await saveUsersToCloud(users);
