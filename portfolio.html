@@ -2,243 +2,52 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#090909" />
-  <meta name="description" content="Projetos de identidade visual, mídia digital, impressão e comunicação visual da Innovae Digital." />
-  <meta name="robots" content="index,follow" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Portfólio — Innovae Digital" />
-  <meta property="og:description" content="Conheça projetos selecionados de design e comunicação visual." />
-  <meta property="og:image" content="assets/logo-innovae.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <meta name="description" content="Projetos selecionados da Innovae Digital." />
   <title>Portfólio — Innovae Digital</title>
   <style>
-    :root { --yellow:#fff200; --black:#090909; --line:rgba(255,255,255,.17); }
-    * { box-sizing:border-box; }
-    html { scroll-behavior:smooth; }
-    body { margin:0; background:var(--black); color:#fff; font-family:Arial, Helvetica, sans-serif; }
-    body::before { content:""; position:fixed; z-index:-1; width:60vw; height:60vw; top:-32vw; right:-20vw; border-radius:50%; background:radial-gradient(circle,rgba(255,242,0,.19),transparent 65%); animation:drift 16s ease-in-out infinite alternate; }
-    nav { display:flex; justify-content:space-between; align-items:center; padding:24px clamp(20px,5vw,72px); }
-    nav img { width:min(180px,45vw); height:auto; }
-    nav a { color:#fff; text-decoration:none; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-    nav a:last-child { color:var(--yellow); }
-    header { padding:68px clamp(20px,5vw,72px) 54px; border-bottom:1px solid var(--line); animation:up .8s cubic-bezier(.16,1,.3,1) both; }
-    .eyebrow { display:flex; align-items:center; gap:10px; color:var(--yellow); font-size:11px; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
-    .eyebrow::before { content:""; width:32px; height:2px; background:currentColor; }
-    h1 { max-width:980px; margin:18px 0 0; font-size:clamp(48px,8vw,112px); line-height:.9; letter-spacing:-.065em; overflow-wrap:anywhere; }
-    h1 em { color:var(--yellow); font-style:normal; }
-    .intro { display:flex; justify-content:space-between; gap:30px; align-items:end; margin-top:50px; }
-    .intro p { max-width:520px; margin:0; color:#aaa; font-size:17px; line-height:1.6; }
-    .count { color:#777; font-size:13px; }
-    main { padding:38px clamp(20px,5vw,72px) 92px; }
-    .filters { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:36px; }
-    .filter { border:1px solid var(--line); border-radius:100px; padding:10px 15px; background:transparent; color:#ccc; cursor:pointer; font:700 12px Arial; transition:.25s ease; }
-    .filter:hover,.filter.active { color:#090909; background:var(--yellow); border-color:var(--yellow); }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); gap:18px; }
-    .project { position:relative; min-height:410px; overflow:hidden; background:#171717; border:1px solid var(--line); cursor:pointer; animation:up .7s both; transition:transform .45s cubic-bezier(.16,1,.3,1), border-color .35s; }
-    .project:only-child { grid-column:1 / -1; width:min(100%,900px); min-height:500px; }
-    .project:hover { z-index:1; transform:translateY(-9px); border-color:var(--yellow); }
-    .project[hidden] { display:none; }
-    .project img,.project video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(18%); transition:transform .65s cubic-bezier(.16,1,.3,1),filter .4s; }
-    .project:hover img,.project:hover video { transform:scale(1.07); filter:grayscale(0); }
-    .project::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.85) 100%); }
-    .project-fallback { position:absolute; inset:0; padding:24px; background:linear-gradient(135deg,#202020,#090909 62%,#514e00); }
-    .project-fallback::after { content:"INNOVAË"; position:absolute; right:-10px; bottom:35px; color:rgba(255,242,0,.16); font-size:clamp(36px,5vw,70px); font-weight:900; letter-spacing:-.1em; transform:rotate(-90deg); transform-origin:right bottom; }
-    .project-copy { position:absolute; z-index:1; bottom:0; left:0; right:0; padding:24px; }
-    .tag { display:inline-block; margin-bottom:9px; color:var(--yellow); font-size:10px; font-weight:900; letter-spacing:.11em; text-transform:uppercase; }
-    h2 { margin:0; font-size:clamp(21px,2vw,32px); letter-spacing:-.04em; }
-    .project-copy p { margin:8px 0 0; color:#ddd; font-size:13px; line-height:1.45; }
-    .project-link { pointer-events:none; }
-    .project-open { position:absolute; z-index:3; inset:0; width:100%; border:0; padding:0; background:transparent; color:transparent; cursor:pointer; }
-    .project-open::after { content:"ABRIR GALERIA ↗"; position:absolute; top:18px; right:18px; padding:10px 12px; background:var(--yellow); color:#090909; font:900 10px Arial; letter-spacing:.08em; opacity:1; transform:none; transition:.3s ease; }
-    .project:hover .project-open::after,.project:focus-visible .project-open::after { background:#fff; }
-    .gallery { position:fixed; z-index:20; inset:0; display:grid; place-items:center; padding:22px; background:rgba(0,0,0,.82); backdrop-filter:blur(12px); opacity:0; transition:opacity .28s ease; }
-    .gallery:not([hidden]) { opacity:1; }
-    .gallery-shell { position:relative; width:min(1120px,100%); max-height:min(860px,calc(100dvh - 44px)); display:grid; grid-template-columns:minmax(0,1fr) 300px; overflow:hidden; background:#121212; border:1px solid rgba(255,255,255,.22); box-shadow:20px 20px 0 rgba(255,242,0,.82); animation:galleryIn .38s cubic-bezier(.16,1,.3,1) both; }
-    .gallery-stage { position:relative; min-height:500px; display:grid; place-items:center; overflow:hidden; background:#050505; }
-    .gallery-stage img,.gallery-stage video { width:100%; height:100%; max-height:calc(100dvh - 44px); object-fit:contain; animation:mediaIn .36s cubic-bezier(.16,1,.3,1) both; }
-    .gallery-close,.gallery-nav { position:absolute; z-index:2; display:grid; place-items:center; border:1px solid rgba(255,255,255,.28); background:rgba(9,9,9,.72); color:#fff; cursor:pointer; transition:.2s ease; }
-    .gallery-close { top:14px; right:14px; width:42px; height:42px; font-size:23px; }
-    .gallery-nav { top:50%; width:46px; height:54px; transform:translateY(-50%); font-size:30px; }
-    .gallery-nav.prev { left:14px; }.gallery-nav.next { right:14px; }.gallery-close:hover,.gallery-nav:hover { background:var(--yellow); border-color:var(--yellow); color:#090909; }
-    .gallery-nav[hidden] { display:none; }
-    .gallery-info { display:flex; flex-direction:column; min-height:0; padding:32px 24px 22px; background:#151515; }
-    .gallery-info .tag { margin-bottom:11px; }.gallery-info h2 { font-size:clamp(26px,3vw,40px); }.gallery-description { margin:14px 0 0; color:#bbb; font-size:14px; line-height:1.6; }
-    .gallery-counter { margin-top:18px; color:#777; font-size:11px; font-weight:800; letter-spacing:.1em; }
-    .gallery-external { display:inline-flex; width:max-content; margin-top:18px; padding:11px 13px; background:var(--yellow); color:#090909; font-size:11px; font-weight:900; letter-spacing:.06em; text-decoration:none; }
-    .gallery-thumbs { display:flex; gap:8px; overflow:auto; margin-top:auto; padding-top:24px; scrollbar-width:thin; }
-    .gallery-thumb { flex:0 0 68px; height:68px; overflow:hidden; border:1px solid transparent; padding:0; background:#090909; cursor:pointer; opacity:.55; transition:.22s ease; }
-    .gallery-thumb img,.gallery-thumb video { display:block; width:100%; height:100%; object-fit:cover; }.gallery-thumb.active { border-color:var(--yellow); opacity:1; transform:translateY(-3px); }
-    body.gallery-open { overflow:hidden; }
-    .empty { grid-column:1/-1; padding:55px 24px; border:1px dashed #666; color:#aaa; }
-    footer { display:flex; justify-content:space-between; gap:20px; padding:24px clamp(20px,5vw,72px); border-top:1px solid var(--line); color:#777; font-size:12px; }
-    @keyframes up { from { opacity:0; transform:translateY(25px); } to { opacity:1; transform:none; } }
-    @keyframes drift { to { transform:translate(-10%,12%) scale(1.12); } } @keyframes galleryIn { from { opacity:0; transform:translateY(24px) scale(.97); } to { opacity:1; transform:none; } } @keyframes mediaIn { from { opacity:0; transform:scale(1.025); } to { opacity:1; transform:none; } }
-    @media(max-width:760px) { nav { padding:18px 16px; } nav img { width:145px; } header { padding:40px 16px 34px; } main { padding:28px 16px 56px; } .intro,footer { display:block; } .count { display:block; margin-top:22px; } .filters { gap:7px; margin-bottom:24px; } .filter { padding:9px 12px; } .grid { grid-template-columns:1fr; gap:16px; } .project,.project:only-child { grid-column:auto; width:100%; min-height:350px; } .project-copy { padding:18px; } .project-open::after { top:14px; right:14px; } .gallery { padding:0; align-items:end; } .gallery-shell { width:100%; max-height:100dvh; grid-template-columns:1fr; box-shadow:none; border:0; } .gallery-stage { min-height:0; height:min(58dvh,520px); } .gallery-stage img,.gallery-stage video { max-height:min(58dvh,520px); } .gallery-info { max-height:42dvh; padding:20px 18px 16px; } .gallery-info h2 { font-size:27px; } .gallery-description { margin-top:8px; font-size:13px; } .gallery-counter { margin-top:12px; } .gallery-external { margin-top:12px; } .gallery-thumbs { margin-top:16px; padding-top:0; } .gallery-close { top:10px; right:10px; } .gallery-nav { width:40px; height:48px; }.gallery-nav.prev { left:8px; }.gallery-nav.next { right:8px; } footer { padding:20px 16px; } footer span+span { display:block; margin-top:8px; } }
-    @media(max-width:380px) { nav a:last-child { font-size:10px; } nav img { width:128px; } .project { min-height:290px; } }
-    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+    :root { --yellow:#fff200; --paper:#f5f4ed; --black:#0b0b0b; --line:rgba(255,255,255,.18); --muted:#989898; }
+    * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { margin:0; overflow-x:hidden; background:var(--black); color:#fff; font-family:Arial,Helvetica,sans-serif; }
+    body::before { content:""; position:fixed; z-index:-1; top:-32vw; right:-22vw; width:72vw; height:72vw; border-radius:50%; background:radial-gradient(circle,rgba(255,242,0,.17),transparent 68%); }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:22px clamp(20px,5vw,76px); border-bottom:1px solid var(--line); }.nav img { display:block; width:min(175px,42vw); height:auto; }.nav-link { color:var(--yellow); font-size:11px; font-weight:900; letter-spacing:.1em; text-decoration:none; text-transform:uppercase; }
+    .hero { display:grid; grid-template-columns:1.15fr .85fr; gap:50px; align-items:end; min-height:430px; padding:clamp(56px,9vw,130px) clamp(20px,5vw,76px) 58px; border-bottom:1px solid var(--line); }.eyebrow { display:flex; align-items:center; gap:10px; color:var(--yellow); font-size:11px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }.eyebrow::before { content:""; width:32px; height:2px; background:currentColor; }
+    h1 { max-width:800px; margin:18px 0 0; font-size:clamp(55px,8.8vw,136px); line-height:.8; letter-spacing:-.085em; } h1 em { color:var(--yellow); font-style:normal; }.hero-copy p { max-width:430px; margin:0; color:#bbb; font-size:17px; line-height:1.6; }.hero-note { display:flex; align-items:center; gap:14px; color:#787878; font-size:12px; }.hero-note strong { color:#fff; font-size:clamp(38px,5vw,64px); letter-spacing:-.07em; }
+    .content { padding:40px clamp(20px,5vw,76px) 90px; }.toolbar { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:30px; }.filters { display:flex; flex-wrap:wrap; gap:8px; }.filter { min-height:40px; padding:9px 14px; border:1px solid var(--line); border-radius:999px; background:transparent; color:#d0d0d0; font:800 12px Arial; cursor:pointer; transition:.2s ease; }.filter:hover,.filter.is-active { border-color:var(--yellow); background:var(--yellow); color:#0b0b0b; }.hint { color:#777; font-size:12px; }
+    .projects { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:16px; }.card { grid-column:span 4; position:relative; min-height:390px; overflow:hidden; border:1px solid var(--line); background:#181818; cursor:pointer; isolation:isolate; animation:enter .55s both; }.card:nth-child(5n+2),.card:nth-child(5n+3) { grid-column:span 4; }.card:nth-child(5n+4) { grid-column:span 5; }.card:nth-child(5n+5) { grid-column:span 3; }.card:only-child { grid-column:span 8; min-height:510px; }.card:hover { border-color:var(--yellow); }.card img,.card video { position:absolute; z-index:-2; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .55s cubic-bezier(.16,1,.3,1),filter .35s; }.card:hover img,.card:hover video { transform:scale(1.055); filter:saturate(1.12); }.card::after { content:""; position:absolute; z-index:-1; inset:0; background:linear-gradient(180deg,rgba(0,0,0,.02) 25%,rgba(0,0,0,.9) 100%); }.fallback { position:absolute; z-index:-2; inset:0; background:linear-gradient(135deg,#282828,#0b0b0b 68%,#665f00); }.fallback::after { content:"INNOVAE"; position:absolute; right:-12px; bottom:25px; color:rgba(255,242,0,.18); font-size:64px; font-weight:900; letter-spacing:-.1em; transform:rotate(-90deg); transform-origin:right bottom; }.card-body { position:absolute; right:0; bottom:0; left:0; padding:24px; }.card-category { display:block; margin-bottom:10px; color:var(--yellow); font-size:10px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }.card h2 { max-width:95%; margin:0; font-size:clamp(25px,2.4vw,39px); letter-spacing:-.055em; }.card p { max-width:520px; margin:8px 0 0; color:#dedede; font-size:13px; line-height:1.45; }.open { position:absolute; z-index:2; top:16px; right:16px; min-height:40px; border:0; padding:9px 11px; background:var(--yellow); color:#0b0b0b; font:900 10px Arial; letter-spacing:.08em; cursor:pointer; text-transform:uppercase; }.card:hover .open { background:#fff; }.empty { grid-column:1/-1; padding:70px 22px; border:1px dashed #777; color:#aaa; text-align:center; }
+    .cta { display:grid; grid-template-columns:1fr auto; gap:28px; align-items:end; margin-top:66px; padding:42px; background:var(--yellow); color:#0b0b0b; }.cta h2 { max-width:620px; margin:8px 0 0; font-size:clamp(34px,5vw,68px); line-height:.88; letter-spacing:-.065em; }.cta a { display:inline-flex; min-height:50px; align-items:center; justify-content:center; padding:14px 17px; background:#0b0b0b; color:#fff; font-size:12px; font-weight:900; letter-spacing:.06em; text-decoration:none; }
+    footer { display:flex; justify-content:space-between; gap:18px; padding:24px clamp(20px,5vw,76px); border-top:1px solid var(--line); color:#777; font-size:12px; }
+    dialog { width:min(1180px,calc(100% - 36px)); max-width:none; max-height:calc(100dvh - 36px); overflow:hidden; border:1px solid rgba(255,255,255,.26); padding:0; background:#151515; color:#fff; box-shadow:20px 20px 0 rgba(255,242,0,.8); } dialog::backdrop { background:rgba(0,0,0,.82); backdrop-filter:blur(10px); }.viewer { display:grid; grid-template-columns:minmax(0,1fr) 320px; min-height:min(720px,calc(100dvh - 38px)); }.viewer-media { position:relative; display:grid; place-items:center; min-height:0; background:#050505; }.viewer-media img,.viewer-media video { width:100%; height:100%; max-height:calc(100dvh - 38px); object-fit:contain; }.close,.arrow { position:absolute; z-index:2; display:grid; place-items:center; border:1px solid rgba(255,255,255,.28); background:rgba(0,0,0,.68); color:#fff; cursor:pointer; }.close { top:14px; right:14px; width:42px; height:42px; font-size:22px; }.arrow { top:50%; width:44px; height:52px; transform:translateY(-50%); font-size:28px; }.arrow.previous { left:14px; }.arrow.next { right:14px; }.close:hover,.arrow:hover { background:var(--yellow); color:#0b0b0b; }.viewer-info { display:flex; flex-direction:column; padding:30px 24px 22px; }.viewer-info h2 { margin:0; font-size:clamp(28px,3vw,42px); letter-spacing:-.055em; }.viewer-info p { color:#bbb; font-size:14px; line-height:1.6; }.counter { margin-top:12px; color:#777; font-size:11px; font-weight:900; letter-spacing:.1em; }.external { display:inline-flex; width:max-content; margin-top:14px; padding:11px 13px; background:var(--yellow); color:#0b0b0b; font-size:11px; font-weight:900; text-decoration:none; }.thumbs { display:flex; gap:8px; overflow:auto; margin-top:auto; padding-top:22px; }.thumb { flex:0 0 66px; height:66px; overflow:hidden; border:1px solid transparent; padding:0; background:#0b0b0b; cursor:pointer; opacity:.58; }.thumb.is-active { border-color:var(--yellow); opacity:1; }.thumb img,.thumb video { width:100%; height:100%; object-fit:cover; }
+    @keyframes enter { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+    @media(max-width:850px) { .hero { grid-template-columns:1fr; gap:30px; min-height:0; }.projects { grid-template-columns:repeat(2,minmax(0,1fr)); }.card,.card:nth-child(n),.card:only-child { grid-column:auto; min-height:360px; width:auto; }.viewer { grid-template-columns:1fr; }.viewer-media { height:min(58dvh,560px); }.viewer-media img,.viewer-media video { max-height:min(58dvh,560px); }.viewer-info { max-height:42dvh; }.cta { grid-template-columns:1fr; } }
+    @media(max-width:560px) { .nav { padding:18px 16px; }.hero { padding:56px 16px 42px; }.content { padding:28px 16px 56px; }.toolbar { align-items:flex-start; flex-direction:column; }.projects { grid-template-columns:1fr; gap:14px; }.card,.card:nth-child(n),.card:only-child { min-height:365px; }.card-body { padding:19px; }.card h2 { font-size:29px; }.cta { margin-top:44px; padding:28px 20px; }.cta a { width:100%; }.viewer-info { padding:20px 18px 16px; }.viewer-media { height:54dvh; }.viewer-media img,.viewer-media video { max-height:54dvh; }.arrow { width:38px; height:46px; }.arrow.previous { left:8px; }.arrow.next { right:8px; } footer { flex-direction:column; padding:20px 16px; } dialog { width:100%; max-height:100dvh; min-height:100dvh; border:0; box-shadow:none; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; } }
   </style>
 </head>
 <body>
-  <script src="assets/analytics.js"></script>
-  <nav><a href="index.html"><img src="assets/logo-innovae.png" alt="Innovae Digital" /></a><a href="index.html">← Voltar ao site</a></nav>
-  <header>
-    <div class="eyebrow">Portfólio selecionado</div>
-    <h1>Design que<br /><em>ocupa espaço.</em></h1>
-    <div class="intro"><p>Projetos que transformam intenção em presença — no digital, na rua e em cada ponto de contato da marca.</p><span class="count" id="count">Carregando projetos...</span></div>
-  </header>
-  <main>
-    <div class="filters" id="filters" aria-label="Filtrar projetos"></div>
-    <section class="grid" id="projects" aria-live="polite"></section>
-  </main>
-  <section class="gallery" id="gallery" role="dialog" aria-modal="true" aria-labelledby="galleryTitle" hidden>
-    <div class="gallery-shell">
-      <div class="gallery-stage" id="galleryStage"></div>
-      <button class="gallery-close" type="button" data-gallery-close aria-label="Fechar galeria">×</button>
-      <button class="gallery-nav prev" type="button" data-gallery-prev aria-label="Mídia anterior">‹</button>
-      <button class="gallery-nav next" type="button" data-gallery-next aria-label="Próxima mídia">›</button>
-      <div class="gallery-info"><span class="tag" id="galleryCategory"></span><h2 id="galleryTitle"></h2><p class="gallery-description" id="galleryDescription"></p><span class="gallery-counter" id="galleryCounter"></span><a class="gallery-external" id="galleryExternal" target="_blank" rel="noopener noreferrer" hidden>Ver link do projeto ↗</a><div class="gallery-thumbs" id="galleryThumbs" aria-label="Outras mídias do projeto"></div></div>
-    </div>
-  </section>
+  <nav class="nav"><a href="index.html"><img src="assets/logo-innovae.png" alt="Innovae Digital" /></a><a class="nav-link" href="index.html">← Voltar ao site</a></nav>
+  <header class="hero"><div><div class="eyebrow">Projetos selecionados</div><h1>Design que<br /><em>fica.</em></h1></div><div class="hero-copy"><p>Identidades, campanhas, peças digitais e comunicação visual pensadas para fazer marcas ocuparem espaço de verdade.</p><div class="hero-note"><strong id="projectTotal">—</strong><span>projetos publicados<br />pela Innovae Digital</span></div></div></header>
+  <main class="content"><div class="toolbar"><div class="filters" id="filters" aria-label="Filtrar projetos"></div><span class="hint" id="resultCount">Carregando projetos...</span></div><section class="projects" id="projects" aria-live="polite"></section><section class="cta"><div><div class="eyebrow" style="color:#0b0b0b">Tem um projeto em mente?</div><h2>Vamos dar presença para a sua marca.</h2></div><a href="https://wa.me/5561933004316?text=Olá%2C%20vim%20pelo%20portfólio%20da%20Innovae%20Digital." target="_blank" rel="noopener noreferrer">Falar no WhatsApp ↗</a></section></main>
   <footer><span>© Innovae Digital</span><span>Design, impressão e comunicação visual · Luziânia/GO</span></footer>
+  <dialog id="viewer" aria-labelledby="viewerTitle"><div class="viewer"><div class="viewer-media" id="viewerMedia"></div><button class="close" id="closeViewer" type="button" aria-label="Fechar">×</button><button class="arrow previous" id="previousMedia" type="button" aria-label="Mídia anterior">‹</button><button class="arrow next" id="nextMedia" type="button" aria-label="Próxima mídia">›</button><aside class="viewer-info"><span class="card-category" id="viewerCategory"></span><h2 id="viewerTitle"></h2><p id="viewerDescription"></p><span class="counter" id="viewerCounter"></span><a class="external" id="viewerExternal" target="_blank" rel="noopener noreferrer" hidden>Ver link do projeto ↗</a><div class="thumbs" id="viewerThumbs" aria-label="Mídias do projeto"></div></aside></div></dialog>
   <script>
-    const key = 'innovae.portfolioItems';
-    const escapeHtml = value => String(value || '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-    const registryBinId = '6a60f489da38895dfe80518a';
-    const jsonBinBaseUrl = 'https://api.jsonbin.io/v3/b';
-    let active = 'Todos';
-    let projects = [];
-    try { projects = JSON.parse(localStorage.getItem(key) || '[]'); if (!Array.isArray(projects)) projects=[]; } catch { projects=[]; }
-    let categories = [];
-    const filters = document.getElementById('filters');
-    const target = document.getElementById('projects');
-    window.portfolioGalleryState = {
-      get projects() { return projects; },
-      get active() { return active; },
-      escapeHtml
-    };
-    function render() {
-      categories = ['Todos', ...new Set(projects.map(item => item.category || 'Projetos'))];
-      filters.innerHTML = categories.map(category => `<button class="filter ${category === active ? 'active' : ''}" data-category="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join('');
-      const visible = active === 'Todos' ? projects : projects.filter(item => (item.category || 'Projetos') === active);
-      document.getElementById('count').textContent = `${visible.length} projeto${visible.length === 1 ? '' : 's'} em destaque`;
-      target.innerHTML = visible.length ? visible.map((item,index) => {
-        const link = `<button class="project-open" type="button" data-open-project="${escapeHtml(item.id)}" aria-label="Abrir galeria de ${escapeHtml(item.title || 'projeto')}">Abrir galeria</button>`;
-        const cover = item.media?.find(media => media.type === 'image')?.url || item.image;
-        const video = item.media?.find(media => media.type === 'video')?.url;
-        const visual = cover ? `<img src="${escapeHtml(cover)}" alt="${escapeHtml(item.title || 'Projeto Innovae')}" loading="${index > 2 ? 'lazy' : 'eager'}" />` : video ? `<video src="${escapeHtml(video)}" muted loop autoplay playsinline aria-label="Vídeo do projeto ${escapeHtml(item.title || 'Innovae')}"></video>` : '<div class="project-fallback"></div>';
-        return `<article class="project" style="animation-delay:${index * 70}ms">${visual}<div class="project-copy"><span class="tag">${escapeHtml(item.category || 'Projeto')}</span><h2>${escapeHtml(item.title || 'Projeto Innovae')}</h2><p>${escapeHtml(item.description || 'Comunicação visual desenvolvida pela Innovae Digital.')}</p></div>${link}</article>`;
-      }).join('') : '<div class="empty">Ainda estamos preparando os projetos desta categoria. Volte em breve.</div>';
-    }
-    filters.addEventListener('click', event => { const button = event.target.closest('[data-category]'); if (!button) return; active = button.dataset.category; render(); });
-    async function loadCloudPortfolio() {
-      try {
-        const response = await fetch(`${jsonBinBaseUrl}/${registryBinId}/latest?meta=false`);
-        if (!response.ok) throw new Error();
-        const data = await response.json();
-        if (Array.isArray(data.items)) {
-          projects = data.items;
-          localStorage.setItem(key, JSON.stringify(projects));
-        }
-      } catch {
-        // Mantém a cópia local disponível caso a conexão esteja indisponível.
-      }
-      render();
-    }
-    loadCloudPortfolio();
-  </script>
-  <script>
-    (() => {
-      const state = window.portfolioGalleryState;
-      if (!state) return;
-      const portfolioTarget = document.getElementById('projects');
-      const escape = state.escapeHtml;
-      const gallery = document.getElementById('gallery');
-      const stage = document.getElementById('galleryStage');
-      const thumbs = document.getElementById('galleryThumbs');
-      const title = document.getElementById('galleryTitle');
-      const category = document.getElementById('galleryCategory');
-      const description = document.getElementById('galleryDescription');
-      const counter = document.getElementById('galleryCounter');
-      const external = document.getElementById('galleryExternal');
-      const closeButton = gallery.querySelector('[data-gallery-close]');
-      const previousButton = gallery.querySelector('[data-gallery-prev]');
-      const nextButton = gallery.querySelector('[data-gallery-next]');
-      let selectedProject = null;
-      let selectedIndex = 0;
-      let touchStart = null;
-
-      const mediaType = media => media.type || (/\.(mp4|webm|mov)(\?|$)/i.test(media.url || '') ? 'video' : 'image');
-      function mediaFor(project) {
-        const media = Array.isArray(project.media) ? project.media.filter(entry => entry && entry.url) : [];
-        if (project.image && !media.some(entry => entry.url === project.image)) media.unshift({ url:project.image, type:'image' });
-        return media;
-      }
-      function closeGallery() {
-        gallery.hidden = true;
-        selectedProject = null;
-        document.body.classList.remove('gallery-open');
-      }
-      function renderGallery() {
-        const media = mediaFor(selectedProject);
-        selectedIndex = (selectedIndex + media.length) % media.length;
-        const selected = media[selectedIndex];
-        const isVideo = mediaType(selected) === 'video';
-        stage.innerHTML = isVideo
-          ? `<video src="${escape(selected.url)}" controls autoplay playsinline aria-label="Project video"></video>`
-          : `<img src="${escape(selected.url)}" alt="${escape(selectedProject.title || 'Innovae project')} - image ${selectedIndex + 1}" />`;
-        title.textContent = selectedProject.title || 'Projeto Innovae';
-        category.textContent = selectedProject.category || 'Projeto';
-        description.textContent = selectedProject.description || 'Comunicação visual desenvolvida pela Innovae Digital.';
-        counter.textContent = `${selectedIndex + 1} / ${media.length} ${media.length === 1 ? 'MIDIA' : 'MIDIAS'}`;
-        external.hidden = !selectedProject.link;
-        if (selectedProject.link) external.href = selectedProject.link;
-        thumbs.innerHTML = media.map((entry, index) => {
-          const preview = mediaType(entry) === 'video'
-            ? `<video src="${escape(entry.url)}" muted playsinline></video>`
-            : `<img src="${escape(entry.url)}" alt="Imagem ${index + 1}" />`;
-          return `<button class="gallery-thumb ${index === selectedIndex ? 'active' : ''}" type="button" data-gallery-index="${index}" aria-label="Abrir mídia ${index + 1}">${preview}</button>`;
-        }).join('');
-        previousButton.hidden = nextButton.hidden = media.length < 2;
-      }
-      function openGallery(project) {
-        if (!project || !mediaFor(project).length) return;
-        selectedProject = project;
-        selectedIndex = 0;
-        gallery.hidden = false;
-        document.body.classList.add('gallery-open');
-        renderGallery();
-        closeButton.focus();
-      }
-      function move(step) { selectedIndex += step; renderGallery(); }
-
-      portfolioTarget.addEventListener('click', event => {
-        const trigger = event.target.closest('[data-open-project]');
-        if (!trigger) return;
-        event.preventDefault();
-        openGallery(state.projects.find(project => String(project.id) === trigger.dataset.openProject));
-      });
-      gallery.addEventListener('click', event => {
-        if (event.target === gallery || event.target.closest('[data-gallery-close]')) closeGallery();
-        else if (event.target.closest('[data-gallery-prev]')) move(-1);
-        else if (event.target.closest('[data-gallery-next]')) move(1);
-        else {
-          const thumbnail = event.target.closest('[data-gallery-index]');
-          if (thumbnail) { selectedIndex = Number(thumbnail.dataset.galleryIndex); renderGallery(); }
-        }
-      });
-      document.addEventListener('keydown', event => {
-        if (gallery.hidden) return;
-        if (event.key === 'Escape') closeGallery();
-        if (event.key === 'ArrowLeft') move(-1);
-        if (event.key === 'ArrowRight') move(1);
-      });
-      gallery.addEventListener('touchstart', event => { touchStart = event.changedTouches[0].clientX; }, { passive:true });
-      gallery.addEventListener('touchend', event => {
-        const distance = event.changedTouches[0].clientX - touchStart;
-        if (Math.abs(distance) > 45) move(distance > 0 ? -1 : 1);
-        touchStart = null;
-      }, { passive:true });
-    })();
+    const binId = '6a60f489da38895dfe80518a';
+    const base = 'https://api.jsonbin.io/v3/b';
+    const escapeHtml = value => String(value || '').replace(/[&<>'"]/g, char => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[char]));
+    const elements = { filters:document.getElementById('filters'), projects:document.getElementById('projects'), total:document.getElementById('projectTotal'), count:document.getElementById('resultCount'), viewer:document.getElementById('viewer'), media:document.getElementById('viewerMedia'), category:document.getElementById('viewerCategory'), title:document.getElementById('viewerTitle'), description:document.getElementById('viewerDescription'), counter:document.getElementById('viewerCounter'), external:document.getElementById('viewerExternal'), thumbs:document.getElementById('viewerThumbs'), previous:document.getElementById('previousMedia'), next:document.getElementById('nextMedia') };
+    let projects = []; let filter = 'Todos'; let currentProject = null; let currentMedia = 0; let touchStart = 0;
+    const mediaType = item => item.type || (/\.(mp4|webm|mov)(\?|$)/i.test(item.url || '') ? 'video' : 'image');
+    function mediaFor(project) { const media = Array.isArray(project.media) ? project.media.filter(item => item && item.url) : []; if (project.image && !media.some(item => item.url === project.image)) media.unshift({ url:project.image, type:'image' }); return media; }
+    function render() { const categories = ['Todos', ...new Set(projects.map(item => item.category || 'Projetos'))]; const visible = filter === 'Todos' ? projects : projects.filter(item => (item.category || 'Projetos') === filter); elements.filters.innerHTML = categories.map(category => `<button class="filter ${category === filter ? 'is-active' : ''}" type="button" data-filter="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join(''); elements.total.textContent = projects.length; elements.count.textContent = `${visible.length} projeto${visible.length === 1 ? '' : 's'} encontrado${visible.length === 1 ? '' : 's'}`; elements.projects.innerHTML = visible.length ? visible.map((project,index) => { const media = mediaFor(project); const cover = media.find(item => mediaType(item) === 'image') || media[0]; const visual = cover ? mediaType(cover) === 'video' ? `<video src="${escapeHtml(cover.url)}" muted loop autoplay playsinline></video>` : `<img src="${escapeHtml(cover.url)}" alt="${escapeHtml(project.title || 'Projeto Innovae')}" loading="${index > 2 ? 'lazy' : 'eager'}" />` : '<div class="fallback"></div>'; return `<article class="card" style="animation-delay:${index * 65}ms"><button class="open" type="button" data-project="${escapeHtml(project.id)}">Abrir galeria ↗</button>${visual}<div class="card-body"><span class="card-category">${escapeHtml(project.category || 'Projeto')}</span><h2>${escapeHtml(project.title || 'Projeto Innovae')}</h2><p>${escapeHtml(project.description || 'Comunicação visual desenvolvida pela Innovae Digital.')}</p></div></article>`; }).join('') : '<div class="empty">Nenhum projeto nesta categoria ainda.</div>'; }
+    function renderViewer() { const media = mediaFor(currentProject); currentMedia = (currentMedia + media.length) % media.length; const item = media[currentMedia]; const video = mediaType(item) === 'video'; elements.media.innerHTML = video ? `<video src="${escapeHtml(item.url)}" controls autoplay playsinline></video>` : `<img src="${escapeHtml(item.url)}" alt="${escapeHtml(currentProject.title || 'Projeto Innovae')}" />`; elements.category.textContent = currentProject.category || 'Projeto'; elements.title.textContent = currentProject.title || 'Projeto Innovae'; elements.description.textContent = currentProject.description || ''; elements.counter.textContent = `${currentMedia + 1} / ${media.length} ${media.length === 1 ? 'MÍDIA' : 'MÍDIAS'}`; elements.external.hidden = !currentProject.link; if (currentProject.link) elements.external.href = currentProject.link; elements.thumbs.innerHTML = media.map((entry,index) => `<button class="thumb ${index === currentMedia ? 'is-active' : ''}" type="button" data-media="${index}" aria-label="Abrir mídia ${index + 1}">${mediaType(entry) === 'video' ? `<video src="${escapeHtml(entry.url)}" muted></video>` : `<img src="${escapeHtml(entry.url)}" alt="Miniatura ${index + 1}" />`}</button>`).join(''); elements.previous.hidden = elements.next.hidden = media.length < 2; }
+    function openViewer(id) { currentProject = projects.find(project => String(project.id) === id); if (!currentProject || !mediaFor(currentProject).length) return; currentMedia = 0; renderViewer(); elements.viewer.showModal(); document.getElementById('closeViewer').focus(); }
+    function move(direction) { currentMedia += direction; renderViewer(); }
+    elements.filters.addEventListener('click', event => { const button = event.target.closest('[data-filter]'); if (!button) return; filter = button.dataset.filter; render(); });
+    elements.projects.addEventListener('click', event => { const button = event.target.closest('[data-project]'); if (button) openViewer(button.dataset.project); });
+    document.getElementById('closeViewer').addEventListener('click', () => elements.viewer.close()); elements.previous.addEventListener('click', () => move(-1)); elements.next.addEventListener('click', () => move(1)); elements.thumbs.addEventListener('click', event => { const button = event.target.closest('[data-media]'); if (button) { currentMedia = Number(button.dataset.media); renderViewer(); } });
+    elements.viewer.addEventListener('click', event => { if (event.target === elements.viewer) elements.viewer.close(); }); document.addEventListener('keydown', event => { if (!elements.viewer.open) return; if (event.key === 'ArrowLeft') move(-1); if (event.key === 'ArrowRight') move(1); }); elements.viewer.addEventListener('touchstart', event => { touchStart = event.changedTouches[0].clientX; }, { passive:true }); elements.viewer.addEventListener('touchend', event => { const distance = event.changedTouches[0].clientX - touchStart; if (Math.abs(distance) > 45) move(distance > 0 ? -1 : 1); }, { passive:true });
+    async function load() { try { const response = await fetch(`${base}/${binId}/latest?meta=false&ts=${Date.now()}`, { cache:'no-store' }); if (!response.ok) throw new Error(); const data = await response.json(); projects = Array.isArray(data.items) ? data.items : []; localStorage.setItem('innovae.portfolioItems', JSON.stringify(projects)); } catch { try { projects = JSON.parse(localStorage.getItem('innovae.portfolioItems') || '[]'); } catch { projects = []; } } render(); }
+    load();
   </script>
 </body>
 </html>
